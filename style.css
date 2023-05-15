@@ -1,0 +1,67 @@
+html {
+  height: 100%;
+  width: 100%;
+}
+
+:root {
+  --rot: 0.8deg;
+  --space-char-w: 0.3em;
+}
+
+* {
+  margin: 0px;
+  padding: 0px;
+}
+
+body > * {
+  margin: 0px;
+  padding: 15px;
+}
+
+@keyframes wavy-animation {
+  0% {
+    transform: rotate( var(--rot) );
+  }
+  50% {
+    transform: rotate( calc( var(--rot) * -1 ) );
+  }
+  100% {
+    transform: rotate( var(--rot) );
+  }
+}
+
+.coolStuffspan {
+  padding-left: var(--space-char-w);
+  padding-right: var(--space-char-w);
+  
+  position: absolute;
+  animation: wavy-animation 2s infinite;
+}
+
+.navHold {
+  display: flex;
+  align-items: center;
+}
+
+.pipeDiv {
+  padding-left: calc(var(--space-char-w));
+  padding-right: var(--space-char-w);
+  
+}
+
+nav {
+  padding: 15px;
+  background: rgb(255,255,255);
+  background: linear-gradient(0deg, rgba(255,255,255,0) 0%, rgba(255,136,0,1) 60%, rgba(255,136,0,1) 100%); 
+}
+
+.link-url {
+	color: #FF5500;
+	/* font-size: 12px; */
+	text-decoration: underline;
+	/* font-family: Arial, Helvetica, sans-serif; */
+}
+
+.link-url:hover {
+	color: #b05400;
+}
