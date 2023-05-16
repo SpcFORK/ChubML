@@ -73,7 +73,15 @@ html;
         
         "Due to its quick syntax, you can form tags";
         span .coolStuffspan;
-          "within minutes, allowing you to create websites rapidly and efficently!";
+          "within minutes,";
+        
+        br;
+        
+        "allowing you to create websites rapidly and efficently!";
+        br;
+        br;
+        span .coolStuffspan;
+          "And so much more!";
       br;
     
     // 

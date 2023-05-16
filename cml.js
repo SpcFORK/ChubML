@@ -565,6 +565,7 @@ var CHUBparse = (a) => {
 
   var sorted = sortInd(col);
   var constructed = stringi(sorted, a);
+  
   return constructed;
 }
 
@@ -594,8 +595,6 @@ function injectChub(input) {
   //   :Super .cool: "WOOO!";
   //     span .woah;
   //       "wow!";
-  //   script;
-  //     "var abcdef = 2"
   // `;
 
   var htmlCode = CHUBparse(input);
@@ -603,7 +602,14 @@ function injectChub(input) {
   if (window.chubDev && window.chubDev == true) console.log(htmlCode)
 
   let locationB = window.chubLocation || "chub"
-  if (!$(locationB)) locationB = "body"
+  let locationGot = $(locationB)
+  if (!locationGot) locationB = "body"
 
-  $(locationB).innerHTML = htmlCode;
+  locationGot.innerHTML = htmlCode;
+
+  // On finish, run finish.
+  if (window.chubinjected && typeof window.chubinjected == "function") {
+    chubinjected(locationGot);
+  }
+  
 }
