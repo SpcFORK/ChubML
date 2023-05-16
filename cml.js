@@ -292,6 +292,7 @@ var CHUBparse = (a) => {
             // Tokenize
             .replace("=", " spcfork.Equals.Token ")
             .replace(/\|e/gm, "=")
+            .replace(/\|col/gm, ";")
             .replace(/\|/gm, " ")
             // Split at Token to prevent multiple splits.
             .split(" spcfork.Equals.Token ")
@@ -478,6 +479,7 @@ var CHUBparse = (a) => {
           border-radius: 10px;
           box-shadow: 6px 6px 0px 0px #000;
           display: flex;
+          padding: 15px;
           
           width: min-content;
           "`
@@ -486,7 +488,7 @@ var CHUBparse = (a) => {
             tag: "div",
             
             id: chubml.attr 
-              ? chubml.attr + " fbox"
+              ? chubml.attr + ` ${indexes.tmp}fbox`
               : " fbox",
             
             class: chubml.class 
@@ -515,10 +517,10 @@ var CHUBparse = (a) => {
         case "chub.fboxu":
           /* Create a box, rounded.
             .------.
-            | ACDD |\
-            |  ABE ||
-            \------'|
-             ```````
+            | ACDD |
+            |  ABE |
+            \------/
+             ``````
 
             Struct:
               div;
@@ -532,6 +534,7 @@ var CHUBparse = (a) => {
           border-radius: 10px;
           box-shadow: 0px 6px 0px 0px #000;
           display: flex;
+          padding: 15px;
           
           width: min-content;
           "`
@@ -540,7 +543,7 @@ var CHUBparse = (a) => {
             tag: "div",
             
             id: chubml.attr 
-              ? chubml.attr + " fbox"
+              ? chubml.attr + ` ${indexes.tmp}fbox`
               : " fbox",
             
             class: chubml.class 
@@ -587,6 +590,7 @@ var CHUBparse = (a) => {
           border-radius: 10px;
           box-shadow: 6px 6px 0px 0px #000;
           display: flex;
+          padding: 15px;
           
           width: min-content;
           "`
@@ -595,7 +599,7 @@ var CHUBparse = (a) => {
             tag: "div",
             
             id: chubml.attr 
-              ? chubml.attr + " fbox"
+              ? chubml.attr + ` ${indexes.tmp}fbox`
               : " fbox",
             
             class: chubml.class 
@@ -624,10 +628,10 @@ var CHUBparse = (a) => {
         case "chub.fboxuBorder":
           /* Create a box, rounded.
             .------.
-            | ACDD |\
-            |  ABE ||
-            \------'|
-             ```````
+            | ACDD |
+            |  ABE |
+            \------/
+             ``````
 
             Struct:
               div;
@@ -642,6 +646,7 @@ var CHUBparse = (a) => {
           border-radius: 10px;
           box-shadow: 0px 6px 0px 0px #000;
           display: flex;
+          padding: 15px;
           
           width: min-content;
           "`
@@ -650,7 +655,7 @@ var CHUBparse = (a) => {
             tag: "div",
             
             id: chubml.attr 
-              ? chubml.attr + " fbox"
+              ? chubml.attr + ` ${indexes.tmp}fbox`
               : " fbox",
             
             class: chubml.class 
@@ -679,31 +684,6 @@ var CHUBparse = (a) => {
         default:
           break
       }
-
-      // if (isTemplate) return html
-      
-      // ¯\_(ツ)_/¯ Didn't need lol, page load css still works? But not JS of course :\ .
-
-      // if (inList.includes("link")) {
-      //   console.log(chubml.o)
-      //   if (document.createStyleSheet) {
-      //     setTimeout(() => {
-      //       document.createStyleSheet('attr')
-      //     }, 5000)
-      //   }
-      //   // else {
-      //   //   var styles = "@import url('http://example.com/big.css');";
-      //   //   var newSS = document.createElement('link');
-          
-      //   //   newSS.rel = 'stylesheet';
-      //   //   newSS.href = 'data:text/css,'+escape(styles);
-          
-      //   //   document.getElementsByTagName("head")[0]
-      //   //     .appendChild(newSS);
-      //   // }
-        
-      //   return html
-      // }
       
       html = `\n${chubml.i}<${chubml.o.tag}`;
 

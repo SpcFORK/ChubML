@@ -91,9 +91,39 @@ html;
         span .coolStuffspan;
           "And so much more!";
       br;
+      br;
 
-  chub.fboxBorder;
-    "hahaha";
+      hr;
+    
+    div .descArticle;
+      h3;
+        "Articles";
+      small;
+        "The Docs, Refs, And more. | Feel free add more, just contact me!";
+
+  // BODY
+    
+  div %style=margin:20px|col|margin-top:10px|col|display:flex|col|gap:10px|col|border-radius:10px|col|width:min-content|col|background:#f80|col|background:radial-gradient(circle,|rgba(255,128,0,1) 20%,|rgba(0,212,255,0)|100%);
+    div %style=display:flex|col|gap:10px|col|flex-direction:column;
+      
+      chub.fboxBorder;
+        a %href=docs;
+          "hahaha";
+      chub.fboxBorder;
+        a %href=docs;
+          "hahaha";
+      chub.fboxBorder;
+        a %href=docs;
+          "hahaha";
+    
+    div %style=display:flex|col|gap:10px;
+      
+      chub.fboxBorder;
+        a %href=docs;
+          "hahaha";
+      chub.fboxBorder;
+        a %href=docs;
+          "hahaha";
   // 
 
   {=
@@ -110,3 +140,4 @@ var chubstart = () => {
 var chubinjected = (locationGot) => {
   // console.log(locationGot, "lol")
 }
+
