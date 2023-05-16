@@ -11,7 +11,7 @@ html;
     meta %name=viewport %content=width|edevice-width;
     
     title;
-      "ChubBuild";
+      "Chub Syntax! | Home";
     
     link %href=style.css %rel=stylesheet %type=text/css;
   //
@@ -45,6 +45,14 @@ html;
         span;
           "CHUB WEBSITE!";
       // 
+      
+      small;
+        "Log by SpectCOW | v.0.0.3";
+      // 
+      br;
+      br;
+      hr;
+      br;
       
       p;
         "The newest and best Markdown Language simplifier!";
