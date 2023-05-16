@@ -2,7 +2,7 @@
   =-=-=-=--=-=-=-=-=
   GUIDE
 
-  Order of USE:
+  Order of USE, SRC:
     START
       *Q-Sel:
       $()
@@ -213,18 +213,6 @@ var CHUBparse = (a) => {
     const indentString = "  "; // two spaces for each indent level
     let indexes = {
       str: 0
-    }
-
-    let templates = {
-      "test": {
-        tag: "",
-        id: "",
-        class: "",
-        content: "",
-        data: "",
-        attr: "",
-        indent: 0,
-      }
     }
 
     // let tree = {}
@@ -461,18 +449,53 @@ var CHUBparse = (a) => {
       let isTemplate = false
 
       // console.log(chubml.o.tag)
-      // Check for ChubTemplates.
+      
+      // Check for ChubTemplates or Special Sets.
+      console.log(chubml.o)
       switch (chubml.o.tag) {
         case "chub.lol":
           console.log("lol, test, lol\nCHUB tag Check functional!")
           break
         
         case "chub.funnybox":
-          html += `
-          <div class="funnybox">
+          /* Create a box, rounded.
+            .------.
+            | ACDD |\
+            |  ABE ||
+            \------'|
+             ```````
+          */
 
-          </div>
+          let fboxStyle = `
+          
           `
+          
+          chubml.o = {
+            tag: "div",
+            
+            id: chubml.attr 
+              ? chubml.attr + " fbox"
+              : " fbox",
+            
+            class: chubml.class 
+              ? chubml.class + " fbox"
+              : " fbox",
+            
+            content: chubml.content 
+              ? chubml.content
+              : "",
+            
+            data: chubml.data 
+              ? chubml.data
+              : "",
+            
+            attr: chubml.attr 
+              ? chubml.attr + " " + fboxStyle
+              : fboxStyle,
+            
+            indent: chubml.indent,
+          }
+          
           isTemplate = true
           break
           
@@ -480,7 +503,7 @@ var CHUBparse = (a) => {
           break
       }
 
-      if (isTemplate) return html
+      // if (isTemplate) return html
       
       // ¯\_(ツ)_/¯ Didn't need lol, page load css still works? But not JS of course :\ .
 
@@ -513,6 +536,10 @@ var CHUBparse = (a) => {
 
       if (chubml.o.id) {
         html += ` id="${chubml.o.id.slice(1)}"`;
+      }
+      
+      if (chubml.o.style) {
+        html += ` style="${chubml.o.id.slice(1)}"`;
       }
 
       if (chubml.o.data) {

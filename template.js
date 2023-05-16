@@ -93,6 +93,7 @@ html;
       br;
 
     chub.funnybox;
+      "hahaha";
     // 
 
   {=
