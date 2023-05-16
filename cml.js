@@ -457,6 +457,30 @@ var CHUBparse = (a) => {
       var isSpecial = specialfind.count
       var inList = specialfind.list
       let html = ''
+
+      let isTemplate = false
+
+      // console.log(chubml.o.tag)
+      // Check for ChubTemplates.
+      switch (chubml.o.tag) {
+        case "chub.lol":
+          console.log("lol, test, lol\nCHUB tag Check functional!")
+          break
+        
+        case "chub.funnybox":
+          html += `
+          <div class="funnybox">
+
+          </div>
+          `
+          isTemplate = true
+          break
+          
+        default:
+          break
+      }
+
+      if (isTemplate) return html
       
       // ¯\_(ツ)_/¯ Didn't need lol, page load css still works? But not JS of course :\ .
 

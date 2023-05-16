@@ -91,7 +91,8 @@ html;
         span .coolStuffspan;
           "And so much more!";
       br;
-    
+
+    chub.funnybox;
     // 
 
   {=
