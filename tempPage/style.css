@@ -65,3 +65,8 @@ nav {
 .link-url:hover {
 	color: #b05400;
 }
+
+.fbox {
+  background-color: #fff;
+  box-shadow: 0px 0px 0px 0px #000;
+}

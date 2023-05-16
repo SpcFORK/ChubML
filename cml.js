@@ -99,12 +99,12 @@ Apparently, you made an error loading or executing your script.
 Look back and take a gander.
 
 Potentially:
-=> Check if you loaded the right file.
-=> Check if you made a typo.
-=> Check if you did not add the directory to the file.
-=> Check if you did every thing else right.
-
-=> If all else. cry :(
+  => Check if you loaded the right file.
+  => Check if you made a typo.
+  => Check if you did not add the directory to the file.
+  => Check if you did every thing else right.
+  
+  => If all else. cry :(
 `),
 }
 
@@ -212,7 +212,8 @@ var CHUBparse = (a) => {
     let result = "";
     const indentString = "  "; // two spaces for each indent level
     let indexes = {
-      str: 0
+      str: 0,
+      tmp: 0,
     }
 
     // let tree = {}
@@ -457,18 +458,83 @@ var CHUBparse = (a) => {
           console.log("lol, test, lol\nCHUB tag Check functional!")
           break
         
-        case "chub.funnybox":
+        case "chub.fbox":
           /* Create a box, rounded.
             .------.
             | ACDD |\
             |  ABE ||
             \------'|
              ```````
+
+            Struct:
+              div;
+                div;
+                  {{INSERT}};
+            
           */
 
-          let fboxStyle = `
+          fboxStyle = `style="
+          background-color: #f80f;
+          border-radius: 10px;
+          box-shadow: 6px 6px 0px 0px #000;
+          display: flex;
           
-          `
+          width: min-content;
+          "`
+          
+          chubml.o = {
+            tag: "div",
+            
+            id: chubml.attr 
+              ? chubml.attr + " fbox"
+              : " fbox",
+            
+            class: chubml.class 
+              ? chubml.class + " fbox"
+              : " fbox",
+            
+            content: chubml.content 
+              ? chubml.content
+              : "",
+            
+            data: chubml.data 
+              ? chubml.data
+              : "",
+            
+            attr: chubml.attr 
+              ? chubml.attr + " " + fboxStyle
+              : fboxStyle,
+            
+            indent: chubml.indent,
+          }
+
+          indexes.tmp++
+          isTemplate = true
+          break
+          
+        case "chub.fboxu":
+          /* Create a box, rounded.
+            .------.
+            | ACDD |\
+            |  ABE ||
+            \------'|
+             ```````
+
+            Struct:
+              div;
+                div;
+                  {{INSERT}};
+            
+          */
+
+          fboxStyle = `style="
+          background-color: #f80f;
+          border-radius: 10px;
+          box-shadow: 0px 6px 0px 0px #000;
+          display: flex;
+          
+          width: min-content;
+          "`
           
           chubml.o = {
             tag: "div",
@@ -496,6 +562,117 @@ var CHUBparse = (a) => {
             indent: chubml.indent,
           }
           
+          indexes.tmp++
+          isTemplate = true
+          break
+          
+        case "chub.fboxBorder":
+          /* Create a box, rounded.
+            .------.
+            | ACDD |\
+            |  ABE ||
+            \------'|
+             ```````
+
+            Struct:
+              div;
+                div;
+                  {{INSERT}};
+            
+          */
+
+          fboxStyle = `style="
+          background-color: #f80f;
+          border: 3px solid #000;
+          border-radius: 10px;
+          box-shadow: 6px 6px 0px 0px #000;
+          display: flex;
+          
+          width: min-content;
+          "`
+          
+          chubml.o = {
+            tag: "div",
+            
+            id: chubml.attr 
+              ? chubml.attr + " fbox"
+              : " fbox",
+            
+            class: chubml.class 
+              ? chubml.class + " fbox"
+              : " fbox",
+            
+            content: chubml.content 
+              ? chubml.content
+              : "",
+            
+            data: chubml.data 
+              ? chubml.data
+              : "",
+            
+            attr: chubml.attr 
+              ? chubml.attr + " " + fboxStyle
+              : fboxStyle,
+            
+            indent: chubml.indent,
+          }
+
+          indexes.tmp++
+          isTemplate = true
+          break
+          
+        case "chub.fboxuBorder":
+          /* Create a box, rounded.
+            .------.
+            | ACDD |\
+            |  ABE ||
+            \------'|
+             ```````
+
+            Struct:
+              div;
+                div;
+                  {{INSERT}};
+            
+          */
+
+          fboxStyle = `style="
+          background-color: #f80f;
+          border: 3px solid #000;
+          border-radius: 10px;
+          box-shadow: 0px 6px 0px 0px #000;
+          display: flex;
+          
+          width: min-content;
+          "`
+          
+          chubml.o = {
+            tag: "div",
+            
+            id: chubml.attr 
+              ? chubml.attr + " fbox"
+              : " fbox",
+            
+            class: chubml.class 
+              ? chubml.class + " fbox"
+              : " fbox",
+            
+            content: chubml.content 
+              ? chubml.content
+              : "",
+            
+            data: chubml.data 
+              ? chubml.data
+              : "",
+            
+            attr: chubml.attr 
+              ? chubml.attr + " " + fboxStyle
+              : fboxStyle,
+            
+            indent: chubml.indent,
+          }
+          
+          indexes.tmp++
           isTemplate = true
           break
           

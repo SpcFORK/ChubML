@@ -92,9 +92,9 @@ html;
           "And so much more!";
       br;
 
-    chub.funnybox;
-      "hahaha";
-    // 
+  chub.fboxBorder;
+    "hahaha";
+  // 
 
   {=
     src="temp/test.js"
