@@ -94,7 +94,18 @@ Use: "meta %name=viewport %content=width|edevice-width;"
   => "meta %name=viewport %content=width=device-width;"
 `),
 
-  
+  scripterror: new Error(`
+Apparently, you made an error loading or executing your script.
+Look back and take a gander.
+
+Potentially:
+=> Check if you loaded the right file.
+=> Check if you made a typo.
+=> Check if you did not add the directory to the file.
+=> Check if you did every thing else right.
+
+=> If all else. cry :(
+`),
 }
 
 /*
@@ -255,7 +266,7 @@ var CHUBparse = (a) => {
         // console.log(issrc)
 
         // Source Check
-        if (issrc) {
+        if (issrc && scrmatch) {
           let srcis = scrmatch[1].match(/src="(.*)"/)[1]
           // console.log(srcis)
 
@@ -266,7 +277,8 @@ var CHUBparse = (a) => {
             })
             .then((text) => {
               // console.log(text)
-              eval(text)
+              try { eval(text) }
+              catch (error) { console.log(error, errlist.scripterror) }
             })
           
           dostill = false
@@ -275,7 +287,8 @@ var CHUBparse = (a) => {
 
         // Eval content (not SRC).
         if (scrmatch !== null && dostill) {
-          eval(scrmatch[1])
+          try { eval(scrmatch[1]) }
+          catch (error) { console.log(error, errlist.scripterror) }
         }
       }
 

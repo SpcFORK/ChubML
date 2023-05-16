@@ -9,11 +9,19 @@ html;
   head;
     meta %charset=utf-8;
     meta %name=viewport %content=width|edevice-width;
+    meta %name=msapplication-TileColor %content=#ff8800;
+    meta %name=theme-color %content=#ff8800;
     
     title;
       "Chub Syntax! | Home";
     
     link %href=style.css %rel=stylesheet %type=text/css;
+    
+    link %sizes=180x180 %rel=apple-touch-icon %href=/apple-touch-icon.png;
+    link %sizes=32x32 %rel=icon %type=image/png %href=/favicon-32x32.png;
+    link %sizes=16x16 %rel=icon %type=image/png %href=/favicon-16x16.png;
+    link %href=/site.webmanifest %rel=manifest;
+    link %href=/safari-pinned-tab.svg %rel=mask-icon %color=#ff8800;
   //
   
   // BODY
@@ -87,7 +95,7 @@ html;
     // 
 
   {=
-    src="test.js"
+    src="temp/test.js"
   =}
   
 `;
@@ -95,4 +103,8 @@ html;
 var chubstart = () => {
   // injectChub(input)
   ChubRep(input)
+}
+
+var chubinjected = (locationGot) => {
+  console.log(locationGot, "lol")
 }

@@ -90,20 +90,20 @@ class FunctionDocumenter {
       const docString = this.generateFunctionDocString(func);
       const built = description ? `/** ${description}\n${docString} */` : docString
       console.log(built);
-      
+
       build.push(built);
     }
-    
-    return build.join("\n\n\n") 
+
+    return build.join("\n\n\n")
   }
 
   generateFunctionDocString(func) {
     const source = func.toString();
     const params = this.getParamNames(source);
-    
+
     const paramText = this.generateParamText(params);
     const returnType = this.getReturnType(source);
-    
+
     return `function ${func.name}(${params.join(", ")}) {\n${paramText}\n  ...\n  @returns ${returnType}\n}`;
   }
 
@@ -112,7 +112,7 @@ class FunctionDocumenter {
     if (!match) {
       return [];
     }
-    
+
     return match[1].split(",").map((param) => param.trim());
   }
 
@@ -126,9 +126,9 @@ class FunctionDocumenter {
 
   getReturnType(source) {
     const match = source.match(/=>\s*(.*?)\s*{/);
-    
-    return match 
-      ? match[1] 
+
+    return match
+      ? match[1]
       : "void";
   }
 }
