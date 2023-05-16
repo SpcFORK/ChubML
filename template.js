@@ -107,5 +107,5 @@ var chubstart = () => {
 }
 
 var chubinjected = (locationGot) => {
-  console.log(locationGot, "lol")
+  // console.log(locationGot, "lol")
 }
