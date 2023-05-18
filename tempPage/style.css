@@ -172,6 +172,15 @@ nav {
   text-shadow: none;
 }
 
+/* 
+  .lol ::hover;
+    addevent: "lolHover";
+
+  !lolHover .asd;
+    background: ;
+
+*/
+
 .coolerfbox:hover, .coolderfbox:active {
   left:0px; 
   top:0px;

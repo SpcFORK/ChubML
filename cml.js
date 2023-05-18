@@ -465,6 +465,8 @@ var CHUBparse = (a) => {
       
       // Check for ChubTemplates or Special Sets.
       console.log(chubml.o)
+
+      // @templates
       switch (chubml.o.tag) {
         case "chub.lol":
           console.log("lol, test, lol\nCHUB tag Check functional!")
@@ -716,10 +718,10 @@ var CHUBparse = (a) => {
         case "chub.prefbox":
           /* Create a box, rounded.
             .------.
-            | ACDD |\
-            |  ABE ||
-            \------'|
-             ```````
+            | ACDD |
+            |  ABE |
+            '------'
+             
 
             Struct:
               div;

@@ -101,44 +101,48 @@ html;
       small;
         "The Docs, Refs, And more. | Feel free add more, just contact me!";
 
-  // BODY
     
-  div #docsNav;
-    div #docsLayout;
-      div #docsMiniCol;
-        
-        a %href=docs .wlink-url;
-          chub.prefboxBorder .coolerfbox;
-            p .docp;
+    div #docsNav;
+      div #docsLayout;
+        div #docsMiniCol;
+          
+          a %href=docs .wlink-url;
+            chub.fboxBorder .coolerfbox;
+              p .docp;
                 "About";
-              
-        a %href=docs .wlink-url;
-          chub.prefboxBorder .coolerfbox;
-            p .docp;
+                
+          a %href=docs .wlink-url;
+            chub.prefboxBorder .coolerfbox;
+              p .docp;
                 "Getting Stated";
-              
-        a %href=docs .wlink-url;
-          chub.prefboxBorder .coolerfbox;
-            p .docp;
+                
+          a %href=docs .wlink-url;
+            chub.prefboxBorder .coolerfbox;
+              p .docp;
                 "Functions";
+        
+        div #docsCol;
+          
+          a %href=docs .wlink-url .tooltip %style=display:flex|col|margin-right:17px;
+            chub.prefboxBorder .coolerHfbox;
+              p .docp;
+                "Content";
+          
+          a %href=docs .wlink-url %style=display:flex|col|margin-right:17px;
+            chub.prefboxBorder .coolerHfbox;
+              p .docp;
+                "Templates";
+          
+          a %href=docs .wlink-url %style=display:flex;
+            chub.prefboxBorder .coolerHfbox;
+              p .docp;
+                "More...";
       
-      div #docsCol;
-        
-        a %href=docs .wlink-url .tooltip %style=display:flex|col|margin-right:17px;
-          chub.prefboxBorder .coolerHfbox;
-            p .docp;
-              "Content";
-        
-        a %href=docs .wlink-url %style=display:flex|col|margin-right:17px;
-          chub.prefboxBorder .coolerHfbox;
-            p .docp;
-              "Templates";
-        
-        a %href=docs .wlink-url %style=display:flex;
-          chub.prefboxBorder .coolerHfbox;
-            p .docp;
-              "More...";
-  // 
+      // Layout
+      
+    // Docs Nav
+    
+  // BODY
 
   {=
     src="temp/test.js"
