@@ -103,27 +103,41 @@ html;
 
   // BODY
     
-  div %style=margin:20px|col|margin-top:10px|col|display:flex|col|gap:10px|col|border-radius:10px|col|width:min-content|col|background:#f80|col|background:radial-gradient(circle,|rgba(255,128,0,1) 20%,|rgba(0,212,255,0)|100%);
-    div %style=display:flex|col|gap:10px|col|flex-direction:column;
+  div #docsNav;
+    div #docsLayout;
+      div #docsMiniCol;
+        
+        a %href=docs .wlink-url;
+          chub.prefboxBorder .coolerfbox;
+            p .docp;
+                "About";
+              
+        a %href=docs .wlink-url;
+          chub.prefboxBorder .coolerfbox;
+            p .docp;
+                "Getting Stated";
+              
+        a %href=docs .wlink-url;
+          chub.prefboxBorder .coolerfbox;
+            p .docp;
+                "Functions";
       
-      chub.fboxBorder;
-        a %href=docs;
-          "hahaha";
-      chub.fboxBorder;
-        a %href=docs;
-          "hahaha";
-      chub.fboxBorder;
-        a %href=docs;
-          "hahaha";
-    
-    div %style=display:flex|col|gap:10px;
-      
-      chub.fboxBorder;
-        a %href=docs;
-          "hahaha";
-      chub.fboxBorder;
-        a %href=docs;
-          "hahaha";
+      div #docsCol;
+        
+        a %href=docs .wlink-url .tooltip %style=display:flex|col|margin-right:17px;
+          chub.prefboxBorder .coolerHfbox;
+            p .docp;
+              "Content";
+        
+        a %href=docs .wlink-url %style=display:flex|col|margin-right:17px;
+          chub.prefboxBorder .coolerHfbox;
+            p .docp;
+              "Templates";
+        
+        a %href=docs .wlink-url %style=display:flex;
+          chub.prefboxBorder .coolerHfbox;
+            p .docp;
+              "More...";
   // 
 
   {=

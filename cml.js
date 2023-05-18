@@ -76,6 +76,16 @@
   =-=-=-=--=-=-=-=-=
 */
 
+
+/* 
+  =-=-=-=--=-=-=-=-=
+  Very important
+  GLOBAL VARS
+  =-=-=-=--=-=-=-=-=
+*/
+
+var styled = {}
+
 /* 
   =-=-=-=--=-=-=-=-=
   ERRORS
@@ -420,7 +430,8 @@ var CHUBparse = (a) => {
         obj.children.forEach(child => traverse(child, level + 1));
       }
     }
-
+    
+    // @pj
     function pubj(chubml) {
 
       // Special Tags which usually are self Closing.
@@ -487,29 +498,50 @@ var CHUBparse = (a) => {
           chubml.o = {
             tag: "div",
             
-            id: chubml.attr 
-              ? chubml.attr + ` ${indexes.tmp}fbox`
+            id: chubml.o.id 
+              ? chubml.o.id + ` ${indexes.tmp}fbox`
               : " fbox",
             
-            class: chubml.class 
-              ? chubml.class + " fbox"
+            class: chubml.o.class 
+              ? chubml.o.class + " fbox"
               : " fbox",
             
-            content: chubml.content 
-              ? chubml.content
+            content: chubml.o.content 
+              ? chubml.o.content
               : "",
             
-            data: chubml.data 
-              ? chubml.data
+            data: chubml.o.data 
+              ? chubml.o.data
               : "",
             
-            attr: chubml.attr 
-              ? chubml.attr + " " + fboxStyle
+            attr: chubml.o.attr 
+              ? chubml.o.attr + " " + fboxStyle
               : fboxStyle,
             
-            indent: chubml.indent,
+            indent: chubml.o.i,
           }
 
+          // Debating weither I should make a global var and preload all styles,
+          // or if I should insert styles between the head like so:
+          /* 
+
+            if (html.includes("head")) {
+              
+              if (styled["fbox"] === true) {
+                html = html.replace("<head>", "<head>" + fboxStyle)
+
+                // Set to "has" since we check earlier if the value is false to define it
+                styled["fbox"] = "has"
+              }
+              
+              ...
+            }
+          
+          */
+
+          
+          // if (!styled["fboxes"]) styled["fboxes"] = true
+          
           indexes.tmp++
           isTemplate = true
           break
@@ -542,27 +574,27 @@ var CHUBparse = (a) => {
           chubml.o = {
             tag: "div",
             
-            id: chubml.attr 
-              ? chubml.attr + ` ${indexes.tmp}fbox`
+            id: chubml.o.id 
+              ? chubml.o.id + ` ${indexes.tmp}fbox`
               : " fbox",
             
-            class: chubml.class 
-              ? chubml.class + " fbox"
+            class: chubml.o.class 
+              ? chubml.o.class + " fbox"
               : " fbox",
             
-            content: chubml.content 
-              ? chubml.content
+            content: chubml.o.content 
+              ? chubml.o.content
               : "",
             
-            data: chubml.data 
-              ? chubml.data
+            data: chubml.o.data 
+              ? chubml.o.data
               : "",
             
-            attr: chubml.attr 
-              ? chubml.attr + " " + fboxStyle
+            attr: chubml.o.attr 
+              ? chubml.o.attr + " " + fboxStyle
               : fboxStyle,
             
-            indent: chubml.indent,
+            indent: chubml.o.i,
           }
           
           indexes.tmp++
@@ -598,27 +630,27 @@ var CHUBparse = (a) => {
           chubml.o = {
             tag: "div",
             
-            id: chubml.attr 
-              ? chubml.attr + ` ${indexes.tmp}fbox`
+            id: chubml.o.id 
+              ? chubml.o.id + ` ${indexes.tmp}fbox`
               : " fbox",
             
-            class: chubml.class 
-              ? chubml.class + " fbox"
+            class: chubml.o.class 
+              ? chubml.o.class + " fbox"
               : " fbox",
             
-            content: chubml.content 
-              ? chubml.content
+            content: chubml.o.content 
+              ? chubml.o.content
               : "",
             
-            data: chubml.data 
-              ? chubml.data
+            data: chubml.o.data 
+              ? chubml.o.data
               : "",
             
-            attr: chubml.attr 
-              ? chubml.attr + " " + fboxStyle
+            attr: chubml.o.attr 
+              ? chubml.o.attr + " " + fboxStyle
               : fboxStyle,
             
-            indent: chubml.indent,
+            indent: chubml.o.i,
           }
 
           indexes.tmp++
@@ -654,27 +686,258 @@ var CHUBparse = (a) => {
           chubml.o = {
             tag: "div",
             
-            id: chubml.attr 
-              ? chubml.attr + ` ${indexes.tmp}fbox`
+            id: chubml.o.id 
+              ? chubml.o.id + ` ${indexes.tmp}fbox`
               : " fbox",
             
-            class: chubml.class 
-              ? chubml.class + " fbox"
+            class: chubml.o.class 
+              ? chubml.o.class + " fbox"
               : " fbox",
             
-            content: chubml.content 
-              ? chubml.content
+            content: chubml.o.content 
+              ? chubml.o.content
               : "",
             
-            data: chubml.data 
-              ? chubml.data
+            data: chubml.o.data 
+              ? chubml.o.data
               : "",
             
-            attr: chubml.attr 
-              ? chubml.attr + " " + fboxStyle
+            attr: chubml.o.attr 
+              ? chubml.o.attr + " " + fboxStyle
               : fboxStyle,
             
-            indent: chubml.indent,
+            indent: chubml.o.i,
+          }
+          
+          indexes.tmp++
+          isTemplate = true
+          break
+          
+        case "chub.prefbox":
+          /* Create a box, rounded.
+            .------.
+            | ACDD |\
+            |  ABE ||
+            \------'|
+             ```````
+
+            Struct:
+              div;
+                div;
+                  {{INSERT}};
+            
+          */
+
+          fboxStyle = `style="
+          background-color: #f80f;
+          border-radius: 10px;
+          display: flex;
+          padding: 15px;
+          "`
+          
+          chubml.o = {
+            tag: "div",
+            
+            id: chubml.o.id 
+              ? chubml.o.id + ` ${indexes.tmp}fbox`
+              : " fbox",
+            
+            class: chubml.o.class 
+              ? chubml.o.class + " fbox"
+              : " fbox",
+            
+            content: chubml.o.content 
+              ? chubml.o.content
+              : "",
+            
+            data: chubml.o.data 
+              ? chubml.o.data
+              : "",
+            
+            attr: chubml.o.attr 
+              ? chubml.o.attr + " " + fboxStyle
+              : fboxStyle,
+            
+            indent: chubml.o.i,
+          }
+
+          // Debating weither I should make a global var and preload all styles,
+          // or if I should insert styles between the head like so:
+          /* 
+
+            if (html.includes("head")) {
+              
+              if (styled["fbox"] === true) {
+                html = html.replace("<head>", "<head>" + fboxStyle)
+
+                // Set to "has" since we check earlier if the value is false to define it
+                styled["fbox"] = "has"
+              }
+              
+              ...
+            }
+          
+          */
+
+          
+          // if (!styled["fboxes"]) styled["fboxes"] = true
+          
+          indexes.tmp++
+          isTemplate = true
+          break
+          
+        case "chub.prefboxu":
+          /* Create a box, rounded.
+            .------.
+            | ACDD |
+            |  ABE |
+            \------/
+             ``````
+
+            Struct:
+              div;
+                div;
+                  {{INSERT}};
+            
+          */
+
+          fboxStyle = `style="
+          background-color: #f80f;
+          border-radius: 10px;
+          display: flex;
+          padding: 15px;
+          "`
+          
+          chubml.o = {
+            tag: "div",
+            
+            id: chubml.o.id 
+              ? chubml.o.id + ` ${indexes.tmp}fbox`
+              : " fbox",
+            
+            class: chubml.o.class 
+              ? chubml.o.class + " fbox"
+              : " fbox",
+            
+            content: chubml.o.content 
+              ? chubml.o.content
+              : "",
+            
+            data: chubml.o.data 
+              ? chubml.o.data
+              : "",
+            
+            attr: chubml.o.attr 
+              ? chubml.o.attr + " " + fboxStyle
+              : fboxStyle,
+            
+            indent: chubml.o.i,
+          }
+          
+          indexes.tmp++
+          isTemplate = true
+          break
+          
+        case "chub.prefboxBorder":
+          /* Create a box, rounded.
+            .------.
+            | ACDD |\
+            |  ABE ||
+            \------'|
+             ```````
+
+            Struct:
+              div;
+                div;
+                  {{INSERT}};
+            
+          */
+
+          fboxStyle = `style="
+          background-color: #f80f;
+          border: 3px solid #000;
+          border-radius: 10px;
+          display: flex;
+          padding: 15px;
+          "`
+          
+          chubml.o = {
+            tag: "div",
+            
+            id: chubml.o.id 
+              ? chubml.o.id + ` ${indexes.tmp}fbox`
+              : " fbox",
+            
+            class: chubml.o.class 
+              ? chubml.o.class + " fbox"
+              : " fbox",
+            
+            content: chubml.o.content 
+              ? chubml.o.content
+              : "",
+            
+            data: chubml.o.data 
+              ? chubml.o.data
+              : "",
+            
+            attr: chubml.o.attr 
+              ? chubml.o.attr + " " + fboxStyle
+              : fboxStyle,
+            
+            indent: chubml.o.i,
+          }
+
+          indexes.tmp++
+          isTemplate = true
+          break
+          
+        case "chub.prefboxuBorder":
+          /* Create a box, rounded.
+            .------.
+            | ACDD |
+            |  ABE |
+            \------/
+             ``````
+
+            Struct:
+              div;
+                div;
+                  {{INSERT}};
+            
+          */
+
+          fboxStyle = `style="
+          background-color: #f80f;
+          border: 3px solid #000;
+          border-radius: 10px;
+          display: flex;
+          padding: 15px;
+          "`
+          
+          chubml.o = {
+            tag: "div",
+            
+            id: chubml.o.id 
+              ? chubml.o.id + ` ${indexes.tmp}fbox`
+              : " fbox",
+            
+            class: chubml.o.class 
+              ? chubml.o.class + " fbox"
+              : " fbox",
+            
+            content: chubml.o.content 
+              ? chubml.o.content
+              : "",
+            
+            data: chubml.o.data 
+              ? chubml.o.data
+              : "",
+            
+            attr: chubml.o.attr 
+              ? chubml.o.attr + " " + fboxStyle
+              : fboxStyle,
+            
+            indent: chubml.o.i,
           }
           
           indexes.tmp++
@@ -737,7 +1000,7 @@ var CHUBparse = (a) => {
       if (html.search("<>")) html = html
         .replace("<>", "")
         .replace("</>", "")
-
+      
       return html;
     }
 
