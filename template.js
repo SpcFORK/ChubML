@@ -107,7 +107,7 @@ html;
         div #docsMiniCol;
           
           a %href=docs .wlink-url;
-            chub.fboxBorder .coolerfbox;
+            chub.prefboxBorder .coolerfbox;
               p .docp;
                 "About";
                 
