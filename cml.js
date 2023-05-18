@@ -1014,45 +1014,46 @@ var CHUBparse = (a) => {
     return a;
   }
 
-  /** Get a tree based off indent nesting.
-    
-  function sortInd(contents) {
-  * @param {string} contents - collapses a string into an object by indentation syntax.
-    ...
-    @returns {object}
-  } */
-  function sortInd(contents) {
-    const sortedContents = [];
-    let parentStack = [];
-
-    contents.forEach(content => {
-      const currentIndent = content.i;
-      const currentContent = { c: content.c };
-
-      while (parentStack.length > 0 && currentIndent <= parentStack[parentStack.length - 1].i) {
-        parentStack.pop();
-      }
-
-      if (parentStack.length > 0) {
-        const parent = parentStack[parentStack.length - 1];
-        if (!parent.children) {
-          parent.children = [];
-        }
-        parent.children.push(currentContent);
-      } else {
-        sortedContents.push(currentContent);
-      }
-
-      parentStack.push(Object.assign(currentContent, { i: currentIndent }));
-    });
-
-    return sortedContents[0];
-  }
 
   var sorted = sortInd(col);
   var constructed = stringi(sorted, a);
   
   return constructed;
+}
+
+/** Get a tree based off indent nesting.
+  
+function sortInd(contents) {
+* @param {string} contents - collapses a string into an object by indentation syntax.
+  ...
+  @returns {object}
+} */
+function sortInd(contents) {
+  const sortedContents = [];
+  let parentStack = [];
+
+  contents.forEach(content => {
+    const currentIndent = content.i;
+    const currentContent = { c: content.c };
+
+    while (parentStack.length > 0 && currentIndent <= parentStack[parentStack.length - 1].i) {
+      parentStack.pop();
+    }
+
+    if (parentStack.length > 0) {
+      const parent = parentStack[parentStack.length - 1];
+      if (!parent.children) {
+        parent.children = [];
+      }
+      parent.children.push(currentContent);
+    } else {
+      sortedContents.push(currentContent);
+    }
+
+    parentStack.push(Object.assign(currentContent, { i: currentIndent }));
+  });
+
+  return sortedContents[0];
 }
 
 // -=-=-=-= START A SCRIPT: Like p5.js =-=-=-=-

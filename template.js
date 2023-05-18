@@ -150,11 +150,19 @@ html;
   
 `;
 
+/* 
+  On document load after Chub is done loading.
+  Done to prevent load issues like P5.JS just in case.
+*/
 var chubstart = () => {
+  // Use this to inject into an element in the HTML.
   // injectChub(input)
+  
+  // Use this to rewrite the HTML and Document ENTIRELY.
   ChubRep(input)
 }
 
+// On injectChub finished.
 var chubinjected = (locationGot) => {
   // console.log(locationGot, "lol")
 }
