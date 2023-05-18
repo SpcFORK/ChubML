@@ -755,118 +755,12 @@ var CHUBparse = (a) => {
           isTemplate = true
           break
           
-        case "chub.prefboxu":
-          /* Create a box, rounded.
-            .------.
-            | ACDD |
-            |  ABE |
-            \------/
-             ``````
-
-            Struct:
-              div;
-                div;
-                  {{INSERT}};
-            
-          */
-
-          fboxStyle = `style="
-          background-color: #f80f;
-          border-radius: 10px;
-          display: flex;
-          padding: 15px;
-          "`
-          
-          chubml.o = {
-            tag: "div",
-            
-            id: chubml.o.id 
-              ? chubml.o.id + ` ${indexes.tmp}fbox`
-              : " fbox",
-            
-            class: chubml.o.class 
-              ? chubml.o.class + " fbox"
-              : " fbox",
-            
-            content: chubml.o.content 
-              ? chubml.o.content
-              : "",
-            
-            data: chubml.o.data 
-              ? chubml.o.data
-              : "",
-            
-            attr: chubml.o.attr 
-              ? chubml.o.attr + " " + fboxStyle
-              : fboxStyle,
-            
-            indent: chubml.o.i,
-          }
-          
-          indexes.tmp++
-          isTemplate = true
-          break
-          
         case "chub.prefboxBorder":
           /* Create a box, rounded.
             .------.
-            | ACDD |\
-            |  ABE ||
-            \------'|
-             ```````
-
-            Struct:
-              div;
-                div;
-                  {{INSERT}};
-            
-          */
-
-          fboxStyle = `style="
-          background-color: #f80f;
-          border: 3px solid #000;
-          border-radius: 10px;
-          display: flex;
-          padding: 15px;
-          "`
-          
-          chubml.o = {
-            tag: "div",
-            
-            id: chubml.o.id 
-              ? chubml.o.id + ` ${indexes.tmp}fbox`
-              : " fbox",
-            
-            class: chubml.o.class 
-              ? chubml.o.class + " fbox"
-              : " fbox",
-            
-            content: chubml.o.content 
-              ? chubml.o.content
-              : "",
-            
-            data: chubml.o.data 
-              ? chubml.o.data
-              : "",
-            
-            attr: chubml.o.attr 
-              ? chubml.o.attr + " " + fboxStyle
-              : fboxStyle,
-            
-            indent: chubml.o.i,
-          }
-
-          indexes.tmp++
-          isTemplate = true
-          break
-          
-        case "chub.prefboxuBorder":
-          /* Create a box, rounded.
-            .------.
             | ACDD |
             |  ABE |
-            \------/
-             ``````
+            '------'
 
             Struct:
               div;
@@ -908,7 +802,7 @@ var CHUBparse = (a) => {
             
             indent: chubml.o.i,
           }
-          
+
           indexes.tmp++
           isTemplate = true
           break
@@ -1807,7 +1701,6 @@ function sortInd(contents) {
 // -=-=-=-= ChubECSS =-=-=-=-
 // Ze better syntax for SS'
 // + Chub Indent-ator.
-
 
 // -=-=-=-= START A SCRIPT: Like p5.js =-=-=-=-
 
