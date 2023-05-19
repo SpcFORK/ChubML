@@ -106,7 +106,7 @@ html;
       div #docsLayout;
         div #docsMiniCol;
           
-          a %href=docs .wlink-url;
+          a %href=about .wlink-url;
             chub.prefboxBorder .coolerfbox;
               p .docp;
                 "About";
@@ -116,24 +116,24 @@ html;
               p .docp;
                 "Getting Stated";
                 
-          a %href=docs .wlink-url;
+          a %href=functions .wlink-url;
             chub.prefboxBorder .coolerfbox;
               p .docp;
                 "Functions";
         
         div #docsCol;
           
-          a %href=docs .wlink-url .tooltip %style=display:flex|col|margin-right:17px;
+          a %href=content .wlink-url .tooltip %style=display:flex|col|margin-right:17px;
             chub.prefboxBorder .coolerHfbox;
               p .docp;
                 "Content";
           
-          a %href=docs .wlink-url %style=display:flex|col|margin-right:17px;
+          a %href=templates .wlink-url %style=display:flex|col|margin-right:17px;
             chub.prefboxBorder .coolerHfbox;
               p .docp;
                 "Templates";
           
-          a %href=docs .wlink-url %style=display:flex;
+          a %href=more .wlink-url %style=display:flex;
             chub.prefboxBorder .coolerHfbox;
               p .docp;
                 "More...";
