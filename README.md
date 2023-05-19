@@ -143,7 +143,7 @@ To start using ChubML, follow these steps:
             // 
         
           {=
-            src="temp/test.js"
+            alert('hey!')
           =}
           
         `;
