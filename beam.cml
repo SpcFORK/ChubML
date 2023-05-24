@@ -1,10 +1,3 @@
-var chubLocation = "html"
-
-var chubDev = true
-
-// You don't really need this if you use beamChub()
-var input = `
-
 html;
   // HEADER
   head;
@@ -43,6 +36,12 @@ html;
             
           a .link-url %href=style.css;
             "Template Style";
+
+          span .pipeDiv;
+            "|";
+            
+          a .link-url %href=cml.js;
+            "SRC Code";
 
     article .descArticle;
     
@@ -148,30 +147,3 @@ html;
   {=
     src="temp/test.js"
   =}
-  
-`;
-
-/* 
-  On document load after Chub is done loading.
-  Done to prevent load issues like P5.JS just in case.
-*/
-
-var chubstart = () => {
-  // Use this to inject into an element in the HTML.
-    // injectChub(input)
-  
-  // Use this to rewrite the HTML and Document ENTIRELY.
-    // ChubRep(input)
-
-  /* 
-  "Beam" a chub file into a location
-  will use chub location if param 2 is undefined 
-  */
-    beamChub("beam.chub", "html" /* PARAM 2 */ )
-}
-
-// On injectChub finished.
-var chubinjected = (locationGot) => {
-  // console.log(locationGot, "lol")
-}
-

@@ -1,8 +1,6 @@
 /**
   =-=-=-=--=-=-=-=-=
-  GUIDE
-
-  Order of USE, SRC:
+  TOUR:
     START
       *Q-Sel:
       $()
@@ -116,6 +114,18 @@ Potentially:
   
   => If all else. cry :(
 `),
+}
+
+var DOMerr = {
+  noBeam: `
+c;
+  beam;
+    "Beam Failed!
+    <br>
+    Try to fix the simple Fetch error.
+    <br>
+    Shouldn't take long.";
+  `,
 }
 
 /*
@@ -1718,6 +1728,124 @@ window.onload = function() {
     chubstart();
   }
 };
+
+async function beamChub(input, DOM) {
+
+  var okfetch = false
+  
+  if (!input) throw new Error("Input is undefined.")
+
+  var aliasIndexes = [
+    "beam.chub",
+    "beam.cml",
+    
+    "bm.chub",
+    "bm.cml",
+    
+    "index.chub",
+    "index.cml",
+    
+    "i.chub",
+    "i.cml",
+  ]
+
+  // Do this so that nobody could possibly mess up
+  // lol.
+  
+  var checkFile = async (loc, resloc = false, respo = false) => {
+    var bing
+    
+    try {
+      await fetch(loc, { method: "HEAD" })
+        .then(async (resp) => {
+          
+          if (resp.ok && resp.status !== 404) {
+            console.log(resp)
+            resloc = true
+            respo = resp
+            okfetch
+            bing = await fetch(loc)
+
+            return bing
+          } else if (response.status === 404) {
+            return Promise.reject('error 404')
+          
+          } else {
+            return Promise.reject('some other error: ' + response.status)
+          
+          }
+          
+        })
+      }
+      
+    catch (err) {
+      respo = err
+    }
+
+    while(bing) {
+      return bing
+      break
+    }
+    
+  }
+  
+  async function findFile(fileLocations) {
+    for (const location of fileLocations) {
+      try {
+        const response = await fetch(location);
+        
+        // Check if the response was successful (status code in the range of 200-299)
+        if (response.ok) {
+          return location; // Return the valid file location
+        }
+      } catch (error) {
+        // Handle any errors that occur during the fetch request
+        console.error(`Error fetching file from '${location}':`, error);
+      }
+    }
+    
+    // Return null if no valid file location was found
+    return null;
+  }
+  
+  await findFile(aliasIndexes)
+    
+    .then(async (foundr) => {
+      if (foundr) {
+        await fetch(foundr)
+          
+          .then(async (outp) => {
+            input = await outp.text()
+          })
+          
+          .then(async (gotten) => {
+            
+            console.log(input)
+            var htmlCode = CHUBparse(input);
+          
+            if (window.chubDev && window.chubDev == true) console.log(htmlCode)
+          
+            let locationB = DOM || window.chubLocation || "chub"
+            let locationGot = $(locationB)
+            if (!locationGot) locationB = "body"
+          
+            locationGot.innerHTML = htmlCode;
+          
+            // On finish, run finish.
+            if (window.chubinjected && typeof window.chubinjected == "function") {
+              // console.log(locationGot)
+              chubinjected(locationGot);
+            }
+            
+          })
+        
+      } else {
+        console.log('No valid file location found.');
+      }
+      
+    })
+}
+
 
 function injectChub(input) {
   // var input = `
