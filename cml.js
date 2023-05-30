@@ -434,7 +434,7 @@ var CHUBparse = (a) => {
       // console.log(chubml.o.tag)
       
       // Check for ChubTemplates or Special Sets.
-      console.log(chubml.o)
+      // console.log(chubml.o)
 
       // @templates
       switch (chubml.o.tag) {
@@ -980,12 +980,18 @@ async function beamChub(input, DOM) {
         .then(async (resp) => {
           
           if (resp.ok && resp.status !== 404) {
-            console.log(resp)
+            // console.log(resp)
             resloc = true
             respo = resp
             okfetch
-            bing = await fetch(loc)
-
+            
+            try {
+              bing = await fetch(loc)
+            }
+            catch {
+              return Promise.reject('error 404')
+            }
+              
             return bing
           } else if (response.status === 404) {
             return Promise.reject('error 404')
@@ -996,15 +1002,14 @@ async function beamChub(input, DOM) {
           }
           
         })
-      }
+    }
       
     catch (err) {
-      respo = err
+      return respo = err
     }
 
     while(bing) {
       return bing
-      break
     }
     
   }
@@ -1040,7 +1045,7 @@ async function beamChub(input, DOM) {
           
           .then(async (gotten) => {
             
-            console.log(input)
+            // console.log(input)
             var htmlCode = CHUBparse(input);
           
             if (window.chubDev && window.chubDev == true) console.log(htmlCode)
