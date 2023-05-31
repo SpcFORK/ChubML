@@ -457,26 +457,47 @@ var CHUBparse = (a) => {
             
           */
 
-          fboxStyle = `style="
-          background-color: #f80f;
-          border-radius: 10px;
-          box-shadow: 6px 6px 0px 0px #000;
-          display: flex;
-          padding: 15px;
+          // fboxStyle = `style="
+          // background-color: #f80f;
+          // border-radius: 10px;
+          // box-shadow: 6px 6px 0px 0px #000;
+          // display: flex;
+          // padding: 15px;
           
-          width: min-content;
-          "`
+          // width: min-content;
+          // "`
+
+          fboxStyle = "" // Inline Dep.
+          styler = `
+          <style>
+            fbox {
+              background-color: #f80f;
+              border-radius: 10px;
+              box-shadow: 6px 6px 0px 0px #000;
+              display: flex;
+              padding: 15px;
+              
+              width: min-content;
+            }
+          </style>
+          `
+
+          let ident = {
+            id: "fbox",
+          }
+
+          ident.counted = ` ${indexes.tmp}${ident.id}`
           
           chubml.o = {
             tag: "div",
             
             id: chubml.o.id 
-              ? chubml.o.id + ` ${indexes.tmp}fbox`
-              : " fbox",
+              ? chubml.o.id + ` ${ident.counted}`
+              : ` ${ident.counted}`,
             
             class: chubml.o.class 
-              ? chubml.o.class + " fbox"
-              : " fbox",
+              ? chubml.o.class + ` ${ident.id}`
+              : ` ${ident.id}`,
             
             content: chubml.o.content 
               ? chubml.o.content
@@ -492,27 +513,14 @@ var CHUBparse = (a) => {
             
             indent: chubml.o.i,
           }
-
-          // Debating weither I should make a global var and preload all styles,
-          // or if I should insert styles between the head like so:
-          /* 
-
-            if (html.includes("head")) {
-              
-              if (styled["fbox"] === true) {
-                html = html.replace("<head>", "<head>" + fboxStyle)
-
-                // Set to "has" since we check earlier if the value is false to define it
-                styled["fbox"] = "has"
-              }
-              
-              ...
-            }
           
-          */
+          if (!styled["fbox"]) {
+            styled["fbox"] = true
+            if (!styled.styles) styled.styles = {}
+            styled.styles["fbox"] = styler
+          }
 
-          
-          // if (!styled["fboxes"]) styled["fboxes"] = true
+          console.log(styled)
           
           indexes.tmp++
           isTemplate = true
@@ -533,26 +541,46 @@ var CHUBparse = (a) => {
             
           */
 
-          fboxStyle = `style="
-          background-color: #f80f;
-          border-radius: 10px;
-          box-shadow: 0px 6px 0px 0px #000;
-          display: flex;
-          padding: 15px;
+          // fboxStyle = `style="
+          // background-color: #f80f;
+          // border-radius: 10px;
+          // box-shadow: 0px 6px 0px 0px #000;
+          // display: flex;
+          // padding: 15px;
           
-          width: min-content;
-          "`
+          // width: min-content;
+          // "`
+
+          styler = `
+          <style>
+            fboxu {
+              background-color: #f80f;
+              border-radius: 10px;
+              box-shadow: 0px 6px 0px 0px #000;
+              display: flex;
+              padding: 15px;
+              
+              width: min-content;
+            }
+          </style>
+          `
+
+          let ident = {
+            id: "fboxu fbox",
+          }
+
+          ident.counted = ` ${indexes.tmp}${ident.id}`
           
           chubml.o = {
             tag: "div",
             
             id: chubml.o.id 
-              ? chubml.o.id + ` ${indexes.tmp}fbox`
-              : " fbox",
+              ? chubml.o.id + ` ${ident.counted}`
+              : `  ${ident.counted}`,
             
             class: chubml.o.class 
-              ? chubml.o.class + " fbox"
-              : " fbox",
+              ? chubml.o.class + ` ${ident.id}`
+              : ` ${ident.counted}`,
             
             content: chubml.o.content 
               ? chubml.o.content
@@ -567,6 +595,13 @@ var CHUBparse = (a) => {
               : fboxStyle,
             
             indent: chubml.o.i,
+          }
+
+          if (!styled["fboxu"]) {
+            styled["fboxu"] = true
+            if (!styled.styles) styled.styles = {}
+            styled.styles["fboxu"] = styler
+            // console.log(styler)
           }
           
           indexes.tmp++
@@ -866,6 +901,23 @@ var CHUBparse = (a) => {
       if (html.search("<>")) html = html
         .replace("<>", "")
         .replace("</>", "")
+
+      if (html.includes("head")) {
+
+        for (let stydm in styled.styles) {
+          console.log(styled.styles[stydm])
+          
+          if (styled[stydm] === true && styled.styles[stydm]) {
+            html = html.replace("<head>", "<head>\n" + styled.styles[stydm])
+            
+    
+            // Set to "has" since we check earlier if the value is false to define it
+            // Also, might use later, need to exist, not be true.
+            styled[stydm] = "has"
+          }
+        }
+        
+      }
       
       return html;
     }

@@ -107,12 +107,12 @@ html;
         div #docsMiniCol;
           
           a %href=about .wlink-url;
-            chub.prefboxBorder .coolerfbox;
+            chub.fbox .coolerfbox;
               p .docp;
                 "About";
                 
           a %href=docs .wlink-url;
-            chub.prefboxBorder .coolerfbox;
+            chub.fboxu;
               p .docp;
                 "Getting Stated";
                 
