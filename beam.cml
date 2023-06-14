@@ -1,6 +1,9 @@
 html;
   // HEADER
   head;
+    // New templating feature!
+    // cmlsty.blackbg;
+
     meta %charset=utf-8;
     meta %name=viewport %content=width|edevice-width;
     meta %name=msapplication-TileColor %content=#ff8800;
@@ -64,6 +67,7 @@ html;
       
       p;
         "The newest and best Markdown Language simplifier!";
+        
         br;
         "As of '9:30 AM, 2023-05-15', ChubML can build most website features.";
         br;
@@ -107,12 +111,12 @@ html;
         div #docsMiniCol;
           
           a %href=about .wlink-url;
-            chub.fbox .coolerfbox;
+            chub.prefboxBorder .coolerfbox;
               p .docp;
                 "About";
                 
           a %href=docs .wlink-url;
-            chub.fboxu;
+            chub.prefboxBorder .coolerfbox;
               p .docp;
                 "Getting Stated";
                 
@@ -137,6 +141,7 @@ html;
             chub.prefboxBorder .coolerHfbox;
               p .docp;
                 "More...";
+
       
       // Layout
       

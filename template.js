@@ -167,7 +167,7 @@ var chubstart = () => {
   "Beam" a chub file into a location
   will use chub location if param 2 is undefined 
   */
-    beamChub("beam.chub", "html" /* PARAM 2 */ )
+    beamChub("beam.cml" /* Leave blank to auto. */, "html" /* PARAM 2 */ )
 }
 
 // On injectChub finished.

@@ -1,0 +1,29 @@
+{
+  "name": "chubml",
+  "version": "1.3.0",
+  "description": "Cut the fat and lay waste to tags! ChubML is a new syntax for building HTML and also contains some nifty functions to streamline simplicity.",
+  "main": "cml.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SpcFORK/ChubML.git"
+  },
+  "keywords": [
+    "chubml",
+    "cml",
+    "html",
+    "streamline",
+    "quick",
+    "builder",
+    "template",
+    "templator"
+  ],
+  "author": "SpcFork (SpectCOW)",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/SpcFORK/ChubML/issues"
+  },
+  "homepage": "https://github.com/SpcFORK/ChubML#readme"
+}

@@ -122,6 +122,46 @@ Potentially:
 `),
 }
 
+
+// Add a method to all classes to export themselves as JSON, including methods
+Object.prototype.SJSON = function() {
+  return JSON.stringify(this);
+};
+
+Object.prototype.toJSON = function() {
+  const methods = {};
+  for (const key in this) {
+    if (typeof this[key] === 'function') {
+      methods[key] = this[key].toString();
+    }
+  }
+  return {
+    ...this,
+    methods,
+  };
+};
+
+
+// Sick Snippeteer snippet to be added.
+function unpackClassFromJSON(json) {
+  const className = json.__className; // Assume the "__className" property is added when serializing
+  const classMethods = json.methods;
+  const classDefinition = new Function(`return ${classMethods.constructor}`)();
+  const instance = new classDefinition();
+
+  delete json.methods;
+  delete json.__className;
+  Object.assign(instance, json);
+
+  for (const methodName in classMethods) {
+    instance[methodName] = new Function(`return ${classMethods[methodName]}`)();
+  }
+
+  return instance;
+}
+
+
+
 var DOMerr = {
   noBeam: `
 c;
@@ -157,7 +197,7 @@ var $ = (a) => {
 var arrMatch = (str, arr) => {
   let count = 0;
   let list = [];
-  
+
   for (let i = 0; i < arr.length; i++) {
     if (str.includes(arr[i])) {
       count++;
@@ -175,13 +215,81 @@ function parse(a) {
   @returns {string} 
 } */
 var CHUBparse = (a) => {
+  // Class to check and add CSS rulesets
+  class CSSRulesetManager {
+    constructor(selector) {
+      this.selector = selector;
+      this.existingRules = {};
+      this.styleSheet = document.styleSheets[0]; // Assuming the first style sheet is used, you can modify this as needed
+    }
+  
+    checkRulesetExists() {
+      this.existingRules = this.styleSheet.cssRules || this.styleSheet.rules;
+      for (let i = 0; i < this.existingRules.length; i++) {
+        const rule = this.existingRules[i];
+        if (rule.selectorText === this.selector) {
+          return true;
+        }
+      }
+      return false;
+    }
+  
+    addRule(styles) {
+      if (!this.checkRulesetExists()) {
+        if (this.styleSheet.insertRule) {
+          this.styleSheet.insertRule(`${this.selector} { ${styles} }`, this.existingRules.length);
+        } else if (this.styleSheet.addRule) {
+          this.styleSheet.addRule(this.selector, styles, this.existingRules.length);
+        }
+      }
+    }
+  
+    toJSON() {
+      return {
+        selector: this.selector,
+        styleSheetIndex: Array.from(document.styleSheets).indexOf(this.styleSheet),
+      };
+    }
+  
+    static fromJSON(json) {
+      const { selector, styleSheetIndex } = json;
+      const styleSheet = document.styleSheets[styleSheetIndex];
+      return new CSSRulesetManager(selector, styleSheet);
+    }
+  }
+  
+
+
+  // Function to unpack JSON data into classes
+  function unpackJSON(json) {
+    const data = JSON.parse(json);
+
+    if (typeof data === 'object' && data !== null) {
+      if (data.hasOwnProperty('prototype') && data.prototype.hasOwnProperty('fromJSON')) {
+        return data.prototype.fromJSON(data);
+      } else if (Array.isArray(data)) {
+        return data.map(item => unpackJSON(item));
+      } else {
+        for (const key in data) {
+          if (data.hasOwnProperty(key)) {
+            data[key] = unpackJSON(data[key]);
+          }
+        }
+        return data;
+      }
+    }
+
+    return data;
+  }
+  
+
   var reg = {
     quoteExept: /\n(?=(?:(?:[^"]*"){2})*[^"]*$)/gm,
     colExept: /\n(?=(?:(?:[^:]*:){2})*[^:]*$)/gm,
-    
+
     betweenQuote: /"([a-zA-Z\s\S]+)"/gm,
     betweenCol: /^:([a-zA-Z\S\s]+):/gm,
-    
+
     script: /\{\=([a-zA-Z\S\s][^;]+)\=\}/gm,
     comment: /\/\/(.*)\n{0,1}/gm,
     lineWithComment: /[^a-zA-Z0-9:-■\n]+((?:[\t ]{0,})\/\/(?:.*)\n{0,1})/gm,
@@ -192,11 +300,11 @@ var CHUBparse = (a) => {
 
   // PRE-FORMAT:
   a = a
-    .replace(reg.lineWithComment, "") 
+    .replace(reg.lineWithComment, "")
     .replace(reg.formatspace2, "\n")
     .replace(reg.formatspace1, "\n")
   // 
-  
+
   var splitn = a.split(/;/)
 
   var col = []
@@ -282,7 +390,7 @@ var CHUBparse = (a) => {
               try { eval(text) }
               catch (error) { console.log(error, errlist.scripterror) }
             })
-          
+
           dostill = false
           // console.log(dostill, "still")
         }
@@ -300,7 +408,7 @@ var CHUBparse = (a) => {
         // Reformat Attributes to prevent conflicts and such.
         var attrSyn = (tex) => {
           if (tex.match(/=/gm).length > 1) throw errlist.eqspl3
-          
+
           let attrParam = tex
             // Tokenize
             .replace("=", " spcfork.Equals.Token ")
@@ -313,7 +421,7 @@ var CHUBparse = (a) => {
           // console.log(attrParam.length, attrParam)
           return attrParam
         }
-        
+
         arr.forEach((param, pind) => {
 
           // ATTR's
@@ -345,11 +453,14 @@ var CHUBparse = (a) => {
 
               break
 
-            case "*":
-              if (param.slice(0, 2) == "*>") {
-                tempC = templates[param.slice(2)];
-              } else break
+            case "@":
+              // if (param.slice(0, 2) == "*>") {
+                // tempC = templates[param.slice(2)];
+              // } else break
 
+              let damnB
+              tempC.attr = `${tempC.attr ? tempC.attr + " " : ""}${attrB}`
+              
               break
 
             default:
@@ -400,7 +511,7 @@ var CHUBparse = (a) => {
         obj.children.forEach(child => traverse(child, level + 1));
       }
     }
-    
+
     // @pj
     var pubj = (chubml) => {
 
@@ -421,9 +532,9 @@ var CHUBparse = (a) => {
         'track',
         'wbr'
       ]
-      
+
       let shorter = false
-      
+
       var specialfind = arrMatch(chubml.o.tag, tagcheck)
       var isSpecial = specialfind.count
       var inList = specialfind.list
@@ -432,16 +543,91 @@ var CHUBparse = (a) => {
       let isTemplate = false
 
       // console.log(chubml.o.tag)
-      
+
       // Check for ChubTemplates or Special Sets.
       // console.log(chubml.o)
 
       // @templates
-      switch (chubml.o.tag) {
+      switch ((oml) = chubml.o.tag.toLowerCase()) {
+
+        // @SPECIALS
+        case "cmlsty.blackbg": 
+
+          // html += `
+          // <style>
+          //   body {
+          //     background-color: #000;
+          //   }
+          // </style>
+          // `
+          
+          // alert("pol")
+          fboxStyle = "" // Inline Dep.
+          // evename = "bbg"
+          styler = `
+          <style>
+            body {
+              background-color: #000;
+            }
+          </style>
+          `
+
+          ident = {
+            id: "bgeve",
+          }
+
+          ident.counted = ` ${indexes.tmp}${ident.id}`
+
+          chubml.o = {
+            tag: "",
+
+            id: "",
+              // chubml.o.id
+              // ? chubml.o.id + ` ${ident.counted}`
+              // : ` ${ident.counted}`, 
+            
+
+            class: "",
+              // chubml.o.class
+              // ? chubml.o.class + ` ${ident.id}`
+              // : ` ${ident.id}`,
+
+            content: "",
+              // chubml.o.content
+              // ? chubml.o.content
+              // : "",
+
+            data: "",
+              // chubml.o.data
+              // ? chubml.o.data
+              // : "",
+
+            attr: "",
+              // chubml.o.attr
+              // ? chubml.o.attr + " " + fboxStyle
+              // : fboxStyle,
+
+            indent: 0 
+              // chubml.o.i,
+          }
+
+          if (!styled[ident.id]) {
+            styled[ident.id] = true
+            if (!styled.styles) styled.styles = {}
+            styled.styles[ident.id] = styler
+          }
+
+          console.log(styled)
+
+          indexes.tmp++
+          isTemplate = true
+          break
+
+
         case "chub.lol":
           console.log("lol, test, lol\nCHUB tag Check functional!")
           break
-        
+
         case "chub.fbox":
           /* Create a box, rounded.
             .------.
@@ -463,7 +649,7 @@ var CHUBparse = (a) => {
           // box-shadow: 6px 6px 0px 0px #000;
           // display: flex;
           // padding: 15px;
-          
+
           // width: min-content;
           // "`
 
@@ -482,50 +668,50 @@ var CHUBparse = (a) => {
           </style>
           `
 
-          let ident = {
+          ident = {
             id: "fbox",
           }
 
           ident.counted = ` ${indexes.tmp}${ident.id}`
-          
+
           chubml.o = {
             tag: "div",
-            
-            id: chubml.o.id 
+
+            id: chubml.o.id
               ? chubml.o.id + ` ${ident.counted}`
               : ` ${ident.counted}`,
-            
-            class: chubml.o.class 
+
+            class: chubml.o.class
               ? chubml.o.class + ` ${ident.id}`
               : ` ${ident.id}`,
-            
-            content: chubml.o.content 
+
+            content: chubml.o.content
               ? chubml.o.content
               : "",
-            
-            data: chubml.o.data 
+
+            data: chubml.o.data
               ? chubml.o.data
               : "",
-            
-            attr: chubml.o.attr 
+
+            attr: chubml.o.attr
               ? chubml.o.attr + " " + fboxStyle
               : fboxStyle,
-            
+
             indent: chubml.o.i,
           }
-          
-          if (!styled["fbox"]) {
-            styled["fbox"] = true
+
+          if (!styled[ident.id]) {
+            styled[ident.id] = true
             if (!styled.styles) styled.styles = {}
-            styled.styles["fbox"] = styler
+            styled.styles[ident.id] = styler
           }
 
           console.log(styled)
-          
+
           indexes.tmp++
           isTemplate = true
           break
-          
+
         case "chub.fboxu":
           /* Create a box, rounded.
             .------.
@@ -547,7 +733,7 @@ var CHUBparse = (a) => {
           // box-shadow: 0px 6px 0px 0px #000;
           // display: flex;
           // padding: 15px;
-          
+
           // width: min-content;
           // "`
 
@@ -565,50 +751,49 @@ var CHUBparse = (a) => {
           </style>
           `
 
-          let ident = {
+          ident = {
             id: "fboxu fbox",
           }
 
           ident.counted = ` ${indexes.tmp}${ident.id}`
-          
+
           chubml.o = {
             tag: "div",
-            
-            id: chubml.o.id 
+
+            id: chubml.o.id
               ? chubml.o.id + ` ${ident.counted}`
               : `  ${ident.counted}`,
-            
-            class: chubml.o.class 
+
+            class: chubml.o.class
               ? chubml.o.class + ` ${ident.id}`
               : ` ${ident.counted}`,
-            
-            content: chubml.o.content 
+
+            content: chubml.o.content
               ? chubml.o.content
               : "",
-            
-            data: chubml.o.data 
+
+            data: chubml.o.data
               ? chubml.o.data
               : "",
-            
-            attr: chubml.o.attr 
+
+            attr: chubml.o.attr
               ? chubml.o.attr + " " + fboxStyle
               : fboxStyle,
-            
+
             indent: chubml.o.i,
           }
 
-          if (!styled["fboxu"]) {
-            styled["fboxu"] = true
+          if (!styled[ident.id]) {
+            styled[ident.id] = true
             if (!styled.styles) styled.styles = {}
-            styled.styles["fboxu"] = styler
-            // console.log(styler)
+            styled.styles[ident.id] = styler
           }
-          
+
           indexes.tmp++
           isTemplate = true
           break
-          
-        case "chub.fboxBorder":
+
+        case "chub.fboxborder":
           /* Create a box, rounded.
             .------.
             | ACDD |\
@@ -633,38 +818,38 @@ var CHUBparse = (a) => {
           
           width: min-content;
           "`
-          
+
           chubml.o = {
             tag: "div",
-            
-            id: chubml.o.id 
+
+            id: chubml.o.id
               ? chubml.o.id + ` ${indexes.tmp}fbox`
               : " fbox",
-            
-            class: chubml.o.class 
+
+            class: chubml.o.class
               ? chubml.o.class + " fbox"
               : " fbox",
-            
-            content: chubml.o.content 
+
+            content: chubml.o.content
               ? chubml.o.content
               : "",
-            
-            data: chubml.o.data 
+
+            data: chubml.o.data
               ? chubml.o.data
               : "",
-            
-            attr: chubml.o.attr 
+
+            attr: chubml.o.attr
               ? chubml.o.attr + " " + fboxStyle
               : fboxStyle,
-            
+
             indent: chubml.o.i,
           }
 
           indexes.tmp++
           isTemplate = true
           break
-          
-        case "chub.fboxuBorder":
+
+        case "chub.fboxuborder":
           /* Create a box, rounded.
             .------.
             | ACDD |
@@ -689,37 +874,37 @@ var CHUBparse = (a) => {
           
           width: min-content;
           "`
-          
+
           chubml.o = {
             tag: "div",
-            
-            id: chubml.o.id 
+
+            id: chubml.o.id
               ? chubml.o.id + ` ${indexes.tmp}fbox`
               : " fbox",
-            
-            class: chubml.o.class 
+
+            class: chubml.o.class
               ? chubml.o.class + " fbox"
               : " fbox",
-            
-            content: chubml.o.content 
+
+            content: chubml.o.content
               ? chubml.o.content
               : "",
-            
-            data: chubml.o.data 
+
+            data: chubml.o.data
               ? chubml.o.data
               : "",
-            
-            attr: chubml.o.attr 
+
+            attr: chubml.o.attr
               ? chubml.o.attr + " " + fboxStyle
               : fboxStyle,
-            
+
             indent: chubml.o.i,
           }
-          
+
           indexes.tmp++
           isTemplate = true
           break
-          
+
         case "chub.prefbox":
           /* Create a box, rounded.
             .------.
@@ -741,59 +926,39 @@ var CHUBparse = (a) => {
           display: flex;
           padding: 15px;
           "`
-          
+
           chubml.o = {
             tag: "div",
-            
-            id: chubml.o.id 
+
+            id: chubml.o.id
               ? chubml.o.id + ` ${indexes.tmp}fbox`
               : " fbox",
-            
-            class: chubml.o.class 
+
+            class: chubml.o.class
               ? chubml.o.class + " fbox"
               : " fbox",
-            
-            content: chubml.o.content 
+
+            content: chubml.o.content
               ? chubml.o.content
               : "",
-            
-            data: chubml.o.data 
+
+            data: chubml.o.data
               ? chubml.o.data
               : "",
-            
-            attr: chubml.o.attr 
+
+            attr: chubml.o.attr
               ? chubml.o.attr + " " + fboxStyle
               : fboxStyle,
-            
+
             indent: chubml.o.i,
           }
 
-          // Debating weither I should make a global var and preload all styles,
-          // or if I should insert styles between the head like so:
-          /* 
 
-            if (html.includes("head")) {
-              
-              if (styled["fbox"] === true) {
-                html = html.replace("<head>", "<head>" + fboxStyle)
-
-                // Set to "has" since we check earlier if the value is false to define it
-                styled["fbox"] = "has"
-              }
-              
-              ...
-            }
-          
-          */
-
-          
-          // if (!styled["fboxes"]) styled["fboxes"] = true
-          
           indexes.tmp++
           isTemplate = true
           break
-          
-        case "chub.prefboxBorder":
+
+        case "chub.prefboxborder":
           /* Create a box, rounded.
             .------.
             | ACDD |
@@ -814,41 +979,41 @@ var CHUBparse = (a) => {
           display: flex;
           padding: 15px;
           "`
-          
+
           chubml.o = {
             tag: "div",
-            
-            id: chubml.o.id 
+
+            id: chubml.o.id
               ? chubml.o.id + ` ${indexes.tmp}fbox`
               : " fbox",
-            
-            class: chubml.o.class 
+
+            class: chubml.o.class
               ? chubml.o.class + " fbox"
               : " fbox",
-            
-            content: chubml.o.content 
+
+            content: chubml.o.content
               ? chubml.o.content
               : "",
-            
-            data: chubml.o.data 
+
+            data: chubml.o.data
               ? chubml.o.data
               : "",
-            
-            attr: chubml.o.attr 
+
+            attr: chubml.o.attr
               ? chubml.o.attr + " " + fboxStyle
               : fboxStyle,
-            
+
             indent: chubml.o.i,
           }
 
           indexes.tmp++
           isTemplate = true
           break
-          
+
         default:
           break
       }
-      
+
       html = `\n${chubml.i}<${chubml.o.tag}`;
 
       if (chubml.o.class) {
@@ -858,7 +1023,7 @@ var CHUBparse = (a) => {
       if (chubml.o.id) {
         html += ` id="${chubml.o.id.slice(1)}"`;
       }
-      
+
       if (chubml.o.style) {
         html += ` style="${chubml.o.id.slice(1)}"`;
       }
@@ -871,10 +1036,10 @@ var CHUBparse = (a) => {
         html += ` ${chubml.o.attr}`;
       }
 
-      
+
       if (isSpecial > 0) shorter = true
-      
-      var ending = shorter 
+
+      var ending = shorter
         ? " />\n"
         : ">\n"
 
@@ -906,19 +1071,19 @@ var CHUBparse = (a) => {
 
         for (let stydm in styled.styles) {
           console.log(styled.styles[stydm])
-          
+
           if (styled[stydm] === true && styled.styles[stydm]) {
             html = html.replace("<head>", "<head>\n" + styled.styles[stydm])
-            
-    
+
+
             // Set to "has" since we check earlier if the value is false to define it
             // Also, might use later, need to exist, not be true.
             styled[stydm] = "has"
           }
         }
-        
+
       }
-      
+
       return html;
     }
 
@@ -932,7 +1097,7 @@ var CHUBparse = (a) => {
 
   var sorted = sortInd(col);
   var constructed = stringi(sorted, a);
-  
+
   return constructed;
 }
 
@@ -978,176 +1143,318 @@ function sortInd(contents) {
   return sortedContents[0];
 }
 
+
+
 // -=-=-=-= ChubECSS =-=-=-=-
 // Ze better syntax for SS'
 // + Chub Indent-ator.
 
 // Chub ECSS use functions will go here.
 
+
+
 // -=-=-=-= START A SCRIPT: Like p5.js =-=-=-=-
 
-window.chubstart = window.chubstart || false
-
-var ChubRep = (doc, quirky = "<!DOCTYPE html>") => {
-  doc = CHUBparse(doc);
-  document.open();
-  document.write(quirky + '\n' + doc);
-  document.close();
+// Snippeteer Funct #9
+var checkEnvironment = () => {
+  // So nasty I'd rather write it as if it were a Py function.
+  // Good thing JS doesn't use multi-line `\` often.
+  
+  if (typeof module 
+      !== 'undefined' 
+      && module.exports 
+      && typeof window 
+      === 'undefined') 
+  {
+    // Node.js environment
+    return 'Node';
+  } 
+  
+  else if (typeof window 
+           !== 'undefined' 
+           && typeof window.document 
+           !== 'undefined') 
+  {
+    // Browser environment
+    return 'Browser';
+  } 
+  
+  else {
+    // Unknown environment
+    return 'Unknown';
+  }
 }
 
-window.onload = function() {
-  if (window.chubstart && typeof window.chubstart == "function") {
-    chubstart();
-  }
-};
 
-async function beamChub(input, DOM) {
+switch (checkEnvironment()) {
+  case "Browser":
 
-  var okfetch = false
-  
-  if (!input) throw new Error("Input is undefined.")
+    window.CHUBparse = CHUBparse
+    if (window.parent) window.parent.CHUBparse = CHUBparse
 
-  var aliasIndexes = [
-    "beam.chub",
-    "beam.cml",
+    window.chubexists = true
+    chubExists = true
     
-    "bm.chub",
-    "bm.cml",
+    window.chubstart = window.chubstart || false
     
-    "index.chub",
-    "index.cml",
     
-    "i.chub",
-    "i.cml",
-  ]
-
-  // Do this so that nobody could possibly mess up
-  // lol.
-  
-  var checkFile = async (loc, resloc = false, respo = false) => {
-    var bing
-    
-    try {
-      await fetch(loc, { method: "HEAD" })
-        .then(async (resp) => {
-          
-          if (resp.ok && resp.status !== 404) {
-            // console.log(resp)
-            resloc = true
-            respo = resp
-            okfetch
-            
-            try {
-              bing = await fetch(loc)
-            }
-            catch {
-              return Promise.reject('error 404')
-            }
-              
-            return bing
-          } else if (response.status === 404) {
-            return Promise.reject('error 404')
-          
-          } else {
-            return Promise.reject('some other error: ' + response.status)
-          
-          }
-          
-        })
-    }
-      
-    catch (err) {
-      return respo = err
-    }
-
-    while(bing) {
-      return bing
+    var ChubRep = (doc, quirky = "<!DOCTYPE html>") => {
+      doc = CHUBparse(doc);
+      document.open();
+      document.write(quirky + '\n' + doc);
+      document.close();
     }
     
-  }
-  
-  async function findFile(fileLocations) {
-    for (const location of fileLocations) {
-      try {
-        const response = await fetch(location);
-        
-        // Check if the response was successful (status code in the range of 200-299)
-        if (response.ok) {
-          return location; // Return the valid file location
+    
+    window.onload = () => {
+      if (window.chubstart && typeof window.chubstart == "function") {
+        chubstart();
+      }
+    };
+    
+    
+    var beamChub = async (input, DOM) => {
+    
+      var okfetch = false
+    
+      // if (!input) throw new Error("Input is undefined.")
+    
+      var aliasIndexes = [
+        "beam.chub",
+        "beam.cml",
+    
+        "bm.chub",
+        "bm.cml",
+    
+        "index.chub",
+        "index.cml",
+    
+        "i.chub",
+        "i.cml",
+      ]
+    
+      // Do this so that nobody could possibly mess up
+      // lol.
+    
+      var checkFile = async (loc, resloc = false, respo = false) => {
+        var bing
+    
+        try {
+          await fetch(loc, { method: "HEAD" })
+            .then(async (resp) => {
+    
+              if (resp.ok && resp.status !== 404) {
+                // console.log(resp)
+                resloc = true
+                respo = resp
+                okfetch
+    
+                try {
+                  bing = await fetch(loc)
+                }
+                catch {
+                  return Promise.reject('error 404')
+                }
+    
+                return bing
+              } else if (response.status === 404) {
+                return Promise.reject('error 404')
+    
+              } else {
+                return Promise.reject('some other error: ' + response.status)
+    
+              }
+    
+            })
         }
-      } catch (error) {
-        // Handle any errors that occur during the fetch request
-        console.error(`Error fetching file from '${location}':`, error);
+    
+        catch (err) {
+          return respo = err
+        }
+    
+        while (bing) {
+          return bing
+        }
+    
+      }
+    
+      async function findFile(fileLocations) {
+        for (const location of fileLocations) {
+          try {
+            const response = await fetch(location);
+    
+            // Check if the response was successful (status code in the range of 200-299)
+            if (response.ok) {
+              return location; // Return the valid file location
+            }
+          } catch (error) {
+            // Handle any errors that occur during the fetch request
+            console.error(`Error fetching file from '${location}':`, error);
+          }
+        }
+    
+        // Return null if no valid file location was found
+        return null;
+      }
+    
+      if (!input) {
+        await findFile(aliasIndexes)
+    
+          .then(async (foundr) => {
+            if (foundr) {
+              await fetch(foundr)
+      
+                .then(async (outp) => {
+                  input = await outp.text()
+                })
+      
+                .then(async (gotten) => {
+      
+                  // console.log(input)
+                  var htmlCode = CHUBparse(input);
+      
+                  if (window.chubDev && window.chubDev == true) console.log(htmlCode)
+      
+                  let locationB = DOM || window.chubLocation || "chub"
+                  let locationGot = $(locationB)
+                  if (!locationGot) locationB = "body"
+      
+                  locationGot.innerHTML = htmlCode;
+      
+                  // On finish, run finish.
+                  if (window.chubinjected && typeof window.chubinjected == "function") {
+                    // console.log(locationGot)
+                    chubinjected(locationGot);
+                  }
+      
+                })
+      
+            } else {
+              console.log('No valid file location found.');
+            }
+      
+          })
+
+      } else {
+        findFile([input])
+          .then(async (foundr) => {
+            if (foundr) {
+              await fetch(foundr)
+      
+                .then(async (outp) => {
+                  input = await outp.text()
+                })
+      
+                .then(async (gotten) => {
+      
+                  // console.log(input)
+                  var htmlCode = CHUBparse(input);
+      
+                  if (window.chubDev && window.chubDev == true) console.log(htmlCode)
+      
+                  let locationB = DOM || window.chubLocation || "chub"
+                  let locationGot = $(locationB)
+                  if (!locationGot) locationB = "body"
+      
+                  locationGot.innerHTML = htmlCode;
+      
+                  // On finish, run finish.
+                  if (window.chubinjected && typeof window.chubinjected == "function") {
+                    // console.log(locationGot)
+                    chubinjected(locationGot);
+                  }
+      
+                })
+      
+            } else {
+              console.log('No valid file location found.');
+            }
+      
+          })
       }
     }
     
-    // Return null if no valid file location was found
-    return null;
-  }
-  
-  await findFile(aliasIndexes)
     
-    .then(async (foundr) => {
-      if (foundr) {
-        await fetch(foundr)
-          
-          .then(async (outp) => {
-            input = await outp.text()
-          })
-          
-          .then(async (gotten) => {
-            
-            // console.log(input)
-            var htmlCode = CHUBparse(input);
-          
-            if (window.chubDev && window.chubDev == true) console.log(htmlCode)
-          
-            let locationB = DOM || window.chubLocation || "chub"
-            let locationGot = $(locationB)
-            if (!locationGot) locationB = "body"
-          
-            locationGot.innerHTML = htmlCode;
-          
-            // On finish, run finish.
-            if (window.chubinjected && typeof window.chubinjected == "function") {
-              // console.log(locationGot)
-              chubinjected(locationGot);
-            }
-            
-          })
-        
-      } else {
-        console.log('No valid file location found.');
+    var injectChub = (input) => {
+      // var input = `
+      // div;
+      //   "wow, im super simple. <br>
+      //   and supper COOOL!";
+      //   hr #wow $hey=lol .very .omg .neat %omg=js|is|cool;
+      //   :Super .cool: "WOOO!";
+      //     span .woah;
+      //       "wow!";
+      // `;
+    
+      var htmlCode = CHUBparse(input);
+    
+      if (window.chubDev && window.chubDev == true) console.log(htmlCode)
+    
+      let locationB = window.chubLocation || "chub"
+      let locationGot = $(locationB)
+      if (!locationGot) locationB = "body"
+    
+      locationGot.innerHTML = htmlCode;
+    
+      // On finish, run finish.
+      if (window.chubinjected && typeof window.chubinjected == "function") {
+        chubinjected(locationGot);
       }
-      
-    })
+    
+    }
+
+    
+    break
+  
+  case "Node":
+
+    CML = {}
+    CML.CHUBparse = CHUBparse
+    
+    break
+  
+  case "Unknown":
+
+    
+    break
 }
 
-
-function injectChub(input) {
-  // var input = `
-  // div;
-  //   "wow, im super simple. <br>
-  //   and supper COOOL!";
-  //   hr #wow $hey=lol .very .omg .neat %omg=js|is|cool;
-  //   :Super .cool: "WOOO!";
-  //     span .woah;
-  //       "wow!";
-  // `;
-
-  var htmlCode = CHUBparse(input);
-
-  if (window.chubDev && window.chubDev == true) console.log(htmlCode)
-
-  let locationB = window.chubLocation || "chub"
-  let locationGot = $(locationB)
-  if (!locationGot) locationB = "body"
-
-  locationGot.innerHTML = htmlCode;
-
-  // On finish, run finish.
-  if (window.chubinjected && typeof window.chubinjected == "function") {
-    chubinjected(locationGot);
-  }
+// ARARARAR
+var htmlToChub = (html) => {
+  const doc = new DOMParser().parseFromString(html, 'text/html');
   
+  function getChubML(node, indent = '') {
+    let chubML = '';
+
+    // Process node name
+    chubML += `${indent}${node.nodeName.toLowerCase()}`;
+
+    // Process attributes
+    const attrs = Array.from(node.attributes);
+    if (attrs.length > 0) {
+      attrs.forEach((attr) => {
+        chubML += ` %${attr.name}="${attr.value}"`;
+      });
+    }
+
+    // Process child nodes
+    if (node.childNodes.length > 0) {
+      chubML += ';\n';
+      const childNodes = Array.from(node.childNodes);
+      childNodes.forEach((child) => {
+        if (child.nodeType === Node.TEXT_NODE) {
+          chubML += `${indent}  "${child.textContent.trim()}";\n`;
+        } else if (child.nodeType === Node.ELEMENT_NODE) {
+          chubML += getChubML(child, `${indent}  `);
+        }
+      });
+      chubML += `${indent}//\n`;
+    } else {
+      chubML += ';\n';
+    }
+
+    return chubML;
+  }
+
+  return getChubML(doc.documentElement);
 }
