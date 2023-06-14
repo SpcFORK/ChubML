@@ -370,6 +370,7 @@ var CHUBparse = (a) => {
       if (isscr !== null) {
         var scrmatch = reg.script.exec(obj.c)
         let issrc = scrmatch[1].includes("src=");
+        let execafter = scrmatch[1].includes("\"execafter\";\n");
 
         var dostill = true
         // console.log(scrmatch)
@@ -394,6 +395,9 @@ var CHUBparse = (a) => {
           dostill = false
           // console.log(dostill, "still")
         }
+
+        // Conditionals
+        
 
         // Eval content (not SRC).
         if (scrmatch !== null && dostill) {
@@ -1330,7 +1334,7 @@ switch (checkEnvironment()) {
                 })
       
             } else {
-              console.log('No valid file location found.');
+              console.log('No valid file location found, Tried:\n\n'+ aliasIndexes.join(",\n")+"\n\nTry again using a prefered index name, or one of the indexes above.");
             }
       
           })
@@ -1367,7 +1371,7 @@ switch (checkEnvironment()) {
                 })
       
             } else {
-              console.log('No valid file location found.');
+              console.log(`No valid file location found, Tried ${input}`);
             }
       
           })
