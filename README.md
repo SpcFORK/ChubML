@@ -186,12 +186,12 @@ Here are a few examples to showcase the ChubML syntax:
 
   Creating a div element with a class and an ID:
 
-    div .example-class #unique-id
+    div .example-class #unique-id;
       
 Adding a link with a URL and text content:
 
-    a .link-url %href="https://example.com"
-      "Visit Example.com"
+    a .link-url %href="https://example.com";
+      "Visit Example.com";
 
 Defining a script import:
 
@@ -218,6 +218,7 @@ html;
   head;
     // Header content.
   body;
+    "Hey";
     // Body content.
 ```
 This is the equivalent to:
@@ -228,7 +229,7 @@ This is the equivalent to:
     
   </head>
   <body>
-    
+    Hey
   </body>
 </html>
 ```

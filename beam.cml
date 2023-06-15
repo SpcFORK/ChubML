@@ -45,6 +45,12 @@ html;
             
           a .link-url %href=cml.js;
             "SRC Code";
+          
+          span .pipeDiv;
+            "|";
+            
+          a .link-url %href=README.md;
+            "README.md";
 
     article .descArticle;
     

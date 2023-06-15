@@ -396,8 +396,6 @@ var CHUBparse = (a) => {
           // console.log(dostill, "still")
         }
 
-        // Conditionals
-        
 
         // Eval content (not SRC).
         if (scrmatch !== null && dostill) {
@@ -1194,7 +1192,9 @@ switch (checkEnvironment()) {
   case "Browser":
 
     window.CHUBparse = CHUBparse
-    if (window.parent) window.parent.CHUBparse = CHUBparse
+    try {
+      if (window.parent) window.parent.CHUBparse = CHUBparse
+    } catch (err) {}
 
     window.chubexists = true
     chubExists = true
@@ -1379,7 +1379,7 @@ switch (checkEnvironment()) {
     }
     
     
-    var injectChub = (input) => {
+    var injectChub = (input, putat = "chub") => {
       // var input = `
       // div;
       //   "wow, im super simple. <br>
@@ -1394,7 +1394,7 @@ switch (checkEnvironment()) {
     
       if (window.chubDev && window.chubDev == true) console.log(htmlCode)
     
-      let locationB = window.chubLocation || "chub"
+      let locationB = window.chubLocation || putat
       let locationGot = $(locationB)
       if (!locationGot) locationB = "body"
     
