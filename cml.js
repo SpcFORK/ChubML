@@ -90,11 +90,19 @@
 
 var styled = {}
 
-/* 
-  =-=-=-=--=-=-=-=-=
-  ERRORS
-  =-=-=-=--=-=-=-=-=
-*/
+/** 
+  * =-=-=-=--=-=-=-=-=
+  * ERRORS
+  * =-=-=-=--=-=-=-=-=
+
+  * Just saying, 
+  * JS docs are stupidly gross.
+  * Who would even use these to generate websites, lmao?
+
+  * Chub's gotta overthrow that :)
+
+  * Returns Errors
+  */
 
 var errlist = {
   // For Params: %lol=haha=asd => split at each `=` => greater than 3? => error.
@@ -608,6 +616,85 @@ var CHUBparse = (a) => {
               // chubml.o.attr
               // ? chubml.o.attr + " " + fboxStyle
               // : fboxStyle,
+
+            indent: 0 
+              // chubml.o.i,
+          }
+
+          if (!styled[ident.id]) {
+            styled[ident.id] = true
+            if (!styled.styles) styled.styles = {}
+            styled.styles[ident.id] = styler
+          }
+
+          console.log(styled)
+
+          indexes.tmp++
+          isTemplate = true
+          break
+        
+          
+        case "chub.coolspan": 
+          ident = {
+            id: "coolStuffspan",
+          }
+
+          ident.counted = ` ${indexes.tmp}${ident.id}`
+            
+          // html += `
+          // <style>
+          //   body {
+          //     background-color: #000;
+          //   }
+          // </style>
+          // `
+          
+          // alert("pol")
+          fboxStyle = "" // Inline Dep.
+          // evename = "bbg"
+          styler = `
+          <style>
+            .coolStuffspan {
+              display: inline-block;
+              
+              /* padding-left: var(--space-char-w); */
+              /* padding-right: var(--space-char-w); */
+              
+              position: relative;
+              animation: wavy-animation 2s infinite;
+            }
+          </style>
+          `
+
+
+          chubml.o = {
+            tag: "span",
+
+            id: 
+              chubml.o.id
+              ? chubml.o.id + ` ${ident.counted}`
+              : ` ${ident.counted}`, 
+            
+
+            class: 
+              chubml.o.class
+              ? chubml.o.class + ` ${ident.id}`
+              : ` ${ident.id}`,
+
+            content: 
+              chubml.o.content
+              ? chubml.o.content
+              : "",
+
+            data: 
+              chubml.o.data
+              ? chubml.o.data
+              : "",
+
+            attr: 
+              chubml.o.attr
+              ? chubml.o.attr + " " + fboxStyle
+              : fboxStyle,
 
             indent: 0 
               // chubml.o.i,
@@ -1200,6 +1287,15 @@ switch (checkEnvironment()) {
     chubExists = true
     
     window.chubstart = window.chubstart || false
+
+
+    function getURLbit() {
+      var url = window.location.href;
+      var parts = url.split('/');
+      var lastPart = parts[parts.length - 1];
+      
+      return lastPart;
+    }
     
     
     var ChubRep = (doc, quirky = "<!DOCTYPE html>") => {
@@ -1395,7 +1491,7 @@ switch (checkEnvironment()) {
       if (window.chubDev && window.chubDev == true) console.log(htmlCode)
     
       let locationB = window.chubLocation || putat
-      let locationGot = $(locationB)
+      let locationGot = $(locationB) || $("body")
       if (!locationGot) locationB = "body"
     
       locationGot.innerHTML = htmlCode;
@@ -1446,7 +1542,7 @@ var htmlToChub = (html) => {
       chubML += ';\n';
       const childNodes = Array.from(node.childNodes);
       childNodes.forEach((child) => {
-        if (child.nodeType === Node.TEXT_NODE) {
+        if (child.nodeType === Node.TEXT_NODE && child.textContent.trim() != "") {
           chubML += `${indent}  "${child.textContent.trim()}";\n`;
         } else if (child.nodeType === Node.ELEMENT_NODE) {
           chubML += getChubML(child, `${indent}  `);

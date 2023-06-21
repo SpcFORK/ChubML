@@ -79,7 +79,7 @@ html;
         br;
         
         "It can create";
-        span .coolStuffspan;
+        chub.coolspan;
           "COOL STUFF really quickly!";
         
         br;
