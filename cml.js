@@ -150,6 +150,7 @@ Object.prototype.toJSON = function() {
 };
 
 
+
 // Sick Snippeteer snippet to be added.
 function unpackClassFromJSON(json) {
   const className = json.__className; // Assume the "__className" property is added when serializing
@@ -1314,7 +1315,7 @@ switch (checkEnvironment()) {
     
     
     var beamChub = async (input, DOM) => {
-    
+      
       var okfetch = false
     
       // if (!input) throw new Error("Input is undefined.")
@@ -1442,6 +1443,8 @@ switch (checkEnvironment()) {
               await fetch(foundr)
       
                 .then(async (outp) => {
+                  var lastChub = input
+                  window.lastChub = lastChub
                   input = await outp.text()
                 })
       
@@ -1461,6 +1464,7 @@ switch (checkEnvironment()) {
                   // On finish, run finish.
                   if (window.chubinjected && typeof window.chubinjected == "function") {
                     // console.log(locationGot)
+                    
                     chubinjected(locationGot);
                   }
       
@@ -1503,13 +1507,65 @@ switch (checkEnvironment()) {
     
     }
 
+
+    class ChubRouter {
+      constructor() {
+        this.routes = [];
+        this.defaultRoute = null;
+        
+        if (window.routermade && typeof window.routermade == "function") {
+          routermade(this)
+        }
+        
+      }
+      
+      addRoute(urlPattern, callback) {
+        this.routes.push({ pattern: urlPattern, callback: callback });
+      }
+      
+      setDefaultRoute(callback) {
+        this.defaultRoute = callback;
+      }
+      
+      execute() {
+        var url = window.location.href;
+        
+        for (var i = 0; i < this.routes.length; i++) {
+          var route = this.routes[i];
+          var pattern = new RegExp(route.pattern);
+          
+          if (pattern.test(url)) {
+            route.callback(getURLbit(route.pattern));
+            return;
+          }
+        }
+        
+        if (this.defaultRoute) {
+          this.defaultRoute();
+        }
+      }
+    }
+
+
+    window.ChubRouter = ChubRouter
     
+
+    if (window.chubloaded && typeof window.chubloaded == "function") {
+      chubloaded()
+    }
+      
     break
   
   case "Node":
 
     CML = {}
     CML.CHUBparse = CHUBparse
+
+    try {
+      if (chubloaded && typeof chubloaded == "function") {
+        chubloaded()
+      }
+    } catch {}
     
     break
   
