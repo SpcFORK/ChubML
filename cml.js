@@ -2405,7 +2405,7 @@ var checkEnvironment = () => {
   if (typeof module
     !== 'undefined'
   
-    && module.exports
+    && module?.exports
     
     && typeof window
     === 'undefined') 
@@ -2417,7 +2417,7 @@ var checkEnvironment = () => {
   else if (typeof window
     !== 'undefined'
     
-    && typeof window.document
+    && typeof window?.document
     !== 'undefined') 
   {
     // Browser environment
@@ -2431,6 +2431,26 @@ var checkEnvironment = () => {
 }
 
 switch (checkEnvironment()) {
+  case 'Node':
+    // Node.js environment
+
+    module.exports = {
+      CHUBWFetch,
+      CHUBstrprep,
+      CHUBunmess,
+      CHUBduper,
+      CHUBfax,
+      CHUBECSS,
+      CHUBduper,
+      CHUBparse,
+      CHUBsanitize,
+      ChubRep,
+      chubDev,
+      htmlToChub,
+    };
+    
+    break;
+  
   case "Browser":
 
     window.CHUBparse = CHUBparse
