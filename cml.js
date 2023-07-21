@@ -1,11 +1,45 @@
 /**
-  =-=-=-=--=-=-=-=-=
+
+
+    ,""""""""""""""""",^,"""""""""""",                  
+  .l ?]]]]]]]]]]]]]]]].~.????????????.I                 
+ ",!l]IIIIIIIIIIIIIIII,< ]]]]]]]]]]]] l                 
+ l ]]]lllllllllllllIII:> ]]]]]]]]]]]] l                 
+ l:iii>>>>>>>>>>>>>]]] ~ ]]]]]]]]]]]] l                 
+ l`++++++++++++++++---.~ ]]]]]]]]]]]] l                 
+ lIIIIIIIIIIIIIIIIIIII;~.??????----?? l                 
+ lIlllllllllllllllllll:iI"""""",;:;''l;".               
+ l;lllllllllllllllllll:l    '^,,Iii??]-i;".             
+ `I,I:::::::::I,,,,,,,:`   ,;ii??]]]]]]]-i",            
+   ,:iiiiiiiii:,          :IIii!!!!!!!?]]]I:"           
+   l ]]]]]]]]] l           ^`````````l.]]]] i           
+   l ]]]]]]]]] l                   .`l.]]]]?.I          
+   l.?]]]]]]]] l         ,""""""""";!!?]]]]] l          
+   `i ]]]]]]]] l        I.?????????-]]]]]]]I";          
+    ;:I]]]]]]]l;""""""",! ]]]]]]]]]]]]]]]?!^;           
+     I,i-]]]]]]-???????.~ ]]]]]]]]]]]]]?!,,^            
+      ^IIi?-]]]]]]]]]]] ~ ]]]]]]]]]]??!,,^              
+        ^I"I!!!!!!!!!!!">:!!!!!!!!!!,",^                
+           ^```````````^ ^``````````^
+
+> SPCFORK INTERACTIVE
+> 2022 - 20XX
+
+  "We we, y'all!"
+  - tCOW/ICow
+
+  Welcome to the SPCFORK INTERACTIVE! Embracing the spirit of innovation and collaboration, we're thrilled to have you here. We ask you to join us as we journey from 2022 to the uncharted future of 20XX and push the boundaries of innovation.
+
+  We promote open discussion, idea exchange, and group problem-solving in this dynamic space. And if you're here, reading this, we dub you a real SPCFORK INTERACTIVE Member because you strive to grow learn and advance. You're just like us, and we are happy to have you in the informative, and bright future of the net!
+
+  So let's start this adventure, prepared to build, motivate, and mold the future.
+
+  =-=-=-=--=-=-=-=-==-=-=-=--=-=-=-=-=
   TODO:
   - Make code cleaner/compact.
   - Make ECSS.
     - Create CHUBECSS Parser.
-  
-  =-=-=-=--=-=-=-=-=
+  =-=-=-=--=-=-=-=-==-=-=-=--=-=-=-=-=
   TOUR:
     START
       *Q-Sel:
@@ -19,8 +53,7 @@
         -> sortInd()
           -> stringi()    
     END
-  =-=-=-=--=-=-=-=-=
-
+  =-=-=-=--=-=-=-=-==-=-=-=--=-=-=-=-=
   TEMPLATE:
   
   html;
@@ -231,7 +264,7 @@ var CHUBparse = (a) => {
       this.existingRules = {};
       this.styleSheet = document.styleSheets[0]; // Assuming the first style sheet is used, you can modify this as needed
     }
-  
+
     checkRulesetExists() {
       this.existingRules = this.styleSheet.cssRules || this.styleSheet.rules;
       for (let i = 0; i < this.existingRules.length; i++) {
@@ -242,7 +275,7 @@ var CHUBparse = (a) => {
       }
       return false;
     }
-  
+
     addRule(styles) {
       if (!this.checkRulesetExists()) {
         if (this.styleSheet.insertRule) {
@@ -252,21 +285,21 @@ var CHUBparse = (a) => {
         }
       }
     }
-  
+
     toJSON() {
       return {
         selector: this.selector,
         styleSheetIndex: Array.from(document.styleSheets).indexOf(this.styleSheet),
       };
     }
-  
+
     static fromJSON(json) {
       const { selector, styleSheetIndex } = json;
       const styleSheet = document.styleSheets[styleSheetIndex];
       return new CSSRulesetManager(selector, styleSheet);
     }
   }
-  
+
 
 
   // Function to unpack JSON data into classes
@@ -290,7 +323,7 @@ var CHUBparse = (a) => {
 
     return data;
   }
-  
+
 
   var reg = {
     quoteExept: /\n(?=(?:(?:[^"]*"){2})*[^"]*$)/gm,
@@ -316,6 +349,7 @@ var CHUBparse = (a) => {
 
   var splitn = a.split(/;/)
 
+  
   var col = []
   splitn.forEach((o, r) => {
     var indentn = o.search(/\S/)
@@ -347,6 +381,13 @@ var CHUBparse = (a) => {
     }
 
     // let tree = {}
+
+    /** 
+    * This function takes in three arguments: obj, level, and nv.
+    ** It traverses the object and checks for attributes such as tag, id, class, content, data, and attr.
+    ** It also checks for script elements and evaluates them if found.
+    ** Finally, it sets the indentation level for each element and returns the object with all the attributes set.
+    */
     var traverse = (obj, level, nv = "") => {
 
       var strBuild = obj.c
@@ -416,23 +457,6 @@ var CHUBparse = (a) => {
       // Check if any Attr?
       var checkAttr = (arr) => {
 
-        // Reformat Attributes to prevent conflicts and such.
-        var attrSyn = (tex) => {
-          if (tex.match(/=/gm).length > 1) throw errlist.eqspl3
-
-          let attrParam = tex
-            // Tokenize
-            .replace("=", " spcfork.Equals.Token ")
-            .replace(/\|e/gm, "=")
-            .replace(/\|col/gm, ";")
-            .replace(/\|/gm, " ")
-            // Split at Token to prevent multiple splits.
-            .split(" spcfork.Equals.Token ")
-
-          // console.log(attrParam.length, attrParam)
-          return attrParam
-        }
-
         arr.forEach((param, pind) => {
 
           // ATTR's
@@ -466,12 +490,56 @@ var CHUBparse = (a) => {
 
             case "@":
               // if (param.slice(0, 2) == "*>") {
-                // tempC = templates[param.slice(2)];
+              // tempC = templates[param.slice(2)];
               // } else break
 
-              let damnB
-              tempC.attr = `${tempC.attr ? tempC.attr + " " : ""}${attrB}`
+              /* 
+              We need to:
+
+              Extract the @val from the param.
+              If as params, get params.
+
+              E.G.
+
+              @fetchw=https://www.google.com
+              */
               
+              
+              console.log("using @", `${param}`.slice(8), `${param}`.split(/[|:>=\-\)!~]/gm)[1].slice(1))
+
+              verb_attr: if (param.includes("fetchw")) {
+                (async () => {
+                  param = param.slice(8)
+                  if (window?.location?.origin) {
+                    console.log(`${param}`.includes(window.location.origin))
+                    param = `${param}`.includes(window.location.origin)
+                      ? param.replace(window.location.origin, ".")
+                      : param
+
+                    console.log(param, param.replace(window.location.origin, "."))
+                  }
+                  console.log("QO")
+                  let fw = await fetch(await findFile([param])) || {
+                    text: () => { return param },
+                  }
+                  
+                  let fwtext = await fw.text()
+                  tempC.content = `${
+                    tempC.content ? tempC.content + " " : ""
+                  }${
+                    fwtext ? fwtext : ""
+                  }`
+
+                  console.log(tempC, fwtext)
+                
+                })()
+                
+              }
+              
+              
+              let damnB
+              // tempC.attr = `${tempC.attr ? tempC.attr + " " : ""}${attrB}`
+
               break
 
             default:
@@ -562,7 +630,889 @@ var CHUBparse = (a) => {
       switch ((oml) = chubml.o.tag.toLowerCase()) {
 
         // @SPECIALS
-        case "cmlsty.blackbg": 
+        case "chub.ComplexAccordion":
+          ident = {
+            id: "chubAccordion",
+          }
+
+          ident.counted = ` ${indexes.tmp}${ident.id}`
+
+          styler = `
+  <style>
+    .chubAccordion {
+      width: ${chubml.o.width || "100%"};
+      margin-bottom: 20px;
+    }
+
+    .chubAccordion .accordionItem {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+
+    .chubAccordion .accordionItem .accordionHeader {
+      background-color: #f5f5f5;
+      padding: 10px;
+      cursor: pointer;
+    }
+
+    .chubAccordion .accordionItem .accordionContent {
+      padding: 10px;
+      display: none;
+    }
+  </style>
+  `
+
+          chubml.o = {
+            tag: "div",
+
+            id: chubml.o.id
+              ? chubml.o.id + ` ${ident.counted}`
+              : ` ${ident.counted}`,
+
+            class: chubml.o.class
+              ? chubml.o.class + ` ${ident.id}`
+              : ` ${ident.id}`,
+
+            content: "",
+            data: chubml.o.data
+              ? chubml.o.data
+              : "",
+
+            attr: chubml.o.attr
+              ? chubml.o.attr
+              : "",
+
+            indent: chubml.o.i,
+          }
+
+          if (!styled[ident.id]) {
+            styled[ident.id] = true
+            if (!styled.styles) styled.styles = {}
+            styled.styles[ident.id] = styler
+          }
+
+          indexes.tmp++
+          isTemplate = true
+
+          setTimeout(() => {
+            createAccordion(ident.counted);
+          }, 0);
+          break;
+
+          function createAccordion(id) {
+            const accordionItems = document.querySelectorAll(`#${id} .accordionItem`);
+
+            accordionItems.forEach((item) => {
+              const header = item.querySelector(".accordionHeader");
+              const content = item.querySelector(".accordionContent");
+
+              header.addEventListener("click", () => {
+                content.style.display = content.style.display === "none" ? "block" : "none";
+              });
+            });
+          }
+
+
+        case "*br":
+          /* adjustable break
+
+          Checks if the break has content, and creates breaks based on the number provided.
+
+            @param {number} n - Number of breaks to create.
+
+            @example
+            
+            *br;
+              "3";
+
+            =>
+
+            <br/>
+            <br/>
+            <br/>
+          */
+
+          fboxStyle = ``
+
+          ident = {
+            id: "mbr",
+          }
+
+          ident.counted = ` ${indexes.tmp}${ident.id}`
+
+          /* 
+          I've been real lazy and sick lately, so I've decided to take the easy route.
+          I'll use .repeat() to repeat the break tag n times.
+          
+          <br/><br/><br/>
+          
+          and then chop off the characters at the start and 2 at the end.
+
+          br/><br/><br
+
+          and put it into o.tag!
+
+          it should get translated into <br/><br/><br/> 
+          :)
+          */
+
+          console.log(chubml)
+          
+          chubml.o = {
+            tag: "br",
+
+            id: chubml.o.id
+              ? chubml.o.id + ` ${ident.counted}`
+              : ` ${ident.counted}`,
+
+            class: chubml.o.class
+              ? chubml.o.class + ` ${ident.id}`
+              : ` ${ident.id}`,
+
+            content: "",
+            data: chubml.o.data
+              ? chubml.o.data
+              : "",
+
+            attr: chubml.o.attr
+              ? chubml.o.attr
+              : "",
+
+            indent: chubml.o.i,
+          }
+
+          shorter = true
+
+          indexes.tmp++
+          isTemplate = true
+          break
+          
+
+          
+        case "chub.carousel":
+          ident = {
+            id: "chubCarousel",
+          }
+
+          ident.counted = ` ${indexes.tmp}${ident.id}`
+
+          styler = `
+  <style>
+    .chubCarousel {
+      width: ${chubml.o.width || "100%"};
+      position: relative;
+    }
+
+    .chubCarousel img {
+      width: 100%;
+      height: auto;
+    }
+
+    .chubCarousel .carouselControls {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      background-color: rgba(0, 0, 0, 0.5);
+      color: #fff;
+    }
+
+    .chubCarousel .carouselControls .prev,
+    .chubCarousel .carouselControls .next {
+      cursor: pointer;
+    }
+  </style>
+  `
+
+          chubml.o = {
+            tag: "div",
+
+            id: chubml.o.id
+              ? chubml.o.id + ` ${ident.counted}`
+              : ` ${ident.counted}`,
+
+            class: chubml.o.class
+              ? chubml.o.class + ` ${ident.id}`
+              : ` ${ident.id}`,
+
+            content: "",
+            data: chubml.o.data
+              ? chubml.o.data
+              : "",
+
+            attr: chubml.o.attr
+              ? chubml.o.attr
+              : "",
+
+            indent: chubml.o.i,
+          }
+
+          if (!styled[ident.id]) {
+            styled[ident.id] = true
+            if (!styled.styles) styled.styles = {}
+            styled.styles[ident.id] = styler
+          }
+
+          indexes.tmp++
+          isTemplate = true
+
+          setTimeout(() => {
+            createCarousel(ident.counted);
+          }, 0);
+          break;
+
+          function createCarousel(id) {
+            const carousel = document.querySelector(`#${id}`);
+            const carouselImages = carousel.querySelectorAll("img");
+            const carouselControls = document.createElement("div");
+            carouselControls.className = "carouselControls";
+            carousel.appendChild(carouselControls);
+
+            let currentSlide = 0;
+
+            function showSlide(index) {
+              if (index < 0) {
+                currentSlide = carouselImages.length - 1;
+              } else if (index >= carouselImages.length) {
+                currentSlide = 0;
+              }
+
+              carouselImages.forEach((image) => {
+                image.style.display = "none";
+              });
+
+              carouselImages[currentSlide].style.display = "block";
+            }
+
+            showSlide(currentSlide);
+
+            const prevButton = document.createElement("div");
+            prevButton.className = "prev";
+            prevButton.textContent = "Prev";
+            prevButton.addEventListener("click", () => {
+              currentSlide--;
+              showSlide(currentSlide);
+            });
+            carouselControls.appendChild(prevButton);
+
+            const nextButton = document.createElement("div");
+            nextButton.className = "next";
+            nextButton.textContent = "Next";
+            nextButton.addEventListener("click", () => {
+              currentSlide++;
+              showSlide(currentSlide);
+            });
+            carouselControls.appendChild(nextButton);
+          }
+
+
+        case "chub.chart":
+          ident = {
+            id: "chubChart",
+          }
+
+          ident.counted = ` ${indexes.tmp}${ident.id}`
+
+          styler = `
+  <style>
+    .chubChart {
+      width: ${chubml.o.width || "100%"};
+      height: ${chubml.o.height || "300px"};
+      position: relative;
+    }
+
+    .chubChart canvas {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+  `
+
+          chubml.o = {
+            tag: "div",
+
+            id: chubml.o.id
+              ? chubml.o.id + ` ${ident.counted}`
+              : ` ${ident.counted}`,
+
+            class: chubml.o.class
+              ? chubml.o.class + ` ${ident.id}`
+              : ` ${ident.id}`,
+
+            content: "",
+            data: chubml.o.data
+              ? chubml.o.data
+              : "",
+
+            attr: chubml.o.attr
+              ? chubml.o.attr
+              : "",
+
+            indent: chubml.o.i,
+          }
+
+          if (!styled[ident.id]) {
+            styled[ident.id] = true
+            if (!styled.styles) styled.styles = {}
+            styled.styles[ident.id] = styler
+          }
+
+          indexes.tmp++
+          isTemplate = true
+
+          setTimeout(() => {
+            createChart(ident.counted);
+          }, 0);
+          break;
+
+          function createChart(id) {
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+
+            const chartData = getChartData(chubml.o.attr); // Pass the attributes object to the data retrieval function
+
+            // Chart configuration options
+            const chartOptions = {
+              type: "bar",
+              data: {
+                labels: chartData.labels,
+                datasets: [{
+                  label: chartData.datasetLabel,
+                  data: chartData.datasetData,
+                  backgroundColor: chartData.datasetColor,
+                }],
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                  },
+                },
+              },
+            };
+
+            new Chart(ctx, chartOptions);
+
+            const chartContainer = document.querySelector(`#${id}`);
+            chartContainer.appendChild(canvas);
+          }
+
+          function getChartData(attributes) {
+            // Extract data from attributes object or content string
+            const labels = attributes.labels ? attributes.labels.split(",") : [];
+            const datasetLabel = attributes.datasetLabel || "Sales";
+            const datasetData = attributes.datasetData
+              ? attributes.datasetData.split(",").map(Number)
+              : [];
+            const datasetColor = attributes.datasetColor || "rgba(54, 162, 235, 0.6)";
+
+            return {
+              labels,
+              datasetLabel,
+              datasetData,
+              datasetColor,
+            };
+          }
+          
+        case "chub.tabs":
+          ident = {
+            id: "chubTabs",
+          }
+
+          ident.counted = ` ${indexes.tmp}${ident.id}`
+
+          styler = `
+  <style>
+    .chubTabs .chubTabButton {
+      display: inline-block;
+      padding: 10px;
+      cursor: pointer;
+      background-color: #f2f2f2;
+      border: 1px solid #ccc;
+      border-bottom: none;
+      border-radius: 4px 4px 0 0;
+    }
+
+    .chubTabs .chubTabButton.active {
+      background-color: #fff;
+      border-bottom-color: transparent;
+    }
+
+    .chubTabs .chubTabContent {
+      display: none;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-top: none;
+      border-radius: 0 4px 4px 4px;
+    }
+
+    .chubTabs .chubTabContent.show {
+      display: block;
+    }
+  </style>
+  `
+
+          chubml.o = {
+            tag: "div",
+
+            id: chubml.o.id
+              ? chubml.o.id + ` ${ident.counted}`
+              : ` ${ident.counted}`,
+
+            class: chubml.o.class
+              ? chubml.o.class + ` ${ident.id}`
+              : ` ${ident.id}`,
+
+            content: `
+      <div class="chubTabs">
+        <div class="chubTabButton" onclick="changeTab(event, '${ident.counted}', 0)">${chubml.o.tab1}</div>
+        <div class="chubTabButton" onclick="changeTab(event, '${ident.counted}', 1)">${chubml.o.tab2}</div>
+        <div class="chubTabContent show">${chubml.o.content1}</div>
+        <div class="chubTabContent">${chubml.o.content2}</div>
+      </div>
+    `,
+
+            data: chubml.o.data
+              ? chubml.o.data
+              : "",
+
+            attr: chubml.o.attr
+              ? chubml.o.attr
+              : "",
+
+            indent: chubml.o.i,
+          }
+
+          if (!styled[ident.id]) {
+            styled[ident.id] = true
+            if (!styled.styles) styled.styles = {}
+            styled.styles[ident.id] = styler
+          }
+
+          indexes.tmp++
+          isTemplate = true
+          break;
+
+          function changeTab(event, id, tabIndex) {
+            const tabButtons = document.querySelectorAll(`#${id} .chubTabButton`);
+            const tabContents = document.querySelectorAll(`#${id} .chubTabContent`);
+
+            tabButtons.forEach((button, index) => {
+              if (index === tabIndex) {
+                button.classList.add("active");
+                tabContents[index].classList.add("show");
+              } else {
+                button.classList.remove("active");
+                tabContents[index].classList.remove("show");
+              }
+            });
+          }
+
+
+        case "chub.accordion":
+          ident = {
+            id: "chubAccordion",
+          }
+
+          ident.counted = ` ${indexes.tmp}${ident.id}`
+
+          styler = `
+  <style>
+    .chubAccordion .chubAccordionTitle {
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .chubAccordion .chubAccordionContent {
+      display: none;
+    }
+
+    .chubAccordion .chubAccordionContent.show {
+      display: block;
+    }
+  </style>
+  `
+
+          chubml.o = {
+            tag: "div",
+
+            id: chubml.o.id
+              ? chubml.o.id + ` ${ident.counted}`
+              : ` ${ident.counted}`,
+
+            class: chubml.o.class
+              ? chubml.o.class + ` ${ident.id}`
+              : ` ${ident.id}`,
+
+            content: `
+      <div class="chubAccordionTitle" onclick="toggleAccordion('${ident.counted}')">
+        ${chubml.o.title}
+      </div>
+      <div class="chubAccordionContent">
+        ${chubml.o.content}
+      </div>
+    `,
+
+            data: chubml.o.data
+              ? chubml.o.data
+              : "",
+
+            attr: chubml.o.attr
+              ? chubml.o.attr
+              : "",
+
+            indent: chubml.o.i,
+          }
+
+          if (!styled[ident.id]) {
+            styled[ident.id] = true
+            if (!styled.styles) styled.styles = {}
+            styled.styles[ident.id] = styler
+          }
+
+          indexes.tmp++
+          isTemplate = true
+          break;
+
+          function toggleAccordion(id) {
+            const accordionContent = document.querySelector(`#${id} .chubAccordionContent`);
+            accordionContent.classList.toggle("show");
+          }
+
+
+        case "chub.listitem":
+          ident = {
+            id: "chubListItem",
+          }
+
+          ident.counted = ` ${indexes.tmp}${ident.id}`
+
+          styler = `
+  <style>
+    .chubListItem {
+      font-size: 16px;
+      color: #333;
+      list-style-type: disc;
+      margin-left: 20px;
+    }
+  </style>
+  `
+
+          chubml.o = {
+            tag: "li",
+
+            id: chubml.o.id
+              ? chubml.o.id + ` ${ident.counted}`
+              : ` ${ident.counted}`,
+
+            class: chubml.o.class
+              ? chubml.o.class + ` ${ident.id}`
+              : ` ${ident.id}`,
+
+            content: chubml.o.content
+              ? chubml.o.content
+              : "",
+
+            data: chubml.o.data
+              ? chubml.o.data
+              : "",
+
+            attr: chubml.o.attr
+              ? chubml.o.attr
+              : "",
+
+            indent: chubml.o.i,
+          }
+
+          if (!styled[ident.id]) {
+            styled[ident.id] = true
+            if (!styled.styles) styled.styles = {}
+            styled.styles[ident.id] = styler
+          }
+
+          indexes.tmp++
+          isTemplate = true
+          break;
+
+
+        case "chub.card":
+          ident = {
+            id: "chubCard",
+          }
+
+          ident.counted = ` ${indexes.tmp}${ident.id}`
+
+          styler = `
+  <style>
+    .chubCard {
+      background-color: #fff;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+  </style>
+  `
+
+          chubml.o = {
+            tag: "div",
+
+            id: chubml.o.id
+              ? chubml.o.id + ` ${ident.counted}`
+              : ` ${ident.counted}`,
+
+            class: chubml.o.class
+              ? chubml.o.class + ` ${ident.id}`
+              : ` ${ident.id}`,
+
+            content: chubml.o.content
+              ? chubml.o.content
+              : "",
+
+            data: chubml.o.data
+              ? chubml.o.data
+              : "",
+
+            attr: chubml.o.attr
+              ? chubml.o.attr
+              : "",
+
+            indent: chubml.o.i,
+          }
+
+          if (!styled[ident.id]) {
+            styled[ident.id] = true
+            if (!styled.styles) styled.styles = {}
+            styled.styles[ident.id] = styler
+          }
+
+          indexes.tmp++
+          isTemplate = true
+          break;
+
+
+        case "chub.paragraph":
+          ident = {
+            id: "chubParagraph",
+          }
+
+          ident.counted = ` ${indexes.tmp}${ident.id}`
+
+          styler = `
+  <style>
+    .chubParagraph {
+      font-size: 16px;
+      line-height: 1.5;
+      color: #333;
+    }
+  </style>
+  `
+
+          chubml.o = {
+            tag: "p",
+
+            id: chubml.o.id
+              ? chubml.o.id + ` ${ident.counted}`
+              : ` ${ident.counted}`,
+
+            class: chubml.o.class
+              ? chubml.o.class + ` ${ident.id}`
+              : ` ${ident.id}`,
+
+            content: chubml.o.content
+              ? chubml.o.content
+              : "",
+
+            data: chubml.o.data
+              ? chubml.o.data
+              : "",
+
+            attr: chubml.o.attr
+              ? chubml.o.attr
+              : "",
+
+            indent: chubml.o.i,
+          }
+
+          if (!styled[ident.id]) {
+            styled[ident.id] = true
+            if (!styled.styles) styled.styles = {}
+            styled.styles[ident.id] = styler
+          }
+
+          indexes.tmp++
+          isTemplate = true
+          break;
+
+        case "chub.image":
+          ident = {
+            id: "chubImage",
+          }
+
+          ident.counted = ` ${indexes.tmp}${ident.id}`
+
+          styler = `
+  <style>
+    .chubImage {
+      max-width: 100%;
+      height: auto;
+    }
+  </style>
+  `
+
+          chubml.o = {
+            tag: "img",
+
+            id: chubml.o.id
+              ? chubml.o.id + ` ${ident.counted}`
+              : ` ${ident.counted}`,
+
+            class: chubml.o.class
+              ? chubml.o.class + ` ${ident.id}`
+              : ` ${ident.id}`,
+
+            content: "",
+
+            data: chubml.o.data
+              ? chubml.o.data
+              : "",
+
+            attr: chubml.o.attr
+              ? chubml.o.attr
+              : "",
+
+            indent: chubml.o.i,
+          }
+
+          if (!styled[ident.id]) {
+            styled[ident.id] = true
+            if (!styled.styles) styled.styles = {}
+            styled.styles[ident.id] = styler
+          }
+
+          indexes.tmp++
+          isTemplate = true
+          break;
+
+
+        case "chub.button":
+          ident = {
+            id: "chubButton",
+          }
+
+          ident.counted = ` ${indexes.tmp}${ident.id}`
+
+          styler = `
+  <style>
+    .chubButton {
+      padding: 10px 20px;
+      background-color: #f80f;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
+  `
+
+          chubml.o = {
+            tag: "button",
+
+            id: chubml.o.id
+              ? chubml.o.id + ` ${ident.counted}`
+              : ` ${ident.counted}`,
+
+            class: chubml.o.class
+              ? chubml.o.class + ` ${ident.id}`
+              : ` ${ident.id}`,
+
+            content: chubml.o.content
+              ? chubml.o.content
+              : "",
+
+            data: chubml.o.data
+              ? chubml.o.data
+              : "",
+
+            attr: chubml.o.attr
+              ? chubml.o.attr
+              : "",
+
+            indent: chubml.o.i,
+          }
+
+          if (!styled[ident.id]) {
+            styled[ident.id] = true
+            if (!styled.styles) styled.styles = {}
+            styled.styles[ident.id] = styler
+          }
+
+          indexes.tmp++
+          isTemplate = true
+          break;
+
+        case "chub.customheading":
+          ident = {
+            id: "customHeading",
+          }
+
+          ident.counted = ` ${indexes.tmp}${ident.id}`
+
+          styler = `
+  <style>
+    .customHeading {
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+    }
+  </style>
+  `
+
+          chubml.o = {
+            tag: "h1",
+
+            id: chubml.o.id
+              ? chubml.o.id + ` ${ident.counted}`
+              : ` ${ident.counted}`,
+
+            class: chubml.o.class
+              ? chubml.o.class + ` ${ident.id}`
+              : ` ${ident.id}`,
+
+            content: chubml.o.content
+              ? chubml.o.content
+              : "",
+
+            data: chubml.o.data
+              ? chubml.o.data
+              : "",
+
+            attr: chubml.o.attr
+              ? chubml.o.attr
+              : "",
+
+            indent: chubml.o.i,
+          }
+
+          if (!styled[ident.id]) {
+            styled[ident.id] = true
+            if (!styled.styles) styled.styles = {}
+            styled.styles[ident.id] = styler
+          }
+
+          indexes.tmp++
+          isTemplate = true
+          break;
+
+
+        case "chub.blackbg":
 
           // html += `
           // <style>
@@ -571,7 +1521,7 @@ var CHUBparse = (a) => {
           //   }
           // </style>
           // `
-          
+
           // alert("pol")
           fboxStyle = "" // Inline Dep.
           // evename = "bbg"
@@ -593,33 +1543,33 @@ var CHUBparse = (a) => {
             tag: "",
 
             id: "",
-              // chubml.o.id
-              // ? chubml.o.id + ` ${ident.counted}`
-              // : ` ${ident.counted}`, 
-            
+            // chubml.o.id
+            // ? chubml.o.id + ` ${ident.counted}`
+            // : ` ${ident.counted}`, 
+
 
             class: "",
-              // chubml.o.class
-              // ? chubml.o.class + ` ${ident.id}`
-              // : ` ${ident.id}`,
+            // chubml.o.class
+            // ? chubml.o.class + ` ${ident.id}`
+            // : ` ${ident.id}`,
 
             content: "",
-              // chubml.o.content
-              // ? chubml.o.content
-              // : "",
+            // chubml.o.content
+            // ? chubml.o.content
+            // : "",
 
             data: "",
-              // chubml.o.data
-              // ? chubml.o.data
-              // : "",
+            // chubml.o.data
+            // ? chubml.o.data
+            // : "",
 
             attr: "",
-              // chubml.o.attr
-              // ? chubml.o.attr + " " + fboxStyle
-              // : fboxStyle,
+            // chubml.o.attr
+            // ? chubml.o.attr + " " + fboxStyle
+            // : fboxStyle,
 
-            indent: 0 
-              // chubml.o.i,
+            indent: 0
+            // chubml.o.i,
           }
 
           if (!styled[ident.id]) {
@@ -633,15 +1583,15 @@ var CHUBparse = (a) => {
           indexes.tmp++
           isTemplate = true
           break
-        
-          
-        case "chub.coolspan": 
+
+
+        case "chub.coolspan":
           ident = {
             id: "coolStuffspan",
           }
 
           ident.counted = ` ${indexes.tmp}${ident.id}`
-            
+
           // html += `
           // <style>
           //   body {
@@ -649,7 +1599,7 @@ var CHUBparse = (a) => {
           //   }
           // </style>
           // `
-          
+
           // alert("pol")
           fboxStyle = "" // Inline Dep.
           // evename = "bbg"
@@ -671,34 +1621,34 @@ var CHUBparse = (a) => {
           chubml.o = {
             tag: "span",
 
-            id: 
+            id:
               chubml.o.id
-              ? chubml.o.id + ` ${ident.counted}`
-              : ` ${ident.counted}`, 
-            
+                ? chubml.o.id + ` ${ident.counted}`
+                : ` ${ident.counted}`,
 
-            class: 
+
+            class:
               chubml.o.class
-              ? chubml.o.class + ` ${ident.id}`
-              : ` ${ident.id}`,
+                ? chubml.o.class + ` ${ident.id}`
+                : ` ${ident.id}`,
 
-            content: 
+            content:
               chubml.o.content
-              ? chubml.o.content
-              : "",
+                ? chubml.o.content
+                : "",
 
-            data: 
+            data:
               chubml.o.data
-              ? chubml.o.data
-              : "",
+                ? chubml.o.data
+                : "",
 
-            attr: 
+            attr:
               chubml.o.attr
-              ? chubml.o.attr + " " + fboxStyle
-              : fboxStyle,
+                ? chubml.o.attr + " " + fboxStyle
+                : fboxStyle,
 
-            indent: 0 
-              // chubml.o.i,
+            indent: 0
+            // chubml.o.i,
           }
 
           if (!styled[ident.id]) {
@@ -713,6 +1663,90 @@ var CHUBparse = (a) => {
           isTemplate = true
           break
 
+        case "chub.spcr":
+          ident = {
+            id: "spcr",
+          }
+
+          ident.counted = ` ${indexes.tmp}${ident.id}`
+
+          // html += `
+          // <style>
+          //   body {
+          //     background-color: #000;
+          //   }
+          // </style>
+          // `
+
+          // alert("pol")
+          fboxStyle = "" // Inline Dep.
+          // evename = "bbg"
+
+          tmlo = /\/\*C(?:[^]*?)height(?:[^]*?)\(([^)]*?)\);(?:[^]*?)\*\//gm
+            .exec(attrSyn(chubml.o.content))
+          
+          tmlo = tmlo?.[1] || "10px"
+
+          
+
+          styler = `
+          <style>
+            .${ident.id} {
+              display: inline-block;
+              
+              height: ${
+                 tmlo
+              };
+            }
+          </style>
+          `
+
+
+          chubml.o = {
+            tag: "div",
+
+            id:
+              chubml.o.id
+                ? chubml.o.id + ` ${ident.counted}`
+                : ` ${ident.counted}`,
+
+
+            class:
+              chubml.o.class
+                ? chubml.o.class + ` ${ident.id} `
+                : ` ${ident.id}`,
+
+            content:
+              chubml.o.content
+                ? chubml.o.content
+                : "",
+
+            data:
+              chubml.o.data
+                ? chubml.o.data
+                : "",
+
+            attr:
+              chubml.o.attr
+                ? chubml.o.attr + " " + fboxStyle
+                : fboxStyle,
+
+            indent: 0
+            // chubml.o.i,
+          }
+
+          if (!styled[ident.id]) {
+            styled[ident.id] = true
+            if (!styled.styles) styled.styles = {}
+            styled.styles[ident.id] = styler
+          }
+
+          console.log(styled)
+
+          indexes.tmp++
+          isTemplate = true
+          break
+          
 
         case "chub.lol":
           console.log("lol, test, lol\nCHUB tag Check functional!")
@@ -1150,6 +2184,20 @@ var CHUBparse = (a) => {
         }
 
         html += `\n${chubml.i}</${chubml.o.tag}>\n`;
+      } else {
+        
+        if (chubml.children) {
+          for (const child of chubml.children) {
+            if (child.c[0] == "\"") {
+              // console.log(child.o.content)
+              html += child.i + child.c.slice(1, child.c.length - 1);
+            } else {
+              html += child.i + pubj(child);
+            }
+          }
+        }
+        
+        html += `\n`
       }
 
       // ¯\_(ツ)_/¯ Quickest fix.
@@ -1202,9 +2250,8 @@ var CHUBECSS;
   
 function sortInd(contents) {
 * @param {string} contents - collapses a string into an object by indentation syntax.
-  ...
-  @returns {object}
-} */
+* @returns {object} object- returns an object with indentation syntax.
+* */
 function sortInd(contents) {
   const sortedContents = [];
   let parentStack = [];
@@ -1234,47 +2281,154 @@ function sortInd(contents) {
 }
 
 
+/**
+ * Find a file from a list of locations.
+ *
+ * @param {string[]} fileLocations - List of file locations to check
+ * @returns {Promise<string>} - The location of the first valid file
+ */
+var findFile = async (fileLocations) => {
+  for (const location of fileLocations) {
+    try {
+      const response = await fetch(location);
 
-// -=-=-=-= ChubECSS =-=-=-=-
-// Ze better syntax for SS'
-// + Chub Indent-ator.
+      // Check if the response was successful (status code in the range of 200-299)
+      if (response.ok) {
+        return location; // Return the valid file location
+      }
+    } catch (error) {
+      // Handle any errors that occur during the fetch request
+      console.error(`Error fetching file from '${location}':`, error);
+    }
+  }
 
-// Chub ECSS use functions will go here.
+  // Return null if no valid file location was found
+  return null;
+}
 
 
+/*
+-=-=-=-= ChubECSS =-=-=-=-
+Events built into CSS.
+Scripts build into CSS, so that you can use ":" events 
+(e.g. :hover, :active, etc.) to trigger JS and stuff!
+-=-=-=-=-=-=-=-=-=-=-=-
+*/
+var ECSSparse = async (stylesheetname) => {
+  // fetch the stylesheet file with the stylesheet param.
+  let received = "";
+  let esheetproto = stylesheetname + ".ecss";
+  if (findFile([esheetproto])) received = fetch(esheetproto);
 
-// -=-=-=-= START A SCRIPT: Like p5.js =-=-=-=-
+  // if the stylesheet is not found, try to find it in the ./ecss/ folder.
+  if (!received && findFile(["./ecss/" + esheetproto])) 
+    received = fetch("./ecss/" + stylesheetname + ".ecss");
+
+}
+  
+
+// -=-=-=-= /ChubECSS =-=-=-=-
+
+
+function CHUBstrprep(str) {
+  return str
+    .replace(/[.*+?^${}()|[\]\\"';:]/g, '\\$&')
+    .replace(/[;]/g, '|col')
+}
+
+function CHUBunmess(str) {
+  const escapedStr = str.replace(/\\\"/g, '"');
+  const unescapedStr = escapedStr.replace(/\\\|col/g, ',');
+
+  return [
+    unescapedStr,
+    JSON.parse(unescapedStr),
+  ]
+  
+}
+
+/**
+ * @param {string} dupe - The dupe to be added to the collection.
+ * @returns {object} - The edited dupe, the dupe collection, and the stringified and parsed collection.
+ */
+var CHUBduper = (dupe = "p;") => {
+  window.DupeCollection
+    ? window.DupeCollection[dupe] = (window.DupeCollection[dupe] + 1 || 0)
+    : window.DupeCollection = { [dupe]: 0 }
+
+  editedDupe = dupe.contains(";")
+    ? (() => {
+      editedDupe = dupe.split(";")
+
+      editedDupe[0] += ` #${window.DupeCollection[`${dupe}`] || "#0"}`
+      console.log(editedDupe)
+      return editedDupe.join("")
+    })()
+
+    : (() => { return dupe + ";" })();
+
+  return {
+    editedDupe,
+    D: window.DupeCollection,
+    s: (() => JSON.stringify(window.DupeCollection.toJSON())),
+    c: (() => JSON.parse(window.DupeCollection.toJSON())),
+  }
+}
+
+
+/**
+ * Fetch a web page and convert it to CHUB
+ * @param {string} url The URL of the web page to fetch
+ * @returns {string} The CHUB representation of the web page
+ */
+var CHUBWFetch = async (url) => {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    const html = await response.text();
+    console.log(htmlToChub(html));
+    return htmlToChub(html);
+  } catch (error) {
+    console.error('Error fetching web page:', error);
+    return null;
+  }
+}
+
+
 
 // Snippeteer Funct #9
 var checkEnvironment = () => {
   // So nasty I'd rather write it as if it were a Py function.
-  // Good thing JS doesn't use multi-line `\` often.
+
+  if (typeof module
+    !== 'undefined'
   
-  if (typeof module 
-      !== 'undefined' 
-      && module.exports 
-      && typeof window 
-      === 'undefined') 
+    && module.exports
+    
+    && typeof window
+    === 'undefined') 
   {
     // Node.js environment
     return 'Node';
-  } 
-  
-  else if (typeof window 
-           !== 'undefined' 
-           && typeof window.document 
-           !== 'undefined') 
+  }
+
+  else if (typeof window
+    !== 'undefined'
+    
+    && typeof window.document
+    !== 'undefined') 
   {
     // Browser environment
     return 'Browser';
-  } 
-  
+  }
+
   else {
     // Unknown environment
     return 'Unknown';
   }
 }
-
 
 switch (checkEnvironment()) {
   case "Browser":
@@ -1282,158 +2436,167 @@ switch (checkEnvironment()) {
     window.CHUBparse = CHUBparse
     try {
       if (window.parent) window.parent.CHUBparse = CHUBparse
-    } catch (err) {}
+    } catch (err) { }
+
+    window.lastChub = window.lastChub || ""
+    lastChub = lastChub || window.lastChub || ""
+
+    window.cbMode = window.cbMode || ""
+    cbMode = cbMode || window.cbMode || ""
 
     window.chubexists = true
+    window.chubExists = true
+    chubexists = true
     chubExists = true
-    
+
     window.chubstart = window.chubstart || false
+    window.chubloaded = window.chubloaded || false
 
 
     function getURLbit() {
       var url = window.location.href;
       var parts = url.split('/');
       var lastPart = parts[parts.length - 1];
-      
+
       return lastPart;
     }
-    
-    
+
+
+    window.CHUBstrprep = CHUBstrprep
+
+
+    function CHUBsanitize(input) {
+      var element = document.createElement('div');
+      element.innerText = input;
+      var sanitizedInput = element.innerHTML;
+      return sanitizedInput;
+    }
+
+
+    window.CHUBsanitize = CHUBsanitize
+
+
     var ChubRep = (doc, quirky = "<!DOCTYPE html>") => {
       doc = CHUBparse(doc);
       document.open();
       document.write(quirky + '\n' + doc);
       document.close();
+      return doc;
     }
-    
-    
+
+
     window.onload = () => {
       if (window.chubstart && typeof window.chubstart == "function") {
         chubstart();
       }
     };
-    
-    
+
+
+    window.CHUBtxt = attrSyn
+
     var beamChub = async (input, DOM) => {
-      
+
       var okfetch = false
-    
+
       // if (!input) throw new Error("Input is undefined.")
-    
+
       var aliasIndexes = [
         "beam.chub",
         "beam.cml",
-    
+
         "bm.chub",
         "bm.cml",
-    
+
         "index.chub",
         "index.cml",
-    
+
         "i.chub",
         "i.cml",
       ]
-    
+
       // Do this so that nobody could possibly mess up
       // lol.
-    
+
       var checkFile = async (loc, resloc = false, respo = false) => {
         var bing
-    
+
         try {
           await fetch(loc, { method: "HEAD" })
             .then(async (resp) => {
-    
+
               if (resp.ok && resp.status !== 404) {
                 // console.log(resp)
                 resloc = true
                 respo = resp
                 okfetch
-    
+
                 try {
                   bing = await fetch(loc)
                 }
                 catch {
                   return Promise.reject('error 404')
                 }
-    
+
                 return bing
               } else if (response.status === 404) {
                 return Promise.reject('error 404')
-    
+
               } else {
                 return Promise.reject('some other error: ' + response.status)
-    
+
               }
-    
+
             })
         }
-    
+
         catch (err) {
           return respo = err
         }
-    
+
         while (bing) {
           return bing
         }
-    
+
       }
-    
-      async function findFile(fileLocations) {
-        for (const location of fileLocations) {
-          try {
-            const response = await fetch(location);
-    
-            // Check if the response was successful (status code in the range of 200-299)
-            if (response.ok) {
-              return location; // Return the valid file location
-            }
-          } catch (error) {
-            // Handle any errors that occur during the fetch request
-            console.error(`Error fetching file from '${location}':`, error);
-          }
-        }
-    
-        // Return null if no valid file location was found
-        return null;
-      }
-    
+
       if (!input) {
         await findFile(aliasIndexes)
-    
+
           .then(async (foundr) => {
             if (foundr) {
               await fetch(foundr)
-      
+
                 .then(async (outp) => {
+                  lastChub = input
+                  window.lastChub = lastChub
                   input = await outp.text()
                 })
-      
+
                 .then(async (gotten) => {
-      
+
                   // console.log(input)
                   var htmlCode = CHUBparse(input);
-      
+
                   if (window.chubDev && window.chubDev == true) console.log(htmlCode)
-      
+
                   let locationB = DOM || window.chubLocation || "chub"
                   let locationGot = $(locationB)
                   if (!locationGot) locationB = "body"
-      
+
                   locationGot.innerHTML = htmlCode;
-      
+
                   // On finish, run finish.
                   if (window.chubinjected && typeof window.chubinjected == "function") {
                     // console.log(locationGot)
-                    chubinjected(locationGot);
+                    chubinjected(locationGot, window.lastChub, window.cbMode);
                   }
-      
+
                 })
-      
+
             } else {
-              console.log('No valid file location found, Tried:\n\n'+ aliasIndexes.join(",\n")+"\n\nTry again using a prefered index name, or one of the indexes above.");
+              console.log('No valid file location found, Tried:\n\n' + aliasIndexes.join(",\n") + "\n\nTry again using a prefered index name, or one of the indexes above.");
             }
-      
+
           })
 
       } else {
@@ -1441,144 +2604,91 @@ switch (checkEnvironment()) {
           .then(async (foundr) => {
             if (foundr) {
               await fetch(foundr)
-      
+
                 .then(async (outp) => {
-                  var lastChub = input
+                  lastChub = input
                   window.lastChub = lastChub
                   input = await outp.text()
                 })
-      
+
                 .then(async (gotten) => {
-      
+
                   // console.log(input)
                   var htmlCode = CHUBparse(input);
-      
+
                   if (window.chubDev && window.chubDev == true) console.log(htmlCode)
-      
+
                   let locationB = DOM || window.chubLocation || "chub"
                   let locationGot = $(locationB)
                   if (!locationGot) locationB = "body"
-      
+
                   locationGot.innerHTML = htmlCode;
-      
+
                   // On finish, run finish.
                   if (window.chubinjected && typeof window.chubinjected == "function") {
                     // console.log(locationGot)
-                    
-                    chubinjected(locationGot);
+
+                    chubinjected(locationGot, lastChub, window.cbMode);
                   }
-      
+
                 })
-      
+
             } else {
               console.log(`No valid file location found, Tried ${input}`);
             }
-      
+
           })
       }
     }
     
     
-    var injectChub = (input, putat = "chub") => {
-      // var input = `
-      // div;
-      //   "wow, im super simple. <br>
-      //   and supper COOOL!";
-      //   hr #wow $hey=lol .very .omg .neat %omg=js|is|cool;
-      //   :Super .cool: "WOOO!";
-      //     span .woah;
-      //       "wow!";
-      // `;
-    
-      var htmlCode = CHUBparse(input);
-    
-      if (window.chubDev && window.chubDev == true) console.log(htmlCode)
-    
-      let locationB = window.chubLocation || putat
-      let locationGot = $(locationB) || $("body")
-      if (!locationGot) locationB = "body"
-    
-      locationGot.innerHTML = htmlCode;
-    
-      // On finish, run finish.
-      if (window.chubinjected && typeof window.chubinjected == "function") {
-        chubinjected(locationGot);
-      }
-    
-    }
-
-
-    class ChubRouter {
-      constructor() {
-        this.routes = [];
-        this.defaultRoute = null;
-        
-        if (window.routermade && typeof window.routermade == "function") {
-          routermade(this)
-        }
-        
-      }
-      
-      addRoute(urlPattern, callback) {
-        this.routes.push({ pattern: urlPattern, callback: callback });
-      }
-      
-      setDefaultRoute(callback) {
-        this.defaultRoute = callback;
-      }
-      
-      execute() {
-        var url = window.location.href;
-        
-        for (var i = 0; i < this.routes.length; i++) {
-          var route = this.routes[i];
-          var pattern = new RegExp(route.pattern);
-          
-          if (pattern.test(url)) {
-            route.callback(getURLbit(route.pattern));
-            return;
-          }
-        }
-        
-        if (this.defaultRoute) {
-          this.defaultRoute();
-        }
-      }
-    }
-
-
-    window.ChubRouter = ChubRouter
-    
-
-    if (window.chubloaded && typeof window.chubloaded == "function") {
-      chubloaded()
-    }
-      
     break
-  
-  case "Node":
 
-    CML = {}
-    CML.CHUBparse = CHUBparse
-
-    try {
-      if (chubloaded && typeof chubloaded == "function") {
-        chubloaded()
-      }
-    } catch {}
-    
-    break
-  
   case "Unknown":
 
-    
+
     break
 }
 
-// ARARARAR
-var htmlToChub = (html) => {
-  const doc = new DOMParser().parseFromString(html, 'text/html');
+// Reformat Attributes to prevent conflicts and such.
+function CHUBfax(tex, sep = " ") {
+  modtxt = tex || "";
+  modtxt = modtxt
+    .replace("=", "|e")
+    .replace(";", "|col")
+    .replace(sep, "|")
   
+  return modtxt
+}
+
+  function attrSyn(tex) {
+    try {
+      
+      if (`${tex}`.match(/=/gm).length > 1) throw errlist.eqspl3
+  
+      let attrParam = tex
+        // Tokenize
+        .replace("=", " spcfork.Equals.Token ")
+        .replace("\\|", " spcfork.Pipe.Token ")
+        
+        .replace(/\|e/gm, "=")
+        .replace(/\|col/gm, ";")
+        .replace(/\|/gm, " ")
+        
+        .replace(" spcfork.Pipe.Token ", "|")
+        
+        // Split at Token to prevent multiple splits.
+        .split(" spcfork.Equals.Token ")
+  
+      // console.log(attrParam.length, attrParam)
+      return attrParam
+    } catch {}
+  }
+
+// ARARARAR
+var htmlToChub = (html, delim = "") => {
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+
   function getChubML(node, indent = '') {
     let chubML = '';
 
@@ -1604,7 +2714,7 @@ var htmlToChub = (html) => {
           chubML += getChubML(child, `${indent}  `);
         }
       });
-      chubML += `${indent}//\n`;
+      chubML += `${indent}${delim}\n`;
     } else {
       chubML += ';\n';
     }

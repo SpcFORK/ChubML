@@ -10,7 +10,7 @@ html {
 
 body {
   width: 100vw;
-  
+  overflow-x: hidden;
 }
 
 * {
@@ -22,10 +22,19 @@ article {
   font-family: Helvetica, sans-serif;
 }
 
-body > * {
-  margin: 0px;
-  padding: 15px;
+article {
+  margin: 15px;
 }
+
+#docsNav {
+  padding: 15px;
+  
+}
+
+/* #docsNav {
+  margin: 10px;
+  /* padding: 15px; */
+  /* top: 0px;   */
 
 @keyframes wavy-animation {
   0% {
@@ -101,11 +110,13 @@ nav {
   /* 
     %style=
   */
+  display: block;
   margin: 20px;
-  margin-top: 10px;
+  margin-top: 2px;
   border-radius: 10px;
   background: #f80;
-  width: min-content;
+  max-width: 330px;
+  /* column-gap: 0px; */
   /* background: radial-gradient(circle, #f80 30%, #c40 100%); */
 }
 
@@ -153,9 +164,12 @@ nav {
 }
 
 .coolerHfbox {
-  left:-5px; 
+  left:-5px;
   top:-5px;
-  position:relative; 
+  padding-right: 0px;
+  padding-left: 0px;
+  position: relative;
+  display: inline-block;
   box-shadow: 6px 6px 0px 0px #000;
   /* background: radial-gradient(circle, #f80 30%, #c40 100%); */
   writing-mode: vertical-rl;
@@ -213,4 +227,114 @@ nav {
 .vtext {
   writing-mode: vertical-rl;
   text-orientation: mixed;
+}
+
+/* CHUBML - A footer
+footer;
+      div .footer;
+      
+        div .footer-left;
+          div .footer-left-title;
+            h3;
+              span .footer-title;
+              "CHUB WEBSITE";
+              
+          div .footer-left-desc;
+            p;
+              "The newest and best Markdown Language simplifier!";
+              br;
+
+        div .footer-right;
+          div .footer-right-title;
+            h3;
+              // Create info List items
+
+              ul;
+                li;
+                  a %href=about .footer-link;
+                    "About";
+                li;
+                  a %href=docs .footer-link;
+                    "Docs";
+                li;
+                  a %href=functions .footer-link;
+                    "Functions";
+                li;
+                  a %href=more .footer-link;
+                    "More...";
+                li;
+                  a %href=contact .footer-link;
+                    "Contact";
+                li;
+                  a %href=privacy .footer-link;
+                    "Privacy";
+                li;
+                  a %href=terms .footer-link;
+                    "Terms";
+                li;
+*/
+
+body .footer {
+  /* A decent footer that will glue itself to the bottom of the page */
+  /* position: ; */
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  margin: 0;
+  background-color: #f80;
+}
+
+.footer-left {
+  /* Left side of the footer */
+  padding: 10px;
+  background-color: #f80;
+}
+
+.footer-left-title {
+  /* Title of the footer */
+  font-size: 20px;
+  color: #000;
+  font-weight: bold;
+}
+
+.footer-left-desc {
+  /* Description of the footer */
+  font-size: 15px;
+  color: #000;
+}
+
+.footer-right {
+  /* Right side of the footer */
+  padding: 10px;
+  background-color: #f80;
+}
+
+.footer-right-title {
+  /* Title of the footer */
+  font-size: 20px;
+  color: #000;
+  font-weight: bold;
+}
+
+.footer-right-title ul {
+  /* List of the footer */
+  list-style-type: none;
+  padding: 0;
+}
+
+.footer-right-title ul li {
+  /* List items of the footer */
+  margin: 5px;
+}
+
+.footer-right-title ul li a {
+  /* List items of the footer */
+  color: #000;
+  text-decoration: none;
+}
+
+.footer-right-title ul li a:hover {
+  /* List items of the footer */
+  color: #fff;
+  text-decoration: underline;
 }

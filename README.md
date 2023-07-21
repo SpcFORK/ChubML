@@ -236,3 +236,5 @@ This is the equivalent to:
 
 """" 
 if you have now understood ChubML.
+
+Join me as I share my coding journey and explore the world of Chub through code snippets and templates. Learn how to create custom templates and code snippets for Chub-Templates with me.
