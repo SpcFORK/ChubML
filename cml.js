@@ -2445,7 +2445,6 @@ switch (checkEnvironment()) {
       CHUBparse,
       CHUBsanitize,
       ChubRep,
-      chubDev,
       htmlToChub,
     };
     
