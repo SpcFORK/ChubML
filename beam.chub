@@ -74,6 +74,46 @@ html;
       // 
       br;
       br;
+
+      p;
+      "The newest and best Markdown Language simplifier!";
+
+      br;
+      "As of '9:30 AM, 2023-05-15', ChubML can build most website features.";
+      br;
+
+      "It can create";
+      chub.coolspan;
+        "COOL STUFF really quickly!";
+
+      br;
+      br;
+
+      "It really is better than normal HTML!";
+
+      br;
+
+      "Due to its quick syntax, you can form tags";
+      span .coolStuffspan;
+        "within minutes,";
+
+      br;
+
+      "allowing you to create websites rapidly and efficently!";
+      br;
+      br;
+      span .coolStuffspan;
+        "And so much more!";
+
+
+      // *br;
+      //   "asd";
+
+      // Soon will allow paramaters to be passed into tags.
+      // And maybe add CML syntax highlighting!
+
+      br;
+      br;
       hr;
 
       div .descArticle;
@@ -131,42 +171,7 @@ html;
 
       
 
-      p;
-        "The newest and best Markdown Language simplifier!";
-        
-        br;
-        "As of '9:30 AM, 2023-05-15', ChubML can build most website features.";
-        br;
-        
-        "It can create";
-        chub.coolspan;
-          "COOL STUFF really quickly!";
-        
-        br;
-        br;
-
-        "It really is better than normal HTML!";
-
-        br;
-        
-        "Due to its quick syntax, you can form tags";
-        span .coolStuffspan;
-          "within minutes,";
-        
-        br;
-        
-        "allowing you to create websites rapidly and efficently!";
-        br;
-        br;
-        span .coolStuffspan;
-          "And so much more!";
-        
-        
-        // *br;
-        //   "asd";
-
-        // Soon will allow paramaters to be passed into tags.
-        // And maybe add CML syntax highlighting!
+      
       
       
       br;

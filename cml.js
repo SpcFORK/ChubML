@@ -2276,7 +2276,7 @@ var CHUBECSS;
 /** Get a tree based off indent nesting.
   
 function sortInd(contents) {
-* @param {string} contents - collapses a string into an object by indentation syntax.
+* @param {object} contents - collapses a object into an object by indentation syntax.
 * @returns {object} object- returns an object with indentation syntax.
 * */
 function sortInd(contents) {
