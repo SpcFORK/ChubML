@@ -349,7 +349,7 @@ var CHUBparse = (a) => {
 
   var splitn = a.split(/;/)
 
-  
+
   var col = []
   splitn.forEach((o, r) => {
     var indentn = o.search(/\S/)
@@ -438,7 +438,15 @@ var CHUBparse = (a) => {
             })
             .then((text) => {
               // console.log(text)
-              try { eval(text) }
+              // try { eval(text) }
+              // Append a script tag to the body
+              try {
+                let script = document.createElement("script");
+                script.type = "text/javascript";
+                script.text = text;
+                document.body.appendChild(script);
+
+              }
               catch (error) { console.log(error, errlist.scripterror) }
             })
 
@@ -503,40 +511,60 @@ var CHUBparse = (a) => {
 
               @fetchw=https://www.google.com
               */
-              
-              
+
+
               console.log("using @", `${param}`.slice(8), `${param}`.split(/[|:>=\-\)!~]/gm)[1].slice(1))
 
               verb_attr: if (param.includes("fetchw")) {
                 (async () => {
+                  let oldparam = param
                   param = param.slice(8)
                   if (window?.location?.origin) {
                     console.log(`${param}`.includes(window.location.origin))
-                    param = `${param}`.includes(window.location.origin)
-                      ? param.replace(window.location.origin, ".")
+                    param = `${param}`.includes("{{ORIG}}")
+                      ? param.replace("{{ORIG}}", window.location.origin)
                       : param
 
-                    console.log(param, param.replace(window.location.origin, "."))
+                    console.log(param, param.replace("." + window.location.origin))
+
                   }
                   console.log("QO")
+                  tempC.tag = tempC.tag ? tempC.tag : 'fetcherBlock'
+                  // tempC.content = `${param.toString() + '-' + new Date().getTime().toString()}`
+
+                  tempC.data = `${tempC.data ? tempC.data + " " : ""}data-fetchw="${param}"`
+                  tempC.data = `${tempC.data} data-instance="${new Date().getTime()}"`
+
+                  console.log(tempC.data)
+
                   let fw = await fetch(await findFile([param])) || {
                     text: () => { return param },
                   }
-                  
-                  let fwtext = await fw.text()
-                  tempC.content = `${
-                    tempC.content ? tempC.content + " " : ""
-                  }${
-                    fwtext ? fwtext : ""
-                  }`
 
-                  console.log(tempC, fwtext)
-                
+                  let fwtext = await fw.text()
+                  tempC.content = ""
+                  tempC.content = `${tempC.content ? tempC.content + " " : ""
+                    }${fwtext ? fwtext : ""
+                    }`
+
+                  // If window is loaded before script end, replace content.
+                  if (window?.location?.origin) {
+                    $(`[${tempC.data.split(' ').join('][')}]`)
+                      .innerHTML = tempC.content
+                        // .replace(/[<>]/g, '\\$&')
+                        // .replace(/</g, '&lt;')
+                        .replace(/\n/g, '\n</br>\n')
+
+
+                  }
+
+                  console.log(tempC, fwtext, "wizz")
+
                 })()
-                
+
               }
-              
-              
+
+
               let damnB
               // tempC.attr = `${tempC.attr ? tempC.attr + " " : ""}${attrB}`
 
@@ -758,7 +786,7 @@ var CHUBparse = (a) => {
           */
 
           console.log(chubml)
-          
+
           chubml.o = {
             tag: "br",
 
@@ -787,9 +815,9 @@ var CHUBparse = (a) => {
           indexes.tmp++
           isTemplate = true
           break
-          
 
-          
+
+
         case "chub.carousel":
           ident = {
             id: "chubCarousel",
@@ -1020,7 +1048,7 @@ var CHUBparse = (a) => {
               datasetColor,
             };
           }
-          
+
         case "chub.tabs":
           ident = {
             id: "chubTabs",
@@ -1684,19 +1712,18 @@ var CHUBparse = (a) => {
 
           tmlo = /\/\*C(?:[^]*?)height(?:[^]*?)\(([^)]*?)\);(?:[^]*?)\*\//gm
             .exec(attrSyn(chubml.o.content))
-          
+
           tmlo = tmlo?.[1] || "10px"
 
-          
+
 
           styler = `
           <style>
             .${ident.id} {
               display: inline-block;
               
-              height: ${
-                 tmlo
-              };
+              height: ${tmlo
+            };
             }
           </style>
           `
@@ -1746,7 +1773,7 @@ var CHUBparse = (a) => {
           indexes.tmp++
           isTemplate = true
           break
-          
+
 
         case "chub.lol":
           console.log("lol, test, lol\nCHUB tag Check functional!")
@@ -2185,7 +2212,7 @@ var CHUBparse = (a) => {
 
         html += `\n${chubml.i}</${chubml.o.tag}>\n`;
       } else {
-        
+
         if (chubml.children) {
           for (const child of chubml.children) {
             if (child.c[0] == "\"") {
@@ -2196,7 +2223,7 @@ var CHUBparse = (a) => {
             }
           }
         }
-        
+
         html += `\n`
       }
 
@@ -2321,11 +2348,11 @@ var ECSSparse = async (stylesheetname) => {
   if (findFile([esheetproto])) received = fetch(esheetproto);
 
   // if the stylesheet is not found, try to find it in the ./ecss/ folder.
-  if (!received && findFile(["./ecss/" + esheetproto])) 
+  if (!received && findFile(["./ecss/" + esheetproto]))
     received = fetch("./ecss/" + stylesheetname + ".ecss");
 
 }
-  
+
 
 // -=-=-=-= /ChubECSS =-=-=-=-
 
@@ -2344,7 +2371,7 @@ function CHUBunmess(str) {
     unescapedStr,
     JSON.parse(unescapedStr),
   ]
-  
+
 }
 
 /**
@@ -2396,32 +2423,48 @@ var CHUBWFetch = async (url) => {
   }
 }
 
-
-
 // Snippeteer Funct #9
 var checkEnvironment = () => {
   // So nasty I'd rather write it as if it were a Py function.
 
-  if (typeof module
+  let isImportSupported = false;
+
+  try {
+    eval('import.meta')
+    isImportSupported = true;
+  }
+  catch { }
+
+  if (isImportSupported) {
+    // ES Module environment
+    return 'ES Module';
+  }
+
+  else if (typeof module
     !== 'undefined'
-  
+
     && module?.exports
-    
+
     && typeof window
-    === 'undefined') 
-  {
+    === 'undefined') {
     // Node.js environment
     return 'Node';
   }
 
   else if (typeof window
     !== 'undefined'
-    
+
     && typeof window?.document
-    !== 'undefined') 
-  {
+    !== 'undefined') {
     // Browser environment
     return 'Browser';
+  }
+
+  else if (typeof WorkerGlobalScope
+    !== 'undefined'
+    && self instanceof WorkerGlobalScope) {
+    // Web Worker environment
+    return 'Web Worker';
   }
 
   else {
@@ -2431,6 +2474,7 @@ var checkEnvironment = () => {
 }
 
 switch (checkEnvironment()) {
+  case "ES Module":
   case 'Node':
     // Node.js environment
 
@@ -2447,11 +2491,10 @@ switch (checkEnvironment()) {
       ChubRep,
       htmlToChub,
     };
-    
-    break;
-  
-  case "Browser":
 
+    break;
+
+  case "Browser":
     window.CHUBparse = CHUBparse
     try {
       if (window.parent) window.parent.CHUBparse = CHUBparse
@@ -2659,8 +2702,8 @@ switch (checkEnvironment()) {
           })
       }
     }
-    
-    
+
+
     break
 
   case "Unknown":
@@ -2669,6 +2712,467 @@ switch (checkEnvironment()) {
     break
 }
 
+
+async function fetchRouteFolder(route) {
+
+  let webver = async (_route) => {
+    let
+      _res = await findFile([`${_route}/chub.ware`])
+      , _res_multiware = await findFile([`${_route}/chub.multi.ware`])
+      , _res_core = await findFile([`${_route}/index.chub`])
+      ;
+
+    var _ensure = async (_res) => {
+      if (_res) {
+        await fetch(_res)
+          .then(async (res) => {
+            var __res = await res.text()
+            return {
+              resp: res,
+              location: _res,
+              text: __res,
+            }
+          })
+      } else {
+        return false
+      }
+    }
+
+    let get_res = _res
+      ? await _ensure(_res)
+      : false
+
+    let get_res_multiware = _res_multiware
+      ? await _ensure(_res_multiware)
+      : false
+
+    let get_res_core = _res_core
+      ? await _ensure(_res_core)
+      : false
+
+    let routeBlueprint = await get_res?.text?.()
+      ? parseChubWare(get_res.text)
+      : false
+
+    let routeMultiWare = await get_res_multiware?.text?.()
+      ? JSON.parse(get_res_multiware.text)
+      : false
+
+    if (routeMultiWare) {
+      await routeMultiWare?.routes
+
+        && typeof routeMultiWare?.routes == "object"
+
+        ? (async () => {
+
+          for (let _route in routeMultiWare.routes) {
+            let __res = await fetchRouteFolder(_route)
+            routeBlueprint = {
+              ...routeBlueprint,
+              ...__res
+            }
+          }
+
+        })()
+
+        : (async () => {
+
+
+
+        })()
+
+
+    }
+
+    console.log(
+      routeBlueprint,
+      routeMultiWare,
+      get_res,
+      get_res_multiware,
+      get_res_core
+    )
+
+    return {
+      _ensure,
+      get_res,
+      route: routeBlueprint,
+      multiware: routeMultiWare,
+      core: get_res_core?.text
+    }
+
+  }
+
+  let nodever = () => {
+    let __fs = global.fs
+      ? fs
+      : global.fs = require('fs');
+
+    __fs.readFile(route, (err, data) => {
+      if (err) {
+        return console.log(err)
+      } else {
+        return {
+          resp: data,
+          location: route,
+          text: data.toString(),
+        }
+      }
+
+    })
+  }
+
+  switch (checkEnvironment()) {
+    case "Node":
+      break;
+    case "Browser":
+
+      return webver(route)
+
+      break;
+  }
+}
+
+
+function parseChubWare(chub) {
+  /* 
+  SYNTAX:
+  ```
+  | dir/to/files
+  -- page.chubml
+  ```
+  */
+
+  let _ev = checkEnvironment()
+  let _setting = "";
+  let _mode = {
+    mode: "normal",
+    args: [
+
+    ],
+    full: [
+
+    ],
+    extras: [
+
+    ]
+  };
+
+  let chubfiles = chub.split("\n")
+  let warestruct = {}
+  let waitTime = 0;
+
+  let specialCharSyms = {
+    space: "{[{SPACECHARSYM}]}",
+  }
+
+  for (let i = 0; i < chubfiles.length; i++) {
+    let chubfile = chubfiles[i]
+    let splitfile = chubfile.split(/\s/g)
+
+    let _fnre = async () => {
+      if (waitTime > 0) {
+        await new Promise(r => setTimeout(r, waitTime));
+      }
+
+      if (_ev == "Node") {
+        if (!global.fs) {
+          let __fs = global.fs = require("fs")
+
+          let file = __fs.readFileSync(chubfile, "utf-8")
+
+        }
+      }
+
+      else if (_ev == "Browser") {
+
+        function getURLbit(are = window.location.href) {
+          var url = are;
+          var parts = url.split('/');
+          var lastPart = parts[parts.length - 1];
+
+          return lastPart;
+        }
+
+        function getURLup(are = window.location.href) {
+          var url = are;
+          var parts = url.split('/');
+          parts.pop()
+
+          var joined = parts.join('/')
+          return joined
+        }
+
+        let _loco = await findFile([
+          window.origin + "/" + splitfile[1]
+        ])
+
+        let _onPage = window.location.href == getURLup(_loco) + "/"
+
+        warestruct?.[_setting]
+          ? warestruct[_setting]._lastFile = _loco
+          : ""
+
+        console.log(_loco)
+
+        _res = await fetch(`${_loco}`);
+
+        console.log(_loco, _onPage, (getURLup(_loco)), window.location.href)
+
+        let _txt = await _res.text();
+        console.log(_txt)
+
+        if (_onPage) {
+
+          // Lol wtf
+
+          window?.onChWareLoad
+            ? window?.onChWareLoad?.(chubfilename, _txt, warestruct)
+            : (async (
+              _chubfilename = chubfile,
+              __txt = _txt
+            ) => {
+              // I pass in new ones 'cus why not.'
+              window.onChWareLoad = (chlink, _txt) => {
+
+
+
+                if (!__txt) {
+                  return
+                }
+
+                if (
+                  _chubfilename.endsWith(".chubML")
+                  || _chubfilename.endsWith(".chml")
+                  || _chubfilename.endsWith(".ch.ware")
+                ) {
+                  __txt = CHUBparse(_txt)
+                }
+
+                // On document load, replace the website's html with the html from the chlink.
+                document.open()
+                document.write(__txt)
+
+                // On refresh, replace the website's html with the html from the chlink.
+                window.onbeforeunload = () => {
+                  document.open()
+                  document.write(__txt)
+                  return null
+                }
+
+                document.close()
+
+              }
+
+              window?.onChWareLoad(_chubfilename, __txt)
+
+            })()
+
+        }
+      }
+
+      warestruct[_setting]
+        ? warestruct[_setting].loaded = true
+        : ""
+
+      return warestruct
+
+
+    }
+
+
+    if (chubfile.startsWith("@ ")) {
+      let __rf = fetchRouteFolder(chubfile.slice(2).trim())
+
+      __rf.then((__rf) => {
+        if (__rf) {
+          __rf?.forEach?.((_file) => {
+
+            console.log(_file)
+
+            if (_file.endsWith(".chubML")
+              || _file.endsWith(".chml")
+              || _file.endsWith(".ch.ware")
+            ) {
+              CHUBWFetch(_file)
+            }
+
+          })
+        }
+
+      })
+    }
+
+    else if (chubfile.startsWith(" -")) {
+      let chubfilename = chubfile
+        .replace(" -", "")
+        .trim() || ""
+
+      if (chubfilename.startsWith("index")) {
+        let __chubfilename = chubfilename
+          .split("/")
+
+        __chubfilename
+          .shift();
+
+        __chubfilename = __chubfilename
+          .join("/")
+
+        chubfilename = __chubfilename
+      }
+
+      // let chubfiledata = chubfiles.slice(i + 1, chubfiles.length)
+      warestruct[_setting] = {
+        lastFile: chubfilename,
+        loaded: false,
+        _lastFile: (() => {
+          if (_ev == "Browser") {
+            return `${_setting}/${chubfilename}`
+          } else {
+            return `./${_setting}/${chubfilename}`
+          }
+        })(),
+        setting: _setting,
+        files: warestruct?.files
+          ? [...warestruct.files, chubfilename]
+          : [chubfilename]
+
+      }
+    }
+
+    else if (chubfile.startsWith("--")) {
+
+      if (chubfile.includes(" ")) {
+        let __count = 0
+        for (const __chubfile in chubfile.split(" ")) {
+          __count++
+        }
+
+        if (__count > 1) {
+          let splitBy = chubfile
+            .replace("\\ ", specialCharSyms.space)
+            .split(" ")
+            || []
+
+          splitBy.map((_, i) => {
+            if (_.includes(specialCharSyms.space)) {
+              splitBy[i] = splitBy[i]
+                .replace(specialCharSyms.space, " ")
+            }
+          })
+
+          _mode.mode = splitBy
+            ?.[2]
+            ?.trim()
+            ?.toLowerCase()
+
+          _mode.args = splitBy
+            ?.[3]
+            ?.trim()
+
+          _mode.full = splitBy.slice(4)
+        }
+
+        if (_mode.mode == "wait") {
+          waitTime = Number(_mode.args)
+        }
+      }
+
+      let chubfilename = chubfile
+        .replace("--", "")
+        .trim() || ""
+
+      if (chubfilename.startsWith("index")) {
+        let __chubfilename = chubfilename
+          .split("/")
+
+        __chubfilename
+          .shift();
+
+        __chubfilename = __chubfilename
+          .join("/")
+
+        chubfilename = __chubfilename
+      }
+
+      // let chubfiledata = chubfiles.slice(i + 1, chubfiles.length)
+      warestruct[_setting] = {
+        lastFile: chubfilename,
+        loaded: "loading",
+        _lastFile: (() => {
+          if (_ev == "Browser") {
+            return `${_setting}/${chubfilename}`
+          } else {
+            return `./${_setting}/${chubfilename}`
+          }
+        })(),
+        setting: _setting,
+        files: warestruct?.files
+          ? [...warestruct.files, chubfilename]
+          : [chubfilename]
+
+      }
+
+      console.log(warestruct);
+
+      _fnre()
+
+    }
+
+    else if (chubfile.startsWith("|")) {
+      let chubfilename = chubfile
+        .replace("|", "")
+        .trim()
+
+      if (chubfilename.startsWith("index")) {
+        let __chubfilename = chubfilename
+          .split("/")
+
+        __chubfilename
+          .shift();
+
+        __chubfilename = __chubfilename
+          .join("/")
+
+        chubfilename = __chubfilename
+      }
+
+      if (_ev == "Node") {
+        _setting = chubfilename
+      } else if (_ev == "Browser") {
+        _setting = window.origin + "/" + chubfilename
+      }
+    }
+
+
+    warestruct?.[_setting]?.loaded
+      ? warestruct[_setting].loaded = true
+      : ""
+
+  }
+
+  return warestruct
+}
+
+class Router {
+
+  constructor() {
+
+    this.__env__ = checkEnvironment(opts);
+
+    switch (this.__env__) {
+      case "Node":
+        break;
+      case "Browser":
+
+
+
+        break;
+    }
+  }
+
+}
+
+
 // Reformat Attributes to prevent conflicts and such.
 function CHUBfax(tex, sep = " ") {
   modtxt = tex || "";
@@ -2676,33 +3180,33 @@ function CHUBfax(tex, sep = " ") {
     .replace("=", "|e")
     .replace(";", "|col")
     .replace(sep, "|")
-  
+
   return modtxt
 }
 
-  function attrSyn(tex) {
-    try {
-      
-      if (`${tex}`.match(/=/gm).length > 1) throw errlist.eqspl3
-  
-      let attrParam = tex
-        // Tokenize
-        .replace("=", " spcfork.Equals.Token ")
-        .replace("\\|", " spcfork.Pipe.Token ")
-        
-        .replace(/\|e/gm, "=")
-        .replace(/\|col/gm, ";")
-        .replace(/\|/gm, " ")
-        
-        .replace(" spcfork.Pipe.Token ", "|")
-        
-        // Split at Token to prevent multiple splits.
-        .split(" spcfork.Equals.Token ")
-  
-      // console.log(attrParam.length, attrParam)
-      return attrParam
-    } catch {}
-  }
+function attrSyn(tex) {
+  try {
+
+    if (`${tex}`.match(/=/gm).length > 1) throw errlist.eqspl3
+
+    let attrParam = tex
+      // Tokenize
+      .replace("=", " spcfork.Equals.Token ")
+      .replace("\\|", " spcfork.Pipe.Token ")
+
+      .replace(/\|e/gm, "=")
+      .replace(/\|col/gm, ";")
+      .replace(/\|/gm, " ")
+
+      .replace(" spcfork.Pipe.Token ", "|")
+
+      // Split at Token to prevent multiple splits.
+      .split(" spcfork.Equals.Token ")
+
+    // console.log(attrParam.length, attrParam)
+    return attrParam
+  } catch { }
+}
 
 // ARARARAR
 var htmlToChub = (html, delim = "") => {
@@ -2718,7 +3222,18 @@ var htmlToChub = (html, delim = "") => {
     const attrs = Array.from(node.attributes);
     if (attrs.length > 0) {
       attrs.forEach((attr) => {
-        chubML += ` %${attr.name}="${attr.value}"`;
+        if (attr.name.toLowerCase() == "class") {
+          chubML += ` .${CHUBfax(attr.value)}`;
+        }
+
+        else if (attr.name.toLowerCase() == "id") {
+          chubML += ` #${CHUBfax(attr.value)}`;
+        }
+
+        else {
+          chubML += ` %${attr.name}=${CHUBfax(attr.value)}`;
+        }
+
       });
     }
 

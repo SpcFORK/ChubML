@@ -52,6 +52,12 @@ html;
           a .link-url %href=README.md;
             "README.md";
 
+          span .pipeDiv;
+            "|";
+
+          a .link-url %href=#;
+            "Temp HTML";
+
     article .descArticle;
     
     // Sick!
@@ -69,61 +75,14 @@ html;
       br;
       br;
       hr;
-      
-      br;
 
-      p #venge @fetchw|./README.md;
-
-      p;
-        "The newest and best Markdown Language simplifier!";
-        
-        br;
-        "As of '9:30 AM, 2023-05-15', ChubML can build most website features.";
-        br;
-        
-        "It can create";
-        chub.coolspan;
-          "COOL STUFF really quickly!";
-        
-        br;
-        br;
-
-        "It really is better than normal HTML!";
-
-        br;
-        
-        "Due to its quick syntax, you can form tags";
-        span .coolStuffspan;
-          "within minutes,";
-        
-        br;
-        
-        "allowing you to create websites rapidly and efficently!";
-        br;
-        br;
-        span .coolStuffspan;
-          "And so much more!";
-        
-        
-        // *br;
-        //   "asd";
-
-        // Soon will allow paramaters to be passed into tags.
-        // And maybe add CML syntax highlighting!
-      
-      
-      br;
-      br;
-
-      hr;
-    
-      
-    div .descArticle;
+      div .descArticle;
       article;
         h3;
           "Articles";
         small;
           "The Docs, Refs, And more. | Feel free add more, just contact me!";
+          
 
     
       div #docsNav;
@@ -166,6 +125,60 @@ html;
       // Layout ENDS HERE
       
     // Docs Nav ENDS HERE
+
+      hr;
+      br;
+
+      
+
+      p;
+        "The newest and best Markdown Language simplifier!";
+        
+        br;
+        "As of '9:30 AM, 2023-05-15', ChubML can build most website features.";
+        br;
+        
+        "It can create";
+        chub.coolspan;
+          "COOL STUFF really quickly!";
+        
+        br;
+        br;
+
+        "It really is better than normal HTML!";
+
+        br;
+        
+        "Due to its quick syntax, you can form tags";
+        span .coolStuffspan;
+          "within minutes,";
+        
+        br;
+        
+        "allowing you to create websites rapidly and efficently!";
+        br;
+        br;
+        span .coolStuffspan;
+          "And so much more!";
+        
+        
+        // *br;
+        //   "asd";
+
+        // Soon will allow paramaters to be passed into tags.
+        // And maybe add CML syntax highlighting!
+      
+      
+      br;
+
+      hr;
+
+      br;
+
+      pre #venge @fetchw|./README.md;
+
+      br;
+      br;
 
     // Footer
     footer;

@@ -13,6 +13,18 @@ body {
   overflow-x: hidden;
 }
 
+pre {
+  font-family: monospace;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  line-height: 1.25;
+  margin: 0px;
+  font-size: 1.25em;
+  padding: 0px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
 * {
   margin: 0px;
   padding: 0px;

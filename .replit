@@ -179,3 +179,7 @@ pattern = "**/{*.less,*.scss,*.css}"
 
 [gitHubImport]
 requiredFiles = [".replit", "replit.nix", ".config"]
+
+[deployment]
+deploymentTarget = "static"
+publicDir = "./"
