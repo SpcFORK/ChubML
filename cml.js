@@ -3179,6 +3179,7 @@ function CHUBfax(tex, sep = " ") {
   modtxt = modtxt
     .replace("=", "|e")
     .replace(";", "|col")
+    .replace("\"", "|qw")
     .replace(sep, "|")
 
   return modtxt
@@ -3196,6 +3197,7 @@ function attrSyn(tex) {
 
       .replace(/\|e/gm, "=")
       .replace(/\|col/gm, ";")
+      .replace(/\|qw/gm, "\"")
       .replace(/\|/gm, " ")
 
       .replace(" spcfork.Pipe.Token ", "|")
