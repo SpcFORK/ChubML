@@ -182,8 +182,6 @@ Object.prototype.toJSON = function() {
   };
 };
 
-
-
 // Sick Snippeteer snippet to be added.
 function unpackClassFromJSON(json) {
   const className = json.__className; // Assume the "__className" property is added when serializing
@@ -653,6 +651,8 @@ var CHUBparse = (a) => {
 
       // Check for ChubTemplates or Special Sets.
       // console.log(chubml.o)
+
+      let oml
 
       // @templates
       switch ((oml) = chubml.o.tag.toLowerCase()) {
