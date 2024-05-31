@@ -298,8 +298,6 @@ var CHUBparse = (a) => {
     }
   }
 
-
-
   // Function to unpack JSON data into classes
   function unpackJSON(json) {
     const data = JSON.parse(json);
