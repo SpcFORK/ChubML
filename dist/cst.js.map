@@ -1,0 +1,1 @@
+{"version":3,"sources":["../src/cst.ts"],"sourcesContent":["\nexport const chaosGl = globalThis as any;\n\nexport const NOOP = (): any => { };\nexport const ANOOP = async (): Promise<any> => { };\n"],"mappings":";;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AACO,IAAM,UAAU;AAEhB,IAAM,OAAO,MAAW;AAAE;AAC1B,IAAM,QAAQ,YAA0B;AAAE;","names":[]}
