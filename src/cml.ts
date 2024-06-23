@@ -1,5 +1,5 @@
 // @ CowSTD
-import { chaosGl, NOOP, ANOOP } from './cst';
+import { chaosGl, chaosEval, NOOP, ANOOP } from './cst';
 import { CowErr } from './CowErr';
 
 import './global'
@@ -7,7 +7,7 @@ import './global'
 var checkEnvironment = () => {
   let isImportSupported = false;
   try {
-    eval('import.meta')
+    chaosEval('import.meta')
     isImportSupported = true;
   }
   catch { }
@@ -256,10 +256,119 @@ export class ChubMLMod extends CML_Static {
 
     // Eval content (not SRC).
     if (scrmatch !== null && dostill) {
-      try { eval(scrmatch[1]) }
+      try { chaosEval(scrmatch[1]) }
       catch (error) { console.error(error, this.s.errorList.scripterror) }
     }
   }
+
+  async #handleAtFetch(param: any, tempC: ChubNode) {
+    param = param.slice(8);
+
+    if (window?.location?.origin) {
+      param = `${param}`.includes("{{ORIG}}")
+        ? param.replace("{{ORIG}}", window.location.origin)
+        : param;
+    }
+
+    tempC.tag = tempC.tag
+      ? tempC.tag
+      : 'fetcherBlock';
+
+    tempC.data = (
+      `${tempC.data ? tempC.data + " " : ""}data-fetchw="${param}"`
+      + ` data-instance="${new Date().getTime()}"`
+    );
+
+    let fw = await fetch(await this.findFile([param])) || {
+      text: () => { return param; },
+    };
+
+    let fwtext = await fw.text();
+    tempC.content = `${fwtext ? fwtext : ""}`;
+
+    // If window is loaded before script end, replace content.
+    if (window?.location?.origin) {
+      let el = this.$(`[${tempC.data.split(' ').join('][')}]`);
+      if (el)
+        el.innerHTML = tempC.content.replace(/\n/g, '\n</br>\n');
+    }
+    return param;
+  }
+
+  #handleAtCode(tempC: ChubNode, param: any) {
+    /*
+      We need to:
+
+      Extract the @val from the param.
+      If as params, get params.
+
+      E.G.
+      @fetchw=https://www.google.com
+    */
+    console.log("using @", `${param}`.slice(8), `${param}`.split(/[|:>=\-\)!~]/gm)[1].slice(1));
+
+    if (param.includes("fetchw"))
+      this.#handleAtFetch(param, tempC)
+
+    return param;
+  }
+
+  #handleClass(tempC: ChubNode, param: any) {
+    let p = (param as string).slice(1)
+    tempC.class = `${tempC.class ? tempC.class + " " : ""}${p}`;
+  }
+
+  #handleID(tempC: ChubNode, param: any) {
+    let p = (param as string).slice(1)
+    tempC.id = `${tempC.id ? tempC.id + " " : ""}${p}`;
+  }
+
+  #handleData(tempC: ChubNode, param: any) {
+    let dataParam = this.attrSyn(param);
+    if (!dataParam) return;
+
+    let dataB = `data-${dataParam[0].slice(1) + "=\"" + dataParam[1] + "\""}`;
+    tempC.data = `${tempC.data ? tempC.data + " " : ""}${dataB}`;
+  }
+
+  #handlePercAttr(tempC: ChubNode, param: any) {
+    let attrParam = this.attrSyn(param);
+    if (!attrParam) return;
+
+    let attrB = `${attrParam[0].slice(1) + "=\"" + attrParam[1] + "\""}`;
+    tempC.attr = `${tempC.attr ? tempC.attr + " " : ""}${attrB}`;
+  }
+
+  #handleChubAttr(param: any, tempC: ChubNode, paramI: number) {
+    switch (param[0]) {
+      case "#":
+        this.#handleID(tempC, param);
+        break;
+
+      case ".":
+        this.#handleClass(tempC, param);
+        break;
+
+      case "$":
+        this.#handleData(tempC, param);
+        break;
+
+      case "%":
+        this.#handlePercAttr(tempC, param);
+        break;
+
+      case "@":
+        param = this.#handleAtCode(tempC, param);
+        break;
+
+      default: tempC.tag = `${tempC.tag ? tempC.tag + " " : ""}${param}`;
+    }
+    return param;
+  }
+
+  #checkAttr = (tempC: ChubNode, arr: any[]) => arr.forEach((param, paramI) => {
+    param = this.#handleChubAttr(param, tempC, paramI);
+  })
 
   #traverse(cil: SortedCILE, i: number, indexes: { str: any; tmp: number; }, v = ''): [SortedCILE, { str: number, tmp: number }] {
     const r = this.#Rexps
@@ -279,6 +388,7 @@ export class ChubMLMod extends CML_Static {
       this.#handleScript(r().script.exec(str));
     }
 
+    // Text Operation
     if (isStr !== -1) {
       let tempLines = str.split(r().betweenCol)
       let content = str.split(r().betweenQuote)[1]
@@ -296,10 +406,8 @@ export class ChubMLMod extends CML_Static {
       this.#checkAttr(tempC, str.split(" "))
     }
 
-    var indc = indentString.repeat(i)
-
     cil.o = tempC
-    cil.i = indc
+    cil.i = indentString.repeat(i)
 
     if (cil.children) {
       cil.children.forEach(child => this.#traverse(child, i + 1, indexes, v));
@@ -308,104 +416,103 @@ export class ChubMLMod extends CML_Static {
     return [cil, indexes]
   }
 
-  #checkAttr = (tempC: ChubNode, arr: any[]) => arr.forEach((param, pind) => {
-    // ATTR's
-    switch (param[0]) {
-      case "#":
-        this.#handleID(tempC, param);
-        break;
+  #parseTemplates(cil: SortedCILE, opts = this.#makeIndexes()) {
+    const { o } = cil
 
-      case ".":
-        this.#handleClass(tempC, param);
-        break;
+    let isTemplate = false
 
-      case "$":
-        let dataParam = this.attrSyn(param);
-        if (!dataParam) return;
+    if (!o) throw new CowErr(`No CIL object found!`)
+    switch (o.tag) {
 
-        let dataB = `data-${dataParam[0].slice(1) + "=\"" + dataParam[1] + "\""}`;
-        tempC.data = `${tempC.data ? tempC.data + " " : ""}${dataB}`;
-        break;
-
-      case "%":
-        let attrParam = this.attrSyn(param);
-        if (!attrParam) return;
-
-        let attrB = `${attrParam[0].slice(1) + "=\"" + attrParam[1] + "\""}`;
-        // console.log(attrB)
-        tempC.attr = `${tempC.attr ? tempC.attr + " " : ""}${attrB}`;
-
-        break;
-
-      case "@":
-        /*
-          We need to:
- 
-          Extract the @val from the param.
-          If as params, get params.
- 
-          E.G.
-          @fetchw=https://www.google.com
-        */
-        param = this.#handleAtCode(param, tempC);
-        break;
-
-      default:
-        tempC.tag = `${tempC.tag ? tempC.tag + " " : ""}${param}`;
     }
-  })
 
-  #handleClass(tempC: ChubNode, param: any) {
-    tempC.class = `${tempC.class ? tempC.class + " " : ""}${param.replace(".", " ")}`;
+    return { isTemplate }
   }
 
-  #handleID(tempC: ChubNode, param: any) {
-    tempC.id = `${tempC.id ? tempC.id + " " : ""}${param.replace("#", " ")}`;
+  #handleSHead(html: string) {
+    for (let stydm in this.styled) if (this.styled[stydm] === true && this.styled.styles[stydm]) {
+      html = html.replace("<head>", "<head>\n" + this.styled.styles[stydm]);
+
+      // Set to "has" since we check earlier if the value is false to define it
+      // Also, might use later, need to exist, not be true.
+      this.styled[stydm] = "has";
+    }
+    return html;
   }
 
-  #handleAtCode(param: any, tempC: ChubNode) {
-    console.log("using @", `${param}`.slice(8), `${param}`.split(/[|:>=\-\)!~]/gm)[1].slice(1));
+  #handleSpecialTag(html: string) {
+    if (html.includes("head")) {
+      html = this.#handleSHead(html);
+    }
+    return html;
+  }
 
-    if (param.includes("fetchw")) (async () => {
-      param = param.slice(8);
+  #handleCNAttr(html: string, o: ChubNode) {
+    const is = (v: any) => !!v;
+    const addTo = (v: any) => html += v;
 
-      if (window?.location?.origin) {
-        param = `${param}`.includes("{{ORIG}}")
-          ? param.replace("{{ORIG}}", window.location.origin)
-          : param;
+    if (is(o.class))
+      addTo(` class="${o.class}"`);
+
+    if (is(o.id))
+      addTo(` id="${o.id}"`);
+
+    if (is(o.style))
+      addTo(` style="${o.style}"`);
+
+    if (is(o.data))
+      addTo(` ${o.data}`);
+
+    if (is(o.attr))
+      addTo(` ${o.attr}`);
+    return html;
+  }
+
+  #buildHeadTag(html: string, cil: SortedCILE, o: ChubNode, isSpecial: number, shorter: boolean) {
+    html = `\n${cil.i}<${o.tag}`;
+
+    html = this.#handleCNAttr(html, o);
+
+    if (isSpecial > 0)
+      shorter = true;
+
+    html += shorter
+      ? " />\n"
+      : ">\n";
+
+    return { html, shorter };
+  }
+
+  #buildChildren(cil: SortedCILE, html: string, opts: { str: number; tmp: number; }) {
+    for (const child of cil.children)
+      switch (child.c[0]) {
+        case "\"":
+          html += child.i + child.c.slice(1, child.c.length - 1);
+          break;
+
+        default:
+          html += child.i + this.#parseChubNode(child, opts);
       }
+    return html;
+  }
 
-      tempC.tag = tempC.tag
-        ? tempC.tag
-        : 'fetcherBlock';
+  #buildFootTag(html: string, shorter: boolean, cil: SortedCILE, o: ChubNode) {
+    html += !shorter
+      ? `\n${cil.i}</${o.tag}>\n`
+      : "\n";
 
-      tempC.data = (
-        `${tempC.data ? tempC.data + " " : ""}data-fetchw="${param}"`
-        + ` data-instance="${new Date().getTime()}"`
-      );
-
-      let fw = await fetch(await this.findFile([param])) || {
-        text: () => { return param; },
-      };
-
-      let fwtext = await fw.text();
-      tempC.content = `${fwtext ? fwtext : ""}`;
-
-      // If window is loaded before script end, replace content.
-      if (window?.location?.origin) {
-        let el = this.$(`[${tempC.data.split(' ').join('][')}]`)
-        if (el)
-          el.innerHTML = tempC.content.replace(/\n/g, '\n</br>\n');
-      }
-    })();
-    return param;
+    // ¯\_(ツ)_/¯ Quickest fix.
+    if (html.search("<>"))
+      html = html
+        .replace("<>", "")
+        .replace("</>", "");
+    return html;
   }
 
   #parseChubNode(cil: SortedCILE, opts = this.#makeIndexes()) {
     const o = cil.o!
     if (!o) throw new CowErr(`No CIL object found!`)
 
-    let isTemplate = false
     let shorter = false
 
     let specialfind = this.arrMatch(o.tag, this.#specialTags)
@@ -414,70 +521,18 @@ export class ChubMLMod extends CML_Static {
 
     let html = ''
 
-    this.#parseTemplates(cil, opts);
-
-    html = `\n${cil.i}<${o.tag}`;
-
-    const is = (v: any) => !!v
-    const addTo = (v: any) => html += v
-
-    switch (true) {
-      // case !!o().class: html += ` class="${o().class.slice(1)}"`
-      case is(o.class): addTo(` class="${o.class}"`)
-      case is(o.id): addTo(` id="${o.id}"`)
-      case is(o.style): addTo(` style="${o.style}"`)
-      case is(o.data): addTo(` ${o.data}`)
-      case is(o.attr): addTo(` ${o.attr}`)
-    }
-
-    if (isSpecial > 0) shorter = true
-
-    html += shorter
-      ? " />\n"
-      : ">\n";
+    let { isTemplate } = this.#parseTemplates(cil, opts);
 
     // This is enough for certain tags.
-    for (const child of cil.children) switch (child.c[0]) {
-      case "\"":
-        html += child.i + child.c.slice(1, child.c.length - 1);
-        break;
+    ({ html, shorter } = this.#buildHeadTag(html, cil, o, isSpecial, shorter));
 
-      default:
-        html += child.i + this.#parseChubNode(child, opts);
-    }
+    html = this.#buildChildren(cil, html, opts);
 
-    html += !shorter
-      ? `\n${cil.i}</${o.tag}>\n`
-      : "\n"
+    html = this.#buildFootTag(html, shorter, cil, o);
 
-    // ¯\_(ツ)_/¯ Quickest fix.
-    if (html.search("<>")) html = html
-      .replace("<>", "")
-      .replace("</>", "")
-
-    if (html.includes("head")) {
-
-      for (let stydm in this.styled) {
-        if (this.styled[stydm] === true && this.styled.styles[stydm]) {
-          html = html.replace("<head>", "<head>\n" + this.styled.styles[stydm])
-
-          // Set to "has" since we check earlier if the value is false to define it
-          // Also, might use later, need to exist, not be true.
-          this.styled[stydm] = "has"
-        }
-      }
-
-    }
+    html = this.#handleSpecialTag(html);
 
     return html
-  }
-
-  #parseTemplates(cil: SortedCILE, opts = this.#makeIndexes()) {
-    const { o } = cil
-    if (!o) throw new CowErr(`No CIL object found!`)
-    switch (o.tag) {
-
-    }
   }
 
   #constuctFrom(cil: SortedCILE, v = '') {
@@ -571,10 +626,10 @@ export class ChubMLMod extends CML_Static {
   CHUBfax(tex: string, sep = " ") {
     let modtxt = tex || "";
     modtxt = modtxt
-      .replace("=", "|e")
-      .replace(";", "|col")
-      .replace("\"", "|qw")
-      .replace(sep, "|")
+      .replaceAll("=", "|e")
+      .replaceAll(";", "|col")
+      .replaceAll("\"", "|qw")
+      .replaceAll(sep, "|")
 
     return modtxt
   }
@@ -613,8 +668,8 @@ export class ChubMLMod extends CML_Static {
     if (!response?.ok)
       throw new Error(`HTTP error! Status: ${response.status}`);
     const html = await response.text();
-    console.log(this.htmlToChub(html));
-    return this.htmlToChub(html);
+    console.log(this.HTMLToChub(html));
+    return this.HTMLToChub(html);
   }
 
   getURLbit() {
@@ -681,14 +736,25 @@ export class ChubMLMod extends CML_Static {
     ]
   }
 
-  // ARARARAR
-  htmlToChub = (html: string, delim = "") => {
-    const doc = new DOMParser().parseFromString(html, 'text/html');
-
-    return this.#getChubML(doc.documentElement, '', delim)
+  MLTextToNodes(str: string, type: DOMParserSupportedType = 'text/html') {
+    return new DOMParser().parseFromString(str, type);
   }
 
-  #getChubML = (node: Element, indent = '', delim = '') => {
+  Chubify(str: string) {
+    let parsedHTML = this.parse(str)
+    let parsedDOM = this.MLTextToNodes(parsedHTML, 'text/html')
+    return parsedDOM
+  }
+
+  // ARARARAR
+  HTMLToChub = (html: string | Element, delim = "") => {
+    if (html instanceof Element) html = html.outerHTML;
+
+    const doc = this.MLTextToNodes(html, 'text/html');
+    return this.getChubML(doc.documentElement, '', delim)
+  }
+
+  getChubML = (node: Element, indent = '', delim = '') => {
     let chubML = '';
 
     // Process node name
@@ -714,17 +780,19 @@ export class ChubMLMod extends CML_Static {
     if (!child.textContent) return '';
     let t = child.textContent.trim();
     if (t != "") return `${indent}  "${t}";\n`;
+    return '';
   }
 
   #handleChildren(chubML: string, node: Element, indent: string, delim: string) {
     chubML += ';\n';
     const childNodes = Array.from(node.childNodes);
+    console.log(childNodes)
     for (const child of childNodes) switch (child.nodeType) {
       case Node.TEXT_NODE:
         chubML += this.#handleChildTextNode(child as Element, indent);
         break;
       case Node.ELEMENT_NODE:
-        chubML += this.#getChubML(child as Element, indent + '  ', delim);
+        chubML += this.getChubML(child as Element, indent + '  ', delim);
         break;
     }
     chubML += `${indent}${delim}\n`;

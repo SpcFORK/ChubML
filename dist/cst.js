@@ -22,10 +22,12 @@ var cst_exports = {};
 __export(cst_exports, {
   ANOOP: () => ANOOP,
   NOOP: () => NOOP,
+  chaosEval: () => chaosEval,
   chaosGl: () => chaosGl
 });
 module.exports = __toCommonJS(cst_exports);
 var chaosGl = globalThis;
+var chaosEval = chaosGl.eval;
 var NOOP = () => {
 };
 var ANOOP = async () => {

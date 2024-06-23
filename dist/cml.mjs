@@ -1,7 +1,8 @@
 import {
   NOOP,
+  chaosEval,
   chaosGl
-} from "./chunk-VPYA37ER.mjs";
+} from "./chunk-P4A2X2EY.mjs";
 import "./chunk-TGZ7WOTJ.mjs";
 import {
   CML_Static
@@ -14,7 +15,7 @@ import {
 var checkEnvironment = () => {
   let isImportSupported = false;
   try {
-    eval("import.meta");
+    chaosEval("import.meta");
     isImportSupported = true;
   } catch {
   }
@@ -42,8 +43,8 @@ var ChubMLMod = class _ChubMLMod extends CML_Static {
   styled = {};
   #Rexps = () => this.s.Rexps;
   #initialFormat(str) {
-    let r2 = this.#Rexps;
-    return str.replace(r2().lineWithComment, "").replace(r2().formatspace2, "\n").replace(r2().formatspace1, "\n");
+    let r = this.#Rexps;
+    return str.replace(r().lineWithComment, "").replace(r().formatspace2, "\n").replace(r().formatspace1, "\n");
   }
   #cascadeIndentList(str) {
     let strLines = str.split(/;/);
@@ -129,27 +130,99 @@ var ChubMLMod = class _ChubMLMod extends CML_Static {
     }
     if (scrmatch !== null && dostill) {
       try {
-        eval(scrmatch[1]);
+        chaosEval(scrmatch[1]);
       } catch (error) {
         console.error(error, this.s.errorList.scripterror);
       }
     }
   }
+  async #handleAtFetch(param, tempC) {
+    param = param.slice(8);
+    if (window?.location?.origin) {
+      param = `${param}`.includes("{{ORIG}}") ? param.replace("{{ORIG}}", window.location.origin) : param;
+    }
+    tempC.tag = tempC.tag ? tempC.tag : "fetcherBlock";
+    tempC.data = `${tempC.data ? tempC.data + " " : ""}data-fetchw="${param}" data-instance="${(/* @__PURE__ */ new Date()).getTime()}"`;
+    let fw = await fetch(await this.findFile([param])) || {
+      text: () => {
+        return param;
+      }
+    };
+    let fwtext = await fw.text();
+    tempC.content = `${fwtext ? fwtext : ""}`;
+    if (window?.location?.origin) {
+      let el = this.$(`[${tempC.data.split(" ").join("][")}]`);
+      if (el)
+        el.innerHTML = tempC.content.replace(/\n/g, "\n</br>\n");
+    }
+    return param;
+  }
+  #handleAtCode(tempC, param) {
+    console.log("using @", `${param}`.slice(8), `${param}`.split(/[|:>=\-\)!~]/gm)[1].slice(1));
+    if (param.includes("fetchw"))
+      this.#handleAtFetch(param, tempC);
+    return param;
+  }
+  #handleClass(tempC, param) {
+    let p = param.slice(1);
+    tempC.class = `${tempC.class ? tempC.class + " " : ""}${p}`;
+  }
+  #handleID(tempC, param) {
+    let p = param.slice(1);
+    tempC.id = `${tempC.id ? tempC.id + " " : ""}${p}`;
+  }
+  #handleData(tempC, param) {
+    let dataParam = this.attrSyn(param);
+    if (!dataParam) return;
+    let dataB = `data-${dataParam[0].slice(1) + '="' + dataParam[1] + '"'}`;
+    tempC.data = `${tempC.data ? tempC.data + " " : ""}${dataB}`;
+  }
+  #handlePercAttr(tempC, param) {
+    let attrParam = this.attrSyn(param);
+    if (!attrParam) return;
+    let attrB = `${attrParam[0].slice(1) + '="' + attrParam[1] + '"'}`;
+    tempC.attr = `${tempC.attr ? tempC.attr + " " : ""}${attrB}`;
+  }
+  #handleChubAttr(param, tempC, paramI) {
+    switch (param[0]) {
+      case "#":
+        this.#handleID(tempC, param);
+        break;
+      case ".":
+        this.#handleClass(tempC, param);
+        break;
+      case "$":
+        this.#handleData(tempC, param);
+        break;
+      case "%":
+        this.#handlePercAttr(tempC, param);
+        break;
+      case "@":
+        param = this.#handleAtCode(tempC, param);
+        break;
+      default:
+        tempC.tag = `${tempC.tag ? tempC.tag + " " : ""}${param}`;
+    }
+    return param;
+  }
+  #checkAttr = (tempC, arr) => arr.forEach((param, paramI) => {
+    param = this.#handleChubAttr(param, tempC, paramI);
+  });
   #traverse(cil, i, indexes, v = "") {
-    const r2 = this.#Rexps;
+    const r = this.#Rexps;
     let indentString = "  ";
     let str = cil.c;
-    let isStr = str.search(r2().betweenQuote);
-    let hasOpts = str.search(r2().betweenCol);
-    let isscr = str.match(r2().script);
+    let isStr = str.search(r().betweenQuote);
+    let hasOpts = str.search(r().betweenCol);
+    let isscr = str.match(r().script);
     let def = this.#makeDef();
     let tempC = this.#makeDef();
     if (isscr !== null) {
-      this.#handleScript(r2().script.exec(str));
+      this.#handleScript(r().script.exec(str));
     }
     if (isStr !== -1) {
-      let tempLines = str.split(r2().betweenCol);
-      let content = str.split(r2().betweenQuote)[1];
+      let tempLines = str.split(r().betweenCol);
+      let content = str.split(r().betweenQuote)[1];
       if (hasOpts == null) {
         tempC = def;
       } else {
@@ -161,125 +234,91 @@ var ChubMLMod = class _ChubMLMod extends CML_Static {
     } else {
       this.#checkAttr(tempC, str.split(" "));
     }
-    var indc = indentString.repeat(i);
     cil.o = tempC;
-    cil.i = indc;
+    cil.i = indentString.repeat(i);
     if (cil.children) {
       cil.children.forEach((child) => this.#traverse(child, i + 1, indexes, v));
     }
     return [cil, indexes];
   }
-  #checkAttr = (tempC, arr) => arr.forEach((param, pind) => {
-    switch (param[0]) {
-      case "#":
-        this.#handleID(tempC, param);
-        break;
-      case ".":
-        this.#handleClass(tempC, param);
-        break;
-      case "$":
-        let dataParam = this.attrSyn(param);
-        if (!dataParam) return;
-        let dataB = `data-${dataParam[0].slice(1) + '="' + dataParam[1] + '"'}`;
-        tempC.data = `${tempC.data ? tempC.data + " " : ""}${dataB}`;
-        break;
-      case "%":
-        let attrParam = this.attrSyn(param);
-        if (!attrParam) return;
-        let attrB = `${attrParam[0].slice(1) + '="' + attrParam[1] + '"'}`;
-        tempC.attr = `${tempC.attr ? tempC.attr + " " : ""}${attrB}`;
-        break;
-      case "@":
-        param = this.#handleAtCode(param, tempC);
-        break;
-      default:
-        tempC.tag = `${tempC.tag ? tempC.tag + " " : ""}${param}`;
+  #parseTemplates(cil, opts = this.#makeIndexes()) {
+    const { o } = cil;
+    let isTemplate = false;
+    if (!o) throw new CowErr(`No CIL object found!`);
+    switch (o.tag) {
     }
-  });
-  #handleClass(tempC, param) {
-    tempC.class = `${tempC.class ? tempC.class + " " : ""}${param.replace(".", " ")}`;
+    return { isTemplate };
   }
-  #handleID(tempC, param) {
-    tempC.id = `${tempC.id ? tempC.id + " " : ""}${param.replace("#", " ")}`;
+  #handleSHead(html) {
+    for (let stydm in this.styled) if (this.styled[stydm] === true && this.styled.styles[stydm]) {
+      html = html.replace("<head>", "<head>\n" + this.styled.styles[stydm]);
+      this.styled[stydm] = "has";
+    }
+    return html;
   }
-  #handleAtCode(param, tempC) {
-    console.log("using @", `${param}`.slice(8), `${param}`.split(/[|:>=\-\)!~]/gm)[1].slice(1));
-    if (param.includes("fetchw")) (async () => {
-      param = param.slice(8);
-      if (window?.location?.origin) {
-        param = `${param}`.includes("{{ORIG}}") ? param.replace("{{ORIG}}", window.location.origin) : param;
+  #handleSpecialTag(html) {
+    if (html.includes("head")) {
+      html = this.#handleSHead(html);
+    }
+    return html;
+  }
+  #handleCNAttr(html, o) {
+    const is = (v) => !!v;
+    const addTo = (v) => html += v;
+    if (is(o.class))
+      addTo(` class="${o.class}"`);
+    if (is(o.id))
+      addTo(` id="${o.id}"`);
+    if (is(o.style))
+      addTo(` style="${o.style}"`);
+    if (is(o.data))
+      addTo(` ${o.data}`);
+    if (is(o.attr))
+      addTo(` ${o.attr}`);
+    return html;
+  }
+  #buildHeadTag(html, cil, o, isSpecial, shorter) {
+    html = `
+${cil.i}<${o.tag}`;
+    html = this.#handleCNAttr(html, o);
+    if (isSpecial > 0)
+      shorter = true;
+    html += shorter ? " />\n" : ">\n";
+    return { html, shorter };
+  }
+  #buildChildren(cil, html, opts) {
+    for (const child of cil.children)
+      switch (child.c[0]) {
+        case '"':
+          html += child.i + child.c.slice(1, child.c.length - 1);
+          break;
+        default:
+          html += child.i + this.#parseChubNode(child, opts);
       }
-      tempC.tag = tempC.tag ? tempC.tag : "fetcherBlock";
-      tempC.data = `${tempC.data ? tempC.data + " " : ""}data-fetchw="${param}" data-instance="${(/* @__PURE__ */ new Date()).getTime()}"`;
-      let fw = await fetch(await this.findFile([param])) || {
-        text: () => {
-          return param;
-        }
-      };
-      let fwtext = await fw.text();
-      tempC.content = `${fwtext ? fwtext : ""}`;
-      if (window?.location?.origin) {
-        let el = this.$(`[${tempC.data.split(" ").join("][")}]`);
-        if (el)
-          el.innerHTML = tempC.content.replace(/\n/g, "\n</br>\n");
-      }
-    })();
-    return param;
+    return html;
+  }
+  #buildFootTag(html, shorter, cil, o) {
+    html += !shorter ? `
+${cil.i}</${o.tag}>
+` : "\n";
+    if (html.search("<>"))
+      html = html.replace("<>", "").replace("</>", "");
+    return html;
   }
   #parseChubNode(cil, opts = this.#makeIndexes()) {
     const o = cil.o;
     if (!o) throw new CowErr(`No CIL object found!`);
-    let isTemplate = false;
     let shorter = false;
     let specialfind = this.arrMatch(o.tag, this.#specialTags);
     let isSpecial = specialfind.count;
     let inList = specialfind.list;
     let html = "";
-    this.#parseTemplates(cil, opts);
-    html = `
-${cil.i}<${o.tag}`;
-    const is = (v) => !!v;
-    const addTo = (v) => html += v;
-    switch (true) {
-      case is(o.class):
-        addTo(` class="${o.class}"`);
-      case is(o.id):
-        addTo(` id="${o.id}"`);
-      case is(o.style):
-        addTo(` style="${o.style}"`);
-      case is(o.data):
-        addTo(` ${o.data}`);
-      case is(o.attr):
-        addTo(` ${o.attr}`);
-    }
-    if (isSpecial > 0) shorter = true;
-    html += shorter ? " />\n" : ">\n";
-    for (const child of cil.children) switch (child.c[0]) {
-      case '"':
-        html += child.i + child.c.slice(1, child.c.length - 1);
-        break;
-      default:
-        html += child.i + this.#parseChubNode(child, opts);
-    }
-    html += !shorter ? `
-${cil.i}</${o.tag}>
-` : "\n";
-    if (html.search("<>")) html = html.replace("<>", "").replace("</>", "");
-    if (html.includes("head")) {
-      for (let stydm in this.styled) {
-        if (this.styled[stydm] === true && this.styled.styles[stydm]) {
-          html = html.replace("<head>", "<head>\n" + this.styled.styles[stydm]);
-          this.styled[stydm] = "has";
-        }
-      }
-    }
+    let { isTemplate } = this.#parseTemplates(cil, opts);
+    ({ html, shorter } = this.#buildHeadTag(html, cil, o, isSpecial, shorter));
+    html = this.#buildChildren(cil, html, opts);
+    html = this.#buildFootTag(html, shorter, cil, o);
+    html = this.#handleSpecialTag(html);
     return html;
-  }
-  #parseTemplates(cil, opts = this.#makeIndexes()) {
-    const { o } = cil;
-    if (!o) throw new CowErr(`No CIL object found!`);
-    switch (o.tag) {
-    }
   }
   #constuctFrom(cil, v = "") {
     let indexes = this.#makeIndexes();
@@ -338,7 +377,7 @@ ${cil.i}</${o.tag}>
   // Reformat Attributes to prevent conflicts and such.
   CHUBfax(tex, sep = " ") {
     let modtxt = tex || "";
-    modtxt = modtxt.replace("=", "|e").replace(";", "|col").replace('"', "|qw").replace(sep, "|");
+    modtxt = modtxt.replaceAll("=", "|e").replaceAll(";", "|col").replaceAll('"', "|qw").replaceAll(sep, "|");
     return modtxt;
   }
   attrSyn(tex) {
@@ -359,8 +398,8 @@ ${cil.i}</${o.tag}>
     if (!response?.ok)
       throw new Error(`HTTP error! Status: ${response.status}`);
     const html = await response.text();
-    console.log(this.htmlToChub(html));
-    return this.htmlToChub(html);
+    console.log(this.HTMLToChub(html));
+    return this.HTMLToChub(html);
   }
   getURLbit() {
     var url = window.location.href;
@@ -414,12 +453,21 @@ ${cil.i}</${o.tag}>
       JSON.parse(unescapedStr)
     ];
   }
+  MLTextToNodes(str, type = "text/html") {
+    return new DOMParser().parseFromString(str, type);
+  }
+  Chubify(str) {
+    let parsedHTML = this.parse(str);
+    let parsedDOM = this.MLTextToNodes(parsedHTML, "text/html");
+    return parsedDOM;
+  }
   // ARARARAR
-  htmlToChub = (html, delim = "") => {
-    const doc = new DOMParser().parseFromString(html, "text/html");
-    return this.#getChubML(doc.documentElement, "", delim);
+  HTMLToChub = (html, delim = "") => {
+    if (html instanceof Element) html = html.outerHTML;
+    const doc = this.MLTextToNodes(html, "text/html");
+    return this.getChubML(doc.documentElement, "", delim);
   };
-  #getChubML = (node, indent = "", delim = "") => {
+  getChubML = (node, indent = "", delim = "") => {
     let chubML = "";
     chubML += `${indent}${node.nodeName.toLowerCase()}`;
     if (node.attributes.length > 0) {
@@ -437,16 +485,18 @@ ${cil.i}</${o.tag}>
     let t = child.textContent.trim();
     if (t != "") return `${indent}  "${t}";
 `;
+    return "";
   }
   #handleChildren(chubML, node, indent, delim) {
     chubML += ";\n";
     const childNodes = Array.from(node.childNodes);
+    console.log(childNodes);
     for (const child of childNodes) switch (child.nodeType) {
       case Node.TEXT_NODE:
         chubML += this.#handleChildTextNode(child, indent);
         break;
       case Node.ELEMENT_NODE:
-        chubML += this.#getChubML(child, indent + "  ", delim);
+        chubML += this.getChubML(child, indent + "  ", delim);
         break;
     }
     chubML += `${indent}${delim}
