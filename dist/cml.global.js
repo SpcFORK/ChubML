@@ -3,8 +3,6 @@
   // src/cst.ts
   var chaosGl = globalThis;
   var chaosEval = chaosGl.eval;
-  var NOOP = () => {
-  };
 
   // src/CowErr.ts
   var CowErr = class extends Error {
@@ -82,6 +80,54 @@
     }
   };
 
+  // src/CustomEventHandle.ts
+  var CustomEventHandle = class {
+    constructor(event) {
+      this.event = event;
+      this.#e = new CustomEvent(event);
+      this.#init();
+    }
+    #globalBus = [];
+    #setHandle = (e) => {
+      this.#globalBus.push(e);
+    };
+    #removeHandler = (e) => this.#globalBus.splice(this.#globalBus.indexOf(e), 1);
+    #clearHandler = () => this.#globalBus = [];
+    #addHandler = (e) => this.#globalBus.push(e);
+    private = false;
+    #getHandle = () => ({
+      event: this.event,
+      globals: this.#globalBus,
+      remove: this.#removeHandler,
+      clear: this.#clearHandler,
+      add: this.#addHandler,
+      _: () => !this.private ? this : null,
+      [Symbol.toStringTag]: "CustomEventHandle"
+    });
+    #makeHandle = (name) => ({
+      set: this.#setHandle,
+      get: this.#getHandle
+    });
+    #activateGlobalSets = () => Object.defineProperty(chaosGl, this.event, this.#makeHandle(this.event));
+    #init() {
+      this.#activateGlobalSets();
+    }
+    get detail() {
+      return this.#e.detail;
+    }
+    set detail(value) {
+      this.makeEvent(this.event, value);
+    }
+    #e;
+    makeEvent(name, detail = {}) {
+      return this.#e = new CustomEvent(name, { detail });
+    }
+    activate() {
+      for (const cb of this.#globalBus) cb(this.#e);
+      dispatchEvent(this.#e);
+    }
+  };
+
   // src/cml.ts
   var checkEnvironment = () => {
     let isImportSupported = false;
@@ -103,12 +149,15 @@
   var ChubMLMod = class _ChubMLMod extends CML_Static {
     static ChubML = _ChubMLMod;
     ChubML = _ChubMLMod;
+    static #ChubStarted = new CustomEventHandle("chubstart");
+    static #ChubInjected = new CustomEventHandle("chubinjected");
     static {
-      chaosGl.chubinjected = NOOP;
-      chaosGl.chubstart = NOOP;
       chaosGl.lastChub ||= "";
       chaosGl.cbMode ||= "";
-      window.onload = () => chaosGl.chubstart?.();
+      window.onload = () => {
+        this.#ChubStarted.detail = this;
+        this.#ChubStarted.activate();
+      };
     }
     s = CML_Static;
     styled = {};
@@ -432,7 +481,8 @@ ${cil.i}</${o.tag}>
       let locationGot = this.$(locationB);
       if (!locationGot) locationB = "body";
       else locationGot.innerHTML = htmlCode;
-      chaosGl.chubinjected?.(locationGot);
+      _ChubMLMod.#ChubInjected.detail = locationGot;
+      _ChubMLMod.#ChubInjected.activate();
     }
     Router = class Router {
       __env__ = checkEnvironment();

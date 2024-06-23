@@ -1,5 +1,7 @@
 import {
-  NOOP,
+  CustomEventHandle
+} from "./chunk-MNUPYKPY.mjs";
+import {
   chaosEval,
   chaosGl
 } from "./chunk-P4A2X2EY.mjs";
@@ -32,12 +34,15 @@ var checkEnvironment = () => {
 var ChubMLMod = class _ChubMLMod extends CML_Static {
   static ChubML = _ChubMLMod;
   ChubML = _ChubMLMod;
+  static #ChubStarted = new CustomEventHandle("chubstart");
+  static #ChubInjected = new CustomEventHandle("chubinjected");
   static {
-    chaosGl.chubinjected = NOOP;
-    chaosGl.chubstart = NOOP;
     chaosGl.lastChub ||= "";
     chaosGl.cbMode ||= "";
-    window.onload = () => chaosGl.chubstart?.();
+    window.onload = () => {
+      this.#ChubStarted.detail = this;
+      this.#ChubStarted.activate();
+    };
   }
   s = CML_Static;
   styled = {};
@@ -361,7 +366,8 @@ ${cil.i}</${o.tag}>
     let locationGot = this.$(locationB);
     if (!locationGot) locationB = "body";
     else locationGot.innerHTML = htmlCode;
-    chaosGl.chubinjected?.(locationGot);
+    _ChubMLMod.#ChubInjected.detail = locationGot;
+    _ChubMLMod.#ChubInjected.activate();
   }
   Router = class Router {
     __env__ = checkEnvironment();

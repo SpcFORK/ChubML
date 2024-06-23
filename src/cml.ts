@@ -42,30 +42,8 @@ var checkEnvironment = () => {
 
 // @ CML
 import { CML_Static } from './static';
-
-interface CILElement {
-  c: string;
-  i: string | number;
-}
-
-interface ChubNode {
-  tag: string,
-  id: string,
-  class: string,
-  content: string,
-  data: string,
-  style: string,
-  attr: string,
-  indent: number,
-}
-
-interface SortedCILE extends CILElement {
-  children: SortedCILE[]
-  o?: ChubNode
-}
-
-type CILEList = CILElement[];
-type SortedCIL = SortedCILE[];
+import { CustomEventHandle } from './CustomEventHandle';
+import { CILEList, ChubNode, SortedCILE } from './CILEList';
 
 /**
  * A ChubML instance.
@@ -126,16 +104,18 @@ export class ChubMLMod extends CML_Static {
   static ChubML = ChubMLMod
   ChubML = ChubMLMod
 
+  static #ChubStarted = new CustomEventHandle('chubstart');
+  static #ChubInjected = new CustomEventHandle('chubinjected');
+
   // @ Options
   static {
-    chaosGl.chubinjected = NOOP
-    chaosGl.chubstart = NOOP
-
     chaosGl.lastChub ||= ""
     chaosGl.cbMode ||= ""
 
-    window.onload = () =>
-      chaosGl.chubstart?.()
+    window.onload = () => {
+      this.#ChubStarted.detail = this
+      this.#ChubStarted.activate();
+    }
   }
 
   s = CML_Static
@@ -605,7 +585,9 @@ export class ChubMLMod extends CML_Static {
     else locationGot.innerHTML = htmlCode;
 
     // On finish, run finish.
-    chaosGl.chubinjected?.(locationGot);
+    // chaosGl.chubinjected?.(locationGot);
+    ChubMLMod.#ChubInjected.detail = locationGot;
+    ChubMLMod.#ChubInjected.activate();
   }
 
   Router = class Router {
