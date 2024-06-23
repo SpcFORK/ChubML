@@ -668,7 +668,6 @@ export class ChubMLMod extends CML_Static {
     if (!response?.ok)
       throw new Error(`HTTP error! Status: ${response.status}`);
     const html = await response.text();
-    console.log(this.HTMLToChub(html));
     return this.HTMLToChub(html);
   }
 
@@ -786,7 +785,6 @@ export class ChubMLMod extends CML_Static {
   #handleChildren(chubML: string, node: Element, indent: string, delim: string) {
     chubML += ';\n';
     const childNodes = Array.from(node.childNodes);
-    console.log(childNodes)
     for (const child of childNodes) switch (child.nodeType) {
       case Node.TEXT_NODE:
         chubML += this.#handleChildTextNode(child as Element, indent);
