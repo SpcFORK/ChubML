@@ -423,8 +423,7 @@ export class ChubMLMod extends CML_Static {
 
     switch (true) {
       // case !!o().class: html += ` class="${o().class.slice(1)}"`
-      case is(o.class): addTo(` class="${o.class
-        }"`)
+      case is(o.class): addTo(` class="${o.class}"`)
       case is(o.id): addTo(` id="${o.id}"`)
       case is(o.style): addTo(` style="${o.style}"`)
       case is(o.data): addTo(` ${o.data}`)
@@ -753,7 +752,7 @@ export class ChubMLMod extends CML_Static {
   }
 
   #elevateToWindow() {
-    
+
   }
 }
 
