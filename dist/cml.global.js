@@ -23,7 +23,7 @@
     static errorList = {
       // For Params: %lol=haha=asd => split at each `=` => greater than 3? => error.
       eqspl3: new CowErr([
-        `You can't have more than 3 Equals characters (\`=\`)!`,
+        `You can't have 3 Equals characters (\`=\`)!`,
         `Try to shorten it please, use \`|e\``,
         `it is the escaped version of \`=\`.`,
         ,
@@ -154,6 +154,7 @@
     static {
       chaosGl.lastChub ||= "";
       chaosGl.cbMode ||= "";
+      chaosGl.chubLocation ||= "";
       window.onload = () => {
         this.#ChubStarted.detail = this;
         this.#ChubStarted.activate();
@@ -361,6 +362,7 @@
       }
       return [cil, indexes];
     }
+    // @ Templates
     #parseTemplates(cil, opts = this.#makeIndexes()) {
       const { o } = cil;
       let isTemplate = false;
@@ -502,12 +504,9 @@ ${cil.i}</${o.tag}>
       return modtxt;
     }
     attrSyn(tex) {
-      try {
-        if (`${tex}`.match(/=/gm)?.length > 1) throw this.s.errorList.eqspl3;
-        let attrParam = tex.replace("=", " spcfork.Equals.Token ").replace("\\|", " spcfork.Pipe.Token ").replace(/\|e/gm, "=").replace(/\|col/gm, ";").replace(/\|qw/gm, '"').replace(/\|/gm, " ").replace(" spcfork.Pipe.Token ", "|").split(" spcfork.Equals.Token ");
-        return attrParam;
-      } catch {
-      }
+      if (`${tex}`.match(/=/gm)?.length > 1) throw this.s.errorList.eqspl3;
+      let attrParam = tex.replace("=", " spcfork.Equals.Token ").replace("\\|", " spcfork.Pipe.Token ").replace(/\|e/gm, "=").replace(/\|col/gm, ";").replace(/\|qw/gm, '"').replace(/\|/gm, " ").replace(" spcfork.Pipe.Token ", "|").split(" spcfork.Equals.Token ");
+      return attrParam;
     }
     /**
      * Fetch a web page and convert it to CHUB
@@ -634,6 +633,85 @@ ${cil.i}</${o.tag}>
           chubML += ` %${attr.name}=${cfv(attr)}`;
       }
       return chubML;
+    }
+    aliasIndexes = [
+      "beam.cma",
+      "beam.chub",
+      "bm.cma",
+      "bm.chub",
+      "index.cma",
+      "index.chub",
+      "i.cma",
+      "i.chub"
+    ];
+    async #checkFile(loc, opts = {}) {
+      let req = await fetch(loc, { method: "HEAD", ...opts });
+      return [req.ok, req];
+    }
+    async #getFileSafely(loc) {
+      let [ok, okRes] = await this.#checkFile(loc);
+      if (!ok) throw new Error(`File not found!`);
+      let req = await fetch(loc);
+      return { req, okRes };
+    }
+    async #findFileOfCases(fileLocations) {
+      for (const loc of fileLocations) {
+        let [ok, okRes] = await this.#checkFile(loc);
+        if (ok) return loc;
+      }
+      return null;
+    }
+    #batchFile = (handleFile, loc) => new Promise(async (resolve, reject) => {
+      try {
+        await handleFile(loc, resolve);
+      } catch (error) {
+        reject(error);
+      }
+    });
+    async #batchFileOfCases(fileLocations) {
+      let pArr = [];
+      let abortController = new AbortController();
+      const handleFile = async (loc, resolve) => {
+        let [f] = await this.#checkFile(loc, { signal: abortController.signal });
+        if (f) abortController.abort();
+        resolve([loc, f]);
+      };
+      for (const loc of fileLocations) pArr.push(this.#batchFile(handleFile, loc));
+      let resses = await Promise.all(pArr.map((p) => p.catch((e) => [null, false])));
+      for (const [res, ok] of resses)
+        if (ok) return res;
+      return null;
+    }
+    async #fileOrFallback(loc, slowly = false) {
+      let [ok, okRes] = await this.#checkFile(loc);
+      if (ok) return loc;
+      return slowly ? await this.#findFileOfCases(this.aliasIndexes) : await this.#batchFileOfCases(this.aliasIndexes);
+    }
+    /**
+     * Example usage:
+     * 
+     * ```typescript
+     * const cml = new ChubMLMod();
+     * cml.beamChub('/path/to/chub/file', document.getElementById('app'), true);
+     * ```
+     * 
+     * @param slowly - If true, errors are ignored and execution using a quicker Promise.all, this is better for users, worse for servers.
+     */
+    async beamChub(location, DOM, slowly = false) {
+      let fileName = await this.#fileOrFallback(location, slowly);
+      if (!fileName) throw new Error(`File not found!`);
+      let { req } = await this.#getFileSafely(fileName);
+      chaosGl.lastChub = req;
+      let text = await req.text();
+      let doc = this.parse(text);
+      if (chaosGl.chubDev == true)
+        console.log(doc);
+      let entrypoint = DOM || chaosGl.chubLocation || "chub";
+      let locationGot = this.$(entrypoint);
+      if (!locationGot) locationGot = document.body;
+      locationGot.innerHTML = doc;
+      _ChubMLMod.#ChubInjected.detail = locationGot;
+      _ChubMLMod.#ChubInjected.activate();
     }
     constructor() {
       super();

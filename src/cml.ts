@@ -793,22 +793,22 @@ export class ChubMLMod extends CML_Static {
     return chubML;
   }
 
-  #aliasIndexes = [
+  aliasIndexes = [
+    "beam.cma",
     "beam.chub",
-    "beam.cml",
 
+    "bm.cma",
     "bm.chub",
-    "bm.cml",
 
+    "index.cma",
     "index.chub",
-    "index.cml",
 
+    "i.cma",
     "i.chub",
-    "i.cml",
   ]
 
-  async #checkFile(loc: string | URL | Request) {
-    let req = await fetch(loc, { method: "HEAD" })
+  async #checkFile(loc: string | URL | Request, opts = {}) {
+    let req = await fetch(loc, { method: "HEAD", ...opts })
     return [req.ok, req] as [boolean, Response]
   }
 
@@ -827,14 +827,59 @@ export class ChubMLMod extends CML_Static {
     return null
   }
 
-  async #fileOrFallback(loc: string | URL | Request) {
-    let [ok, okRes] = await this.#checkFile(loc)
-    if (ok) return loc
-    return await this.#findFileOfCases(this.#aliasIndexes)
+  #batchFile = (
+    handleFile: Function,
+    loc: string
+  ): Promise<[string, boolean]> => new Promise(async (resolve, reject) => {
+    try {
+      await handleFile(loc, resolve);
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+  async #batchFileOfCases(fileLocations: string[]) {
+    let pArr = [] as Promise<[string, boolean]>[];
+    let abortController = new AbortController();
+
+    const handleFile = async (loc: string, resolve: (value: [string, boolean] | PromiseLike<[string, boolean]>) => void) => {
+      let [f] = await this.#checkFile(loc, { signal: abortController.signal });
+      if (f) abortController.abort();
+      resolve([loc, f]);
+    }
+
+    for (const loc of fileLocations) pArr.push(this.#batchFile(handleFile, loc));
+
+    let resses = await Promise.all(pArr.map(p => p.catch(e => [null, false])));
+
+    // Find first valid res
+    for (const [res, ok] of resses)
+      if (ok) return res;
+
+    return null;
   }
 
-  async beamChub(location: string | URL | Request, DOM: any) {
-    let fileName = await this.#fileOrFallback(location)
+  async #fileOrFallback(loc: string | URL | Request, slowly = false) {
+    let [ok, okRes] = await this.#checkFile(loc)
+    if (ok) return loc
+    return slowly
+      ? await this.#findFileOfCases(this.aliasIndexes)
+      : await this.#batchFileOfCases(this.aliasIndexes)
+  }
+
+
+  /**
+   * Example usage:
+   * 
+   * ```typescript
+   * const cml = new ChubMLMod();
+   * cml.beamChub('/path/to/chub/file', document.getElementById('app'), true);
+   * ```
+   * 
+   * @param slowly - If true, errors are ignored and execution using a quicker Promise.all, this is better for users, worse for servers.
+   */
+  async beamChub(location: string | URL | Request, DOM: any, slowly = false) {
+    let fileName = await this.#fileOrFallback(location, slowly)
     if (!fileName) throw new Error(`File not found!`)
     let { req } = await this.#getFileSafely(fileName)
     chaosGl.lastChub = req

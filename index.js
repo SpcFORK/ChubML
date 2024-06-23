@@ -9,7 +9,7 @@ app.use(
     next();
   },
   express.static('./front', {
-    extensions: ['html'],
+    extensions: ['html', 'js', 'css', 'cma'],
   }),
   express.static('./dist', {
     extensions: ['js', 'css'],

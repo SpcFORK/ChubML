@@ -43,7 +43,7 @@ var CML_Static = class _CML_Static {
   static errorList = {
     // For Params: %lol=haha=asd => split at each `=` => greater than 3? => error.
     eqspl3: new CowErr([
-      `You can't have more than 3 Equals characters (\`=\`)!`,
+      `You can't have 3 Equals characters (\`=\`)!`,
       `Try to shorten it please, use \`|e\``,
       `it is the escaped version of \`=\`.`,
       ,
