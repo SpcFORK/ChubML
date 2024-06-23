@@ -111,6 +111,7 @@ export class ChubMLMod extends CML_Static {
   static {
     chaosGl.lastChub ||= ""
     chaosGl.cbMode ||= ""
+    chaosGl.chubLocation ||= ""
 
     window.onload = () => {
       this.#ChubStarted.detail = this
@@ -396,6 +397,7 @@ export class ChubMLMod extends CML_Static {
     return [cil, indexes]
   }
 
+  // @ Templates
   #parseTemplates(cil: SortedCILE, opts = this.#makeIndexes()) {
     const { o } = cil
 
@@ -617,27 +619,25 @@ export class ChubMLMod extends CML_Static {
   }
 
   attrSyn(tex: string) {
-    try {
-      if (`${tex}`.match(/=/gm)!?.length > 1) throw this.s.errorList.eqspl3
+    if (`${tex}`.match(/=/gm)!?.length > 1) throw this.s.errorList.eqspl3
 
-      let attrParam = tex
-        // Tokenize
-        .replace("=", " spcfork.Equals.Token ")
-        .replace("\\|", " spcfork.Pipe.Token ")
+    let attrParam = tex
+      // Tokenize
+      .replace("=", " spcfork.Equals.Token ")
+      .replace("\\|", " spcfork.Pipe.Token ")
 
-        .replace(/\|e/gm, "=")
-        .replace(/\|col/gm, ";")
-        .replace(/\|qw/gm, "\"")
-        .replace(/\|/gm, " ")
+      .replace(/\|e/gm, "=")
+      .replace(/\|col/gm, ";")
+      .replace(/\|qw/gm, "\"")
+      .replace(/\|/gm, " ")
 
-        .replace(" spcfork.Pipe.Token ", "|")
+      .replace(" spcfork.Pipe.Token ", "|")
 
-        // Split at Token to prevent multiple splits.
-        .split(" spcfork.Equals.Token ")
+      // Split at Token to prevent multiple splits.
+      .split(" spcfork.Equals.Token ")
 
-      // console.log(attrParam.length, attrParam)
-      return attrParam
-    } catch { }
+    // console.log(attrParam.length, attrParam)
+    return attrParam
   }
 
   /**
@@ -791,6 +791,70 @@ export class ChubMLMod extends CML_Static {
       default: chubML += ` %${attr.name}=${cfv(attr)}`;
     }
     return chubML;
+  }
+
+  #aliasIndexes = [
+    "beam.chub",
+    "beam.cml",
+
+    "bm.chub",
+    "bm.cml",
+
+    "index.chub",
+    "index.cml",
+
+    "i.chub",
+    "i.cml",
+  ]
+
+  async #checkFile(loc: string | URL | Request) {
+    let req = await fetch(loc, { method: "HEAD" })
+    return [req.ok, req] as [boolean, Response]
+  }
+
+  async #getFileSafely(loc: string | URL | Request) {
+    let [ok, okRes] = await this.#checkFile(loc)
+    if (!ok) throw new Error(`File not found!`)
+    let req = await fetch(loc)
+    return { req, okRes }
+  }
+
+  async #findFileOfCases(fileLocations: string[]) {
+    for (const loc of fileLocations) {
+      let [ok, okRes] = await this.#checkFile(loc)
+      if (ok) return loc
+    }
+    return null
+  }
+
+  async #fileOrFallback(loc: string | URL | Request) {
+    let [ok, okRes] = await this.#checkFile(loc)
+    if (ok) return loc
+    return await this.#findFileOfCases(this.#aliasIndexes)
+  }
+
+  async beamChub(location: string | URL | Request, DOM: any) {
+    let fileName = await this.#fileOrFallback(location)
+    if (!fileName) throw new Error(`File not found!`)
+    let { req } = await this.#getFileSafely(fileName)
+    chaosGl.lastChub = req
+
+    let text = await req.text()
+    let doc = this.parse(text)
+
+    if (chaosGl.chubDev == true)
+      console.log(doc)
+
+    let entrypoint = DOM || chaosGl.chubLocation || 'chub'
+    let locationGot = this.$(entrypoint)
+    if (!locationGot) locationGot = document.body
+
+    locationGot.innerHTML = doc;
+
+    // On finish, run finish.
+    // chaosGl.chubinjected?.(locationGot);
+    ChubMLMod.#ChubInjected.detail = locationGot;
+    ChubMLMod.#ChubInjected.activate();
   }
 
   constructor() {
