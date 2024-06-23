@@ -7,7 +7,7 @@ var chubDev = true
 */
 
 var chubstart = () => {
-  beamChub("beam.cml", "html")
+  ChubML.beamChub("beam.cml", "html")
 }
 
 // On injectChub finished.
