@@ -1,3 +1,5 @@
+let cml = globalThis.ChubML
+
 var chubLocation = "html"
 var chubDev = true
 
@@ -6,11 +8,15 @@ var chubDev = true
   Done to prevent load issues like P5.JS just in case.
 */
 
-var chubstart = () => {
-  ChubML.beamChub("beam.cma", "html")
-}
+let pageSrc = 'beam.lmc'
+let page = cml.beamMake(pageSrc)
+
+cml.body = 'Loading...'
+page.then(({ doc }) => {
+  cml.beamRender(doc, chubLocation)
+})
 
 // On injectChub finished.
 var chubinjected = (locationGot) => {
-  // console.log(locationGot, "lol")
+  console.log(locationGot, "lol", cml)
 }

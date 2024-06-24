@@ -1,3 +1,8 @@
+@eval=console.log(1);
+
 html;
-  wow;
-    "entry";
+  head;
+    title;
+      "wow";
+  body;
+    wow #wow @eval='hey';

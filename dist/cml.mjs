@@ -2,10 +2,12 @@ import {
   CustomEventHandle
 } from "./chunk-MNUPYKPY.mjs";
 import {
+  checkEnvironment
+} from "./chunk-ITEFCH3S.mjs";
+import {
   chaosEval,
   chaosGl
 } from "./chunk-P4A2X2EY.mjs";
-import "./chunk-TGZ7WOTJ.mjs";
 import {
   CML_Static
 } from "./chunk-BJUEP7UN.mjs";
@@ -14,23 +16,7 @@ import {
 } from "./chunk-AAIK3BUI.mjs";
 
 // src/cml.ts
-var checkEnvironment = () => {
-  let isImportSupported = false;
-  try {
-    chaosEval("import.meta");
-    isImportSupported = true;
-  } catch {
-  }
-  if (isImportSupported) {
-    return "ES Module";
-  } else if (typeof module !== "undefined" && module?.exports && typeof window === "undefined") {
-    return "Node";
-  } else if (typeof window !== "undefined" && typeof window?.document !== "undefined") {
-    return "Browser";
-  } else {
-    return "Unknown";
-  }
-};
+import "../global";
 var ChubMLMod = class _ChubMLMod extends CML_Static {
   static ChubML = _ChubMLMod;
   ChubML = _ChubMLMod;
@@ -44,6 +30,82 @@ var ChubMLMod = class _ChubMLMod extends CML_Static {
       this.#ChubStarted.detail = this;
       this.#ChubStarted.activate();
     };
+  }
+  #makeDef = () => ({
+    tag: "",
+    id: "",
+    class: "",
+    content: "",
+    data: "",
+    style: "",
+    attr: "",
+    indent: 0
+  });
+  #makeIndexes = () => ({
+    str: 0,
+    tmp: 0
+  });
+  #specialTags = [
+    "area",
+    "base",
+    "br",
+    "col",
+    "embed",
+    "hr",
+    "img",
+    "input",
+    "link",
+    "meta",
+    "param",
+    "source",
+    "track",
+    "wbr"
+  ];
+  get doc() {
+    return document;
+  }
+  #setOrAppend(val, p) {
+    if (typeof val === "string") this.body.innerHTML = val;
+    else this.body.appendChild(val);
+  }
+  get body() {
+    return document.body;
+  }
+  set body(val) {
+    this.#setOrAppend(val, this.body);
+  }
+  get head() {
+    return document.head;
+  }
+  set head(val) {
+    this.#setOrAppend(val, this.head);
+  }
+  get html() {
+    return document.documentElement;
+  }
+  get title() {
+    return document.title;
+  }
+  set title(val) {
+    document.title = val;
+  }
+  get chubLocation() {
+    return chaosGl.chubLocation;
+  }
+  set chubLocation(val) {
+    chaosGl.chubLocation = val;
+  }
+  get chubDev() {
+    return chaosGl.chubDev;
+  }
+  set chubDev(val) {
+    chaosGl.chubDev = val;
+  }
+  #orStr(str, def = "") {
+    return str ? str : def;
+  }
+  #prepSpcIf(str) {
+    return str ? str + " " : "";
   }
   s = CML_Static;
   styled = {};
@@ -80,55 +142,26 @@ var ChubMLMod = class _ChubMLMod extends CML_Static {
     ;
     return sortedContents;
   }
-  #makeDef = () => ({
-    tag: "",
-    id: "",
-    class: "",
-    content: "",
-    data: "",
-    style: "",
-    attr: "",
-    indent: 0
-  });
-  #makeIndexes = () => ({
-    str: 0,
-    tmp: 0
-  });
-  #specialTags = [
-    "area",
-    "base",
-    "br",
-    "col",
-    "embed",
-    "hr",
-    "img",
-    "input",
-    "link",
-    "meta",
-    "param",
-    "source",
-    "track",
-    "wbr"
-  ];
   #handleScript(scrmatch) {
     const r = this.#Rexps;
-    let issrc = scrmatch[1].includes("src=");
-    let execafter = scrmatch[1].includes('"execafter";\n');
+    let src = scrmatch[1];
+    let issrc = src.includes("src=");
+    let execafter = src.includes('"execafter";\n');
     var dostill = true;
-    const fetchScript = async (src) => fetch(src).then((js) => {
-      return js.text();
-    }).then((text) => {
+    const fetchScript = async (src2) => {
+      let pt = await fetch(src2);
+      let t = await pt.text();
       try {
         let script = document.createElement("script");
         script.type = "text/javascript";
-        script.text = text;
+        script.text = t;
         document.body.appendChild(script);
       } catch (error) {
         console.log(error, this.s.errorList.scripterror);
       }
-    });
+    };
     if (issrc && scrmatch) {
-      let srcis = scrmatch[1].match(/src="(.*)"/);
+      let srcis = src.match(/src="(.*)"/);
       if (srcis) {
         fetchScript(srcis[1]);
         dostill = false;
@@ -136,19 +169,18 @@ var ChubMLMod = class _ChubMLMod extends CML_Static {
     }
     if (scrmatch !== null && dostill) {
       try {
-        chaosEval(scrmatch[1]);
+        chaosEval(src);
       } catch (error) {
         console.error(error, this.s.errorList.scripterror);
       }
     }
   }
-  async #handleAtFetch(param, tempC) {
-    param = param.slice(8);
+  async #handleAtFetch(tempC, param) {
     if (window?.location?.origin) {
       param = `${param}`.includes("{{ORIG}}") ? param.replace("{{ORIG}}", window.location.origin) : param;
     }
     tempC.tag = tempC.tag ? tempC.tag : "fetcherBlock";
-    tempC.data = `${tempC.data ? tempC.data + " " : ""}data-fetchw="${param}" data-instance="${(/* @__PURE__ */ new Date()).getTime()}"`;
+    tempC.data = `${this.#prepSpcIf(tempC.data)}data-fetchw="${param}" data-instance="${(/* @__PURE__ */ new Date()).getTime()}"`;
     let fw = await fetch(await this.findFile([param])) || {
       text: () => {
         return param;
@@ -163,31 +195,62 @@ var ChubMLMod = class _ChubMLMod extends CML_Static {
     }
     return param;
   }
+  // #watchVar(tempC: ChubNode, param: string) {
+  //   let v: unknown;
+  // }
+  // @@
   #handleAtCode(tempC, param) {
-    console.log("using @", `${param}`.slice(8), `${param}`.split(/[|:>=\-\)!~]/gm)[1].slice(1));
-    if (param.includes("fetchw"))
-      this.#handleAtFetch(param, tempC);
+    if (typeof param !== "string") return;
+    console.log("using @: ", `${param}`.slice(1).split("="));
+    const S_name = param.slice(1);
+    const prune = (len) => S_name.slice(len + 1);
+    const starts = (str) => S_name.startsWith(str);
+    switch (true) {
+      case starts("fetchw"):
+        this.#handleAtFetch(tempC, prune(6));
+        break;
+      case starts("eval"):
+        this.#handleAtEval(tempC, prune(4));
+        break;
+      default:
+        console.log("no @ found...?", param);
+    }
     return param;
   }
+  #handleAtEval(tempC, ev) {
+    try {
+      var scriptRes = chaosEval(ev);
+    } catch (error) {
+      return console.error(error, this.s.errorList.scripterror);
+    }
+    if (this.chubDev) console.log("scriptRes: ", scriptRes);
+    let r = this.#orStr(scriptRes);
+    tempC.content += r;
+  }
+  #appendAttr(tempC, nodeName, newAttr, expectedPrefixLen = 1) {
+    let pv = newAttr.slice(expectedPrefixLen);
+    tempC[nodeName] = this.#prepSpcIf(tempC[nodeName].toString()) + pv;
+  }
   #handleClass(tempC, param) {
-    let p = param.slice(1);
-    tempC.class = `${tempC.class ? tempC.class + " " : ""}${p}`;
+    this.#appendAttr(tempC, "class", param);
   }
   #handleID(tempC, param) {
-    let p = param.slice(1);
-    tempC.id = `${tempC.id ? tempC.id + " " : ""}${p}`;
+    this.#appendAttr(tempC, "id", param);
   }
   #handleData(tempC, param) {
-    let dataParam = this.attrSyn(param);
-    if (!dataParam) return;
-    let dataB = `data-${dataParam[0].slice(1) + '="' + dataParam[1] + '"'}`;
-    tempC.data = `${tempC.data ? tempC.data + " " : ""}${dataB}`;
+    this.#addAttribute(tempC, param, "data", true);
   }
   #handlePercAttr(tempC, param) {
+    this.#addAttribute(tempC, param, "attr", false);
+  }
+  #addAttribute(tempC, param, type, isData) {
     let attrParam = this.attrSyn(param);
     if (!attrParam) return;
-    let attrB = `${attrParam[0].slice(1) + '="' + attrParam[1] + '"'}`;
-    tempC.attr = `${tempC.attr ? tempC.attr + " " : ""}${attrB}`;
+    let name = attrParam[0].slice(1);
+    let value = attrParam[1];
+    let attrB = `${name}="${value}"`;
+    if (isData) attrB = `data-${attrB}`;
+    tempC[type] = this.#prepSpcIf(tempC[type]) + attrB;
   }
   #handleChubAttr(param, tempC, paramI) {
     switch (param[0]) {
@@ -207,7 +270,7 @@ var ChubMLMod = class _ChubMLMod extends CML_Static {
         param = this.#handleAtCode(tempC, param);
         break;
       default:
-        tempC.tag = `${tempC.tag ? tempC.tag + " " : ""}${param}`;
+        tempC.tag = this.#prepSpcIf(tempC.tag) + param;
     }
     return param;
   }
@@ -256,16 +319,17 @@ var ChubMLMod = class _ChubMLMod extends CML_Static {
     }
     return { isTemplate };
   }
-  #handleSHead(html) {
+  #handleSHead(html, lessNl) {
     for (let stydm in this.styled) if (this.styled[stydm] === true && this.styled.styles[stydm]) {
-      html = html.replace("<head>", "<head>\n" + this.styled.styles[stydm]);
+      let p = lessNl ? "" : "\n";
+      html = html.replace("<head>", "<head>" + p + this.styled.styles[stydm]);
       this.styled[stydm] = "has";
     }
     return html;
   }
-  #handleSpecialTag(html) {
+  #handleSpecialTag(html, lessNl) {
     if (html.includes("head")) {
-      html = this.#handleSHead(html);
+      html = this.#handleSHead(html, lessNl);
     }
     return html;
   }
@@ -284,35 +348,47 @@ var ChubMLMod = class _ChubMLMod extends CML_Static {
       addTo(` ${o.attr}`);
     return html;
   }
-  #buildHeadTag(html, cil, o, isSpecial, shorter) {
-    html = `
-${cil.i}<${o.tag}`;
+  #buildHeadTag(html, cil, o, isSpecial, shorter, lessNl) {
+    let p = lessNl ? "" : "\n";
+    html = p + `${lessNl ? "" : cil.i}<${o.tag}`;
     html = this.#handleCNAttr(html, o);
     if (isSpecial > 0)
       shorter = true;
-    html += shorter ? " />\n" : ">\n";
+    let end = ">" + p;
+    if (shorter) html += " /";
+    html += end;
     return { html, shorter };
   }
-  #buildChildren(cil, html, opts) {
+  #handleBuildChild(child, html, opts, lessNl) {
+    let p = lessNl ? "" : child.i;
+    switch (child.c[0]) {
+      case '"':
+        html += p + child.c.slice(1, child.c.length - 1);
+        break;
+      default:
+        html += p + this.#parseChubNode(child, opts, lessNl);
+    }
+    return html;
+  }
+  #buildChildren(cil, html, opts, lessNl) {
     for (const child of cil.children)
-      switch (child.c[0]) {
-        case '"':
-          html += child.i + child.c.slice(1, child.c.length - 1);
-          break;
-        default:
-          html += child.i + this.#parseChubNode(child, opts);
-      }
+      html = this.#handleBuildChild(child, html, opts, lessNl);
     return html;
   }
-  #buildFootTag(html, shorter, cil, o) {
-    html += !shorter ? `
-${cil.i}</${o.tag}>
-` : "\n";
-    if (html.search("<>"))
-      html = html.replace("<>", "").replace("</>", "");
+  #buildFootTag(html, shorter, cil, o, lessNl) {
+    let p = lessNl ? "" : "\n";
+    html += p;
+    if (!shorter) html += `${lessNl ? "" : cil.i}</${o.tag}>${p}`;
+    if (html.includes("<>")) html = html.replace("<>", "").replace("</>", "");
     return html;
   }
-  #parseChubNode(cil, opts = this.#makeIndexes()) {
+  #buildContent(cil, html, lessNl) {
+    let p = lessNl ? "" : cil.i + "  ";
+    if (cil.o?.content)
+      html += p + cil.o.content;
+    return html;
+  }
+  #parseChubNode(cil, opts = this.#makeIndexes(), lessNl = false) {
     const o = cil.o;
     if (!o) throw new CowErr(`No CIL object found!`);
     let shorter = false;
@@ -321,26 +397,27 @@ ${cil.i}</${o.tag}>
     let inList = specialfind.list;
     let html = "";
     let { isTemplate } = this.#parseTemplates(cil, opts);
-    ({ html, shorter } = this.#buildHeadTag(html, cil, o, isSpecial, shorter));
-    html = this.#buildChildren(cil, html, opts);
-    html = this.#buildFootTag(html, shorter, cil, o);
-    html = this.#handleSpecialTag(html);
+    ({ html, shorter } = this.#buildHeadTag(html, cil, o, isSpecial, shorter, lessNl));
+    html = this.#buildContent(cil, html, lessNl);
+    html = this.#buildChildren(cil, html, opts, lessNl);
+    html = this.#buildFootTag(html, shorter, cil, o, lessNl);
+    html = this.#handleSpecialTag(html, lessNl);
     return html;
   }
-  #constuctFrom(cil, v = "") {
+  #constuctFrom(cil, lessNl, v = "") {
     let indexes = this.#makeIndexes();
     let travRes = this.#traverse(cil, 0, indexes, v);
     {
       [cil, indexes] = travRes;
     }
-    let res = this.#parseChubNode(cil, indexes);
+    let res = this.#parseChubNode(cil, indexes, lessNl);
     return res;
   }
-  parse(source) {
+  parse(source, lessNl) {
     let str = this.#initialFormat(source);
     let indList = this.#cascadeIndentList(str);
     let sorted = this.#sortCILIndent(indList);
-    return this.#constuctFrom(sorted[0]);
+    return this.#constuctFrom(sorted[0], lessNl);
   }
   async findFile(fileLocations) {
     for (const location of fileLocations) {
@@ -356,15 +433,15 @@ ${cil.i}</${o.tag}>
     return null;
   }
   ChubRep(doc, quirky = "<!DOCTYPE html>") {
-    doc = this.parse(doc);
+    doc = this.parse(doc, true);
     document.open();
     document.write(quirky + "\n" + doc);
     document.close();
   }
   injectChub(input) {
-    var htmlCode = this.parse(input);
-    if (chaosGl.chubDev == true) console.log(htmlCode);
-    let locationB = chaosGl.chubLocation || "chub";
+    var htmlCode = this.parse(input, true);
+    if (this.chubDev == true) console.log(htmlCode);
+    let locationB = this.chubLocation || "chub";
     let locationGot = this.$(locationB);
     if (!locationGot) locationB = "body";
     else locationGot.innerHTML = htmlCode;
@@ -433,18 +510,19 @@ ${cil.i}</${o.tag}>
     }
     let editedDupe;
     if (dupe.includes(";")) {
-      let d = dupe.split(";");
-      d[0] += ` #${this.DupeCollection[dupe]}`;
-      editedDupe = d.join("");
+      let d2 = dupe.split(";");
+      d2[0] += ` #${this.DupeCollection[dupe]}`;
+      editedDupe = d2.join("");
     } else {
       editedDupe = dupe + ";";
     }
-    return {
+    let d = {
       editedDupe,
       D: this.DupeCollection,
       s: () => JSON.stringify(this.DupeCollection),
-      c: () => JSON.parse(JSON.stringify(this.DupeCollection))
+      c: () => JSON.parse(d.s())
     };
+    return d;
   }
   CHUBstrprep(str) {
     return str.replace(/[.*+?^${}()|[\]\\"';:]/g, "\\$&").replace(/[;]/g, "|col");
@@ -461,7 +539,7 @@ ${cil.i}</${o.tag}>
     return new DOMParser().parseFromString(str, type);
   }
   Chubify(str) {
-    let parsedHTML = this.parse(str);
+    let parsedHTML = this.parse(str, true);
     let parsedDOM = this.MLTextToNodes(parsedHTML, "text/html");
     return parsedDOM;
   }
@@ -560,7 +638,9 @@ ${cil.i}</${o.tag}>
     };
     for (const loc of fileLocations)
       pArr.push(this.#batchFile(handleFile, loc));
-    let resses = await Promise.all(pArr.map((p) => p.catch((e) => ["", false])));
+    let resses = await Promise.all(
+      pArr.map((p) => p.catch((e) => ["", false]))
+    );
     for (const [res, ok] of resses)
       if (ok) return res;
     return null;
@@ -569,6 +649,43 @@ ${cil.i}</${o.tag}>
     let [ok, okRes] = await this.#checkFile(loc);
     if (ok) return loc;
     return slowly ? await this.#findFileOfCases(this.aliasIndexes) : await this.#batchFileOfCases(this.aliasIndexes);
+  }
+  async beamPrep(location, slowly) {
+    let fileName = await this.#fileOrFallback(location, slowly);
+    if (!fileName)
+      throw new Error(`File not found!`);
+    let req = await this.#getFileSafely(fileName);
+    chaosGl.lastChub = req;
+    return { ...req, location };
+  }
+  async beamParse(req, location = "") {
+    let text = await req.text();
+    let doc = this.parse(text, true);
+    return { text, doc, location };
+  }
+  async beamMake(location, slowly) {
+    let { req } = await this.beamPrep(location, slowly);
+    return await this.beamParse(req, location);
+  }
+  async beamDo(req, DOM) {
+    let { text, doc, location } = await this.beamParse(req);
+    this.beamRender(doc, DOM, { location, text });
+  }
+  beamRender(doc, DOM, optionalDetails = {}) {
+    if (this.chubDev) console.log(doc);
+    let entrypoint = DOM || this.chubLocation || "chub";
+    let locationGot = this.$(entrypoint) || document.body;
+    locationGot.innerHTML = doc;
+    _ChubMLMod.#ChubInjected.detail = {
+      nodes: locationGot,
+      text: doc,
+      ...optionalDetails
+    };
+    _ChubMLMod.#ChubInjected.activate();
+  }
+  async beamSync(location, DOM, slowly = false) {
+    let { req } = await this.beamPrep(location, slowly);
+    return async () => await this.beamDo(req, DOM);
   }
   /**
    * Example usage:
@@ -581,20 +698,7 @@ ${cil.i}</${o.tag}>
    * @param slowly - If true, errors are ignored and execution using a quicker Promise.all, this is better for users, worse for servers.
    */
   async beamChub(location, DOM, slowly = false) {
-    let fileName = await this.#fileOrFallback(location, slowly);
-    if (!fileName) throw new Error(`File not found!`);
-    let { req } = await this.#getFileSafely(fileName);
-    chaosGl.lastChub = req;
-    let text = await req.text();
-    let doc = this.parse(text);
-    if (chaosGl.chubDev == true)
-      console.log(doc);
-    let entrypoint = DOM || chaosGl.chubLocation || "chub";
-    let locationGot = this.$(entrypoint);
-    if (!locationGot) locationGot = document.body;
-    locationGot.innerHTML = doc;
-    _ChubMLMod.#ChubInjected.detail = locationGot;
-    _ChubMLMod.#ChubInjected.activate();
+    return await (await this.beamSync(location, DOM, slowly))();
   }
   constructor() {
     super();

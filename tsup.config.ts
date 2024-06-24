@@ -8,5 +8,6 @@ export default defineConfig({
   dts: true,
   bundle: true,
   sourcemap: true,
-  format: ['cjs', 'esm', 'iife']
+  format: ['cjs', 'esm', 'iife'],
+  external: ['./global', '../global']
 })
