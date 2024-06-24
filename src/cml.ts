@@ -284,7 +284,7 @@ export class ChubMLMod extends CML_Static {
       If as params, get params.
 
       E.G.
-      @fetchw=https://www.google.com
+      tag @fetchw=https://www.google.com
     */
     console.log("using @", `${param}`.slice(8), `${param}`.split(/[|:>=\-\)!~]/gm)[1].slice(1));
 
@@ -794,17 +794,11 @@ export class ChubMLMod extends CML_Static {
   }
 
   aliasIndexes = [
-    "beam.cma",
+    "beam.lmc",
     "beam.chub",
 
-    "bm.cma",
-    "bm.chub",
-
-    "index.cma",
+    "index.lmc",
     "index.chub",
-
-    "i.cma",
-    "i.chub",
   ]
 
   async #checkFile(loc: string | URL | Request, opts = {}) {
@@ -842,15 +836,17 @@ export class ChubMLMod extends CML_Static {
     let pArr = [] as Promise<[string, boolean]>[];
     let abortController = new AbortController();
 
-    const handleFile = async (loc: string, resolve: (value: [string, boolean] | PromiseLike<[string, boolean]>) => void) => {
+    const handleFile = async (loc: string, resolve: Function) => {
+      if (abortController.signal.aborted) throw new Error("Aborted");
       let [f] = await this.#checkFile(loc, { signal: abortController.signal });
       if (f) abortController.abort();
       resolve([loc, f]);
     }
 
-    for (const loc of fileLocations) pArr.push(this.#batchFile(handleFile, loc));
+    for (const loc of fileLocations)
+      pArr.push(this.#batchFile(handleFile, loc));
 
-    let resses = await Promise.all(pArr.map(p => p.catch(e => [null, false])));
+    let resses = await Promise.all(pArr.map(p => p.catch(e => ['', false] as ['', boolean])));
 
     // Find first valid res
     for (const [res, ok] of resses)

@@ -635,14 +635,10 @@ ${cil.i}</${o.tag}>
       return chubML;
     }
     aliasIndexes = [
-      "beam.cma",
+      "beam.lmc",
       "beam.chub",
-      "bm.cma",
-      "bm.chub",
-      "index.cma",
-      "index.chub",
-      "i.cma",
-      "i.chub"
+      "index.lmc",
+      "index.chub"
     ];
     async #checkFile(loc, opts = {}) {
       let req = await fetch(loc, { method: "HEAD", ...opts });
@@ -672,12 +668,14 @@ ${cil.i}</${o.tag}>
       let pArr = [];
       let abortController = new AbortController();
       const handleFile = async (loc, resolve) => {
+        if (abortController.signal.aborted) throw new Error("Aborted");
         let [f] = await this.#checkFile(loc, { signal: abortController.signal });
         if (f) abortController.abort();
         resolve([loc, f]);
       };
-      for (const loc of fileLocations) pArr.push(this.#batchFile(handleFile, loc));
-      let resses = await Promise.all(pArr.map((p) => p.catch((e) => [null, false])));
+      for (const loc of fileLocations)
+        pArr.push(this.#batchFile(handleFile, loc));
+      let resses = await Promise.all(pArr.map((p) => p.catch((e) => ["", false])));
       for (const [res, ok] of resses)
         if (ok) return res;
       return null;
