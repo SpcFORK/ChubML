@@ -1,15 +1,3 @@
-"use strict";
-(() => {
-  // src/CowErr.ts
-  var CowErr = class extends Error {
-    constructor(message, ext) {
-      super(Array.isArray(message) ? message.join("\n") : message);
-      this.name = "CowErr" + (ext ? ` (${ext})` : "");
-    }
-    toss = (...params) => console.error(this, ...params);
-    throw() {
-      throw this;
-    }
-  };
-})();
+"use strict";(()=>{var t=class extends Error{constructor(r,n){super(Array.isArray(r)?r.join(`
+`):r),this.name="CowErr"+(n?` (${n})`:"")}toss=(...r)=>console.error(this,...r);throw(){throw this}};})();
 //# sourceMappingURL=CowErr.global.js.map

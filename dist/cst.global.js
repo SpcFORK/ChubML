@@ -1,11 +1,2 @@
-"use strict";
-(() => {
-  // src/cst.ts
-  var chaosGl = globalThis;
-  var chaosEval = chaosGl.eval;
-  var NOOP = () => {
-  };
-  var ANOOP = async () => {
-  };
-})();
+"use strict";(()=>{var o=globalThis,a=o.eval,s=()=>{},n=async()=>{};})();
 //# sourceMappingURL=cst.global.js.map

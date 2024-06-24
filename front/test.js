@@ -1,7 +1,7 @@
 let cml = globalThis.ChubML
 
 var chubLocation = "html"
-var chubDev = true
+// var chubDev = true
 
 /* 
   On document load after Chub is done loading.

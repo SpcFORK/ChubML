@@ -1,8 +1,2 @@
-import {
-  CML_Static
-} from "./chunk-BJUEP7UN.mjs";
-import "./chunk-AAIK3BUI.mjs";
-export {
-  CML_Static
-};
+import{a}from"./chunk-CBHQQSGR.mjs";import"./chunk-7D7K5WQR.mjs";export{a as CML_Static};
 //# sourceMappingURL=static.mjs.map

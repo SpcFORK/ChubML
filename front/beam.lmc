@@ -1,8 +1,9 @@
-@eval=console.log(1);
+@call=console.log;
+@call=;
 
 html;
   head;
     title;
       "wow";
   body;
-    wow #wow @eval='hey';
+    wow #wow;

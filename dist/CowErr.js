@@ -1,36 +1,3 @@
-"use strict";
-var __defProp = Object.defineProperty;
-var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-var __getOwnPropNames = Object.getOwnPropertyNames;
-var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __export = (target, all) => {
-  for (var name in all)
-    __defProp(target, name, { get: all[name], enumerable: true });
-};
-var __copyProps = (to, from, except, desc) => {
-  if (from && typeof from === "object" || typeof from === "function") {
-    for (let key of __getOwnPropNames(from))
-      if (!__hasOwnProp.call(to, key) && key !== except)
-        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
-  }
-  return to;
-};
-var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
-
-// src/CowErr.ts
-var CowErr_exports = {};
-__export(CowErr_exports, {
-  CowErr: () => CowErr
-});
-module.exports = __toCommonJS(CowErr_exports);
-var CowErr = class extends Error {
-  constructor(message, ext) {
-    super(Array.isArray(message) ? message.join("\n") : message);
-    this.name = "CowErr" + (ext ? ` (${ext})` : "");
-  }
-  toss = (...params) => console.error(this, ...params);
-  throw() {
-    throw this;
-  }
-};
+"use strict";var s=Object.defineProperty;var c=Object.getOwnPropertyDescriptor;var e=Object.getOwnPropertyNames;var a=Object.prototype.hasOwnProperty;var d=(n,r)=>{for(var t in r)s(n,t,{get:r[t],enumerable:!0})},u=(n,r,t,h)=>{if(r&&typeof r=="object"||typeof r=="function")for(let o of e(r))!a.call(n,o)&&o!==t&&s(n,o,{get:()=>r[o],enumerable:!(h=c(r,o))||h.enumerable});return n};var y=n=>u(s({},"__esModule",{value:!0}),n);var l={};d(l,{CowErr:()=>i});module.exports=y(l);var i=class extends Error{constructor(r,t){super(Array.isArray(r)?r.join(`
+`):r),this.name="CowErr"+(t?` (${t})`:"")}toss=(...r)=>console.error(this,...r);throw(){throw this}};
 //# sourceMappingURL=CowErr.js.map

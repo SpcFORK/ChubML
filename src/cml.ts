@@ -84,7 +84,7 @@ export class ChubMLMod extends CML_Static {
     }
   }
 
-  #makeDef = (): ChubNode => ({
+  #makeDef = (_?: SortedCILE): ChubNode => ({
     tag: "",
     id: "",
     class: "",
@@ -93,7 +93,14 @@ export class ChubMLMod extends CML_Static {
     style: "",
     attr: "",
     indent: 0,
+    [Symbol.unscopables]: {
+      _: _ || null
+    }
   })
+
+  #_(scope: Record<string, any> & { [Symbol.unscopables]: any }) {
+    return Reflect.get(scope, Symbol.unscopables)
+  }
 
   #makeIndexes = () => ({
     str: 0,
@@ -295,11 +302,45 @@ export class ChubMLMod extends CML_Static {
     return param;
   }
 
+  #handleAtEval(tempC: ChubNode, ev: string) {
+    try { var scriptRes = new Function(ev).bind(tempC)(this) }
+    catch (error) { return console.error(error, this.s.errorList.scripterror) }
+    if (this.chubDev) console.log("AtEval: ", scriptRes);
+    if (scriptRes) this.#handleAtPutCont(tempC, scriptRes);
+  }
+
+  #handleAtPutCont(tempC: ChubNode, param: string) {
+    let r = this.#orStr(param)
+    tempC.content += r
+    if (this.chubDev) console.log("AtPutCont: ", param);
+  }
+
+  #handleAtCall(tempC: ChubNode, globalRef: string) {
+    let r = this.#orStr(globalRef)
+    let res = chaosEval(r)
+
+    if (!res) throw new CowErr("CowErr", "No Call: " + r)
+    if (typeof res !== 'function') throw new CowErr("CowErr", "Not a function: " + r)
+
+    let cr = res(tempC)
+    if (cr) this.#handleAtPutCont(tempC, cr)
+    if (this.chubDev) console.log("Call: ", cr);
+  }
+
+  #handleAtFrom(tempC: ChubNode, param: string) {
+    let r = this.#orStr(param)
+    let template = this.$(r)
+    if (!template) throw new CowErr("CowErr", "No Template: " + r)
+    let res = template.innerHTML
+    tempC.content += res
+    if (this.chubDev) console.log("AtFrom: ", res)
+  }
+
   // #watchVar(tempC: ChubNode, param: string) {
   //   let v: unknown;
   // }
 
-  // @@
+  /** @@ - At Codes */
   #handleAtCode(tempC: ChubNode, param: any) {
     if (typeof param !== "string") return;
     /*
@@ -311,34 +352,44 @@ export class ChubMLMod extends CML_Static {
       E.G.
       tag @fetchw=https://www.google.com
     */
-    console.log("using @: ", `${param}`.slice(1).split('='));
+    if (this.chubDev)
+      console.log("using @: ", `${param}`.slice(1).split(/[=>]/));
 
     const S_name = param.slice(1)
-    const prune = (len: number) => S_name.slice(len + 1); // @...=, 2 extra
-    const starts = (str: string) => S_name.startsWith(str);
+    function prune(len: number): string {
+      return S_name.slice(len + 1);
+    }
+    function starts(str: string): boolean {
+      return S_name.startsWith(str);
+    }
 
     switch (true) {
       case starts('fetchw'):
         this.#handleAtFetch(tempC, prune(6));
         break;
+
       case starts('eval'):
         this.#handleAtEval(tempC, prune(4));
         break;
 
-      default: console.log("no @ found...?", param);
+      case starts(':'):
+        this.#handleAtPutCont(tempC, prune(0));
+        break;
+
+      case starts('call'):
+        this.#handleAtCall(tempC, prune(4));
+        break;
+
+      case starts('from'):
+        this.#handleAtFrom(tempC, prune(4));
+        break;
+
+      case starts(''):
+
+      default: console.log("no valid @ found...?", param);
     }
 
     return param;
-  }
-
-  #handleAtEval(tempC: ChubNode, ev: string) {
-    try { var scriptRes = chaosEval(ev) }
-    catch (error) { return console.error(error, this.s.errorList.scripterror) }
-    if (this.chubDev) console.log("scriptRes: ", scriptRes);
-    // Set text to res
-    let r = this.#orStr(scriptRes)
-    // tempC.data += ` data-eval="${r}"`
-    tempC.content += r
   }
 
   #appendAttr(tempC: ChubNode, nodeName: keyof ChubNode, newAttr: string, expectedPrefixLen = 1) {
@@ -416,8 +467,8 @@ export class ChubMLMod extends CML_Static {
     let hasOpts = str.search(r().betweenCol)
     let isscr = str.match(r().script)
 
-    let def = this.#makeDef()
-    let tempC = this.#makeDef()
+    let def = this.#makeDef(cil)
+    let tempC = this.#makeDef(cil)
 
     // Script Operation
     if (isscr !== null) {
@@ -616,17 +667,12 @@ export class ChubMLMod extends CML_Static {
 
   async findFile(fileLocations: any) {
     for (const location of fileLocations) {
-      try {
-        const response = await fetch(location);
-
-        // Check if the response was successful (status code in the range of 200-299)
-        if (response.ok) {
-          return location; // Return the valid file location
-        }
-      } catch (error) {
-        // Handle any errors that occur during the fetch request
+      try { var res = await fetch(location) }
+      catch (error) {
         console.error(`Error fetching file from '${location}':`, error);
       }
+      if (res!?.ok)
+        return location;
     }
 
     // Return null if no valid file location was found
@@ -818,7 +864,6 @@ export class ChubMLMod extends CML_Static {
     chubML += `${indent}${node.nodeName.toLowerCase()}`;
 
     // Process attributes
-
     if (node.attributes.length > 0) {
       const attrs = Array.from(node.attributes);
       chubML = this.#handleAttr(attrs, chubML);
