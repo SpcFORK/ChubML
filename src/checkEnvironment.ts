@@ -1,6 +1,9 @@
-import { chaosEval } from './cst';
+import cst from './cst';
+const { chaosEval } = cst;
 
-export var checkEnvironment = () => {
+import eobj from './eobj';
+
+var checkEnvironment = () => {
   let isImportSupported = false;
   try {
     chaosEval('import.meta');
@@ -35,3 +38,5 @@ export var checkEnvironment = () => {
     return 'Unknown';
   }
 };
+
+export default eobj(checkEnvironment, ['checkEnvironment']).default;

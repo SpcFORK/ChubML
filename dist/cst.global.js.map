@@ -1,1 +1,0 @@
-{"version":3,"sources":["../src/cst.ts"],"sourcesContent":["export const chaosGl = globalThis as any;\nexport const chaosEval = chaosGl.eval;\n\nexport const NOOP = (): any => { };\nexport const ANOOP = async (): Promise<any> => { };\n"],"mappings":"mBAAO,IAAMA,EAAU,WACVC,EAAYD,EAAQ,KAEpBE,EAAO,IAAW,CAAE,EACpBC,EAAQ,SAA0B,CAAE","names":["chaosGl","chaosEval","NOOP","ANOOP"]}

@@ -8,7 +8,10 @@ export default defineConfig({
   dts: true,
   bundle: true,
   sourcemap: true,
-  minify: true,
-  format: ['cjs', 'esm', 'iife'],
-  external: ['./global', '../global']
+  minify: false,
+  format: ['cjs', 'esm'],
+  external: ['./global', '../global'],
+  banner: {
+    js: `if (globalThis.window) globalThis.module ||= { exports: {} }`
+  }
 })

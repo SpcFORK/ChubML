@@ -1,9 +1,6 @@
-@call=console.log;
-@call=;
-
-html;
+html @gl=html;
   head;
-    title;
-      "wow";
   body;
-    wow #wow;
+    "Hey";
+
+@%=;

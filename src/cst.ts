@@ -1,5 +1,16 @@
-export const chaosGl = globalThis as any;
-export const chaosEval = chaosGl.eval;
+import eobj from './eobj';
 
-export const NOOP = (): any => { };
-export const ANOOP = async (): Promise<any> => { };
+const chaosGl = globalThis as any;
+const chaosEval = chaosGl.eval;
+
+const NOOP = (): any => { };
+const ANOOP = async (): Promise<any> => { };
+
+const eo = new class cst {
+  chaosGl = eobj(chaosGl, ['chaosGl']).default;
+  chaosEval = eobj(chaosEval, ['chaosEval']).default;
+  NOOP = eobj(NOOP, ['NOOP']).default;
+  ANOOP = eobj(ANOOP, ['ANOOP']).default;
+}
+
+export default eobj(eo).default;

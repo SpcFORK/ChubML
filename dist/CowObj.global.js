@@ -1,2 +1,0 @@
-"use strict";(()=>{var r=class{SJSON(){return JSON.stringify(this)}toJSON(){return{...this,__methods:this.extractMethods()}}extractMethods(){let e={};for(let t in this)typeof this[t]=="function"&&(e[t]=String(this[t]));return e}};})();
-//# sourceMappingURL=CowObj.global.js.map

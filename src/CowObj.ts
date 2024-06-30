@@ -1,4 +1,6 @@
-export class CowObj {
+import eobj from './eobj';
+
+class CowObj {
   SJSON() {
     return JSON.stringify(this);
   }
@@ -18,6 +20,8 @@ export class CowObj {
     return methods;
   }
 }
+
+export default eobj(CowObj).default;
 
 export type CowObject<Object = {}> = Object & Partial<{
   __methods: Record<string, string>;

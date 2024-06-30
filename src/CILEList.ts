@@ -12,7 +12,8 @@ export interface ChubNode {
   attr: string;
   indent: number;
   [Symbol.unscopables]: {
-    _: SortedCILE | null
+    _: SortedCILE | null,
+    atBucket: string[]
   }
 }
 export interface SortedCILE extends CILElement {
@@ -21,4 +22,4 @@ export interface SortedCILE extends CILElement {
   o?: ChubNode;
 }
 export type CILEList = CILElement[];
-type SortedCIL = SortedCILE[];
+export type SortedCIL = SortedCILE[];

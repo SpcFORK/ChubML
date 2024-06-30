@@ -1,6 +1,9 @@
-import { chaosGl } from './cst';
+import cst from './cst';
+const { chaosGl } = cst;
 
-export class CustomEventHandle {
+import eobj from './eobj';
+
+class CustomEventHandle {
   #globalBus = [] as Function[];
 
   #setHandle = (e: Function) => {
@@ -39,27 +42,30 @@ export class CustomEventHandle {
   }
 
   get detail() {
-    return this.#e.detail;
+    return Reflect.has(this.#e, 'detail') ? (this.#e as CustomEvent).detail : null;
   }
   set detail(value) {
     this.makeEvent(this.event, value)
   }
 
-  #e: CustomEvent;
+  #e: CustomEvent | Event;
+  #_E = globalThis.CustomEvent ?  CustomEvent : Event;
 
   makeEvent(name: string, detail: { detail?: unknown } & Record<string, unknown> = {}) {
-    return this.#e = new CustomEvent(name, { detail });
+    return this.#e = new this.#_E(name, { detail })
   }
 
   activate() {
     for (const cb of this.#globalBus) cb(this.#e);
     dispatchEvent(this.#e)
   }
-
+  
   constructor(
     public event: string,
   ) {
-    this.#e = new CustomEvent(event);
+    this.#e = new this.#_E(event);
     this.#init();
   }
 }
+
+export default eobj(CustomEventHandle).default;

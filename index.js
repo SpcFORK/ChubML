@@ -3,6 +3,10 @@ const path = require("path");
 
 const app = express();
 
+const cml = require("./dist/cml");
+const chub = cml.default
+
+
 app.use(
   (req, res, next) => {
     console.log(req.method, req.url);

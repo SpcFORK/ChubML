@@ -1,15 +1,909 @@
-import{a as w}from"./chunk-BDFFKWZU.mjs";import{a as m}from"./chunk-SBYLR2US.mjs";import{a as c,b as p}from"./chunk-5FZSLDQI.mjs";import{a as y}from"./chunk-CBHQQSGR.mjs";import{a as d}from"./chunk-7D7K5WQR.mjs";import"../global";var C=class u extends y{static ChubML=u;ChubML=u;static#o=new w("chubstart");static#t=new w("chubinjected");static{c.lastChub||="",c.cbMode||="",c.chubLocation||="",window.onload=()=>{this.#o.detail=this,this.#o.activate()}}#l=t=>({tag:"",id:"",class:"",content:"",data:"",style:"",attr:"",indent:0,[Symbol.unscopables]:{_:t||null}});#X(t){return Reflect.get(t,Symbol.unscopables)}#n=()=>({str:0,tmp:0});#g=["area","base","br","col","embed","hr","img","input","link","meta","param","source","track","wbr"];get doc(){return document}#c(t,e){typeof t=="string"?this.body.innerHTML=t:this.body.appendChild(t)}get body(){return document.body}set body(t){this.#c(t,this.body)}get head(){return document.head}set head(t){this.#c(t,this.head)}get html(){return document.documentElement}get title(){return document.title}set title(t){document.title=t}get chubLocation(){return c.chubLocation}set chubLocation(t){c.chubLocation=t}get chubDev(){return c.chubDev}set chubDev(t){c.chubDev=t}#s(t,e=""){return t||e}#e(t){return t?t+" ":""}s=y;styled={};#i=()=>this.s.Rexps;#p(t){let e=this.#i;return t.replace(e().lineWithComment,"").replace(e().formatspace2,`
-`).replace(e().formatspace1,`
-`)}#w(t){let e=t.split(/;/),r=[];for(let n of e)r.push({c:n.trim(),i:n.search(/\S/)});return r}#y(t){let e=[],r=[];for(let n of t){let s=n.i,i={c:n.c,i:s,children:[]};for(;r.length>0&&s<=r[r.length-1].i;)r.pop();r.length>0?r[r.length-1].children.push(i):e.push(i),r.push(Object.assign(i))}return e}#C(t){let e=this.#i,r=t[1],n=r.includes("src="),s=r.includes(`"execafter";
-`);var i=!0;let a=async o=>{let b=await(await fetch(o)).text();try{let h=document.createElement("script");h.type="text/javascript",h.text=b,document.body.appendChild(h)}catch(h){console.log(h,this.s.errorList.scripterror)}};if(n&&t){let o=r.match(/src="(.*)"/);o&&(a(o[1]),i=!1)}if(t!==null&&i)try{p(r)}catch(o){console.error(o,this.s.errorList.scripterror)}}async#m(t,e){window?.location?.origin&&(e=`${e}`.includes("{{ORIG}}")?e.replace("{{ORIG}}",window.location.origin):e),t.tag=t.tag?t.tag:"fetcherBlock",t.data=`${this.#e(t.data)}data-fetchw="${e}" data-instance="${new Date().getTime()}"`;let n=await(await fetch(await this.findFile([e]))||{text:()=>e}).text();if(t.content=`${n||""}`,window?.location?.origin){let s=this.$(`[${t.data.split(" ").join("][")}]`);s&&(s.innerHTML=t.content.replace(/\n/g,`
-</br>
-`))}return e}#L(t,e){try{var r=new Function(e).bind(t)(this)}catch(n){return console.error(n,this.s.errorList.scripterror)}this.chubDev&&console.log("AtEval: ",r),r&&this.#a(t,r)}#a(t,e){let r=this.#s(e);t.content+=r,this.chubDev&&console.log("AtPutCont: ",e)}#E(t,e){let r=this.#s(e),n=p(r);if(!n)throw new d("CowErr","No Call: "+r);if(typeof n!="function")throw new d("CowErr","Not a function: "+r);let s=n(t);s&&this.#a(t,s),this.chubDev&&console.log("Call: ",s)}#k(t,e){let r=this.#s(e),n=this.$(r);if(!n)throw new d("CowErr","No Template: "+r);let s=n.innerHTML;t.content+=s,this.chubDev&&console.log("AtFrom: ",s)}#S(t,e){if(typeof e!="string")return;this.chubDev&&console.log("using @: ",`${e}`.slice(1).split(/[=>]/));let r=e.slice(1);function n(i){return r.slice(i+1)}function s(i){return r.startsWith(i)}switch(!0){case s("fetchw"):this.#m(t,n(6));break;case s("eval"):this.#L(t,n(4));break;case s(":"):this.#a(t,n(0));break;case s("call"):this.#E(t,n(4));break;case s("from"):this.#k(t,n(4));break;case s(""):default:console.log("no valid @ found...?",e)}return e}#h(t,e,r,n=1){let s=r.slice(n);t[e]=this.#e(t[e].toString())+s}#T(t,e){this.#h(t,"class",e)}#v(t,e){this.#h(t,"id",e)}#$(t,e){this.#u(t,e,"data",!0)}#N(t,e){this.#u(t,e,"attr",!1)}#u(t,e,r,n){let s=this.attrSyn(e);if(!s)return;let i=s[0].slice(1),a=s[1],o=`${i}="${a}"`;n&&(o=`data-${o}`),t[r]=this.#e(t[r])+o}#x(t,e,r){switch(t[0]){case"#":this.#v(e,t);break;case".":this.#T(e,t);break;case"$":this.#$(e,t);break;case"%":this.#N(e,t);break;case"@":t=this.#S(e,t);break;default:e.tag=this.#e(e.tag)+t}return t}#d=(t,e)=>e.forEach((r,n)=>{r=this.#x(r,t,n)});#f(t,e,r,n=""){let s=this.#i,i="  ",a=t.c,o=a.search(s().betweenQuote),l=a.search(s().betweenCol),b=a.match(s().script),h=this.#l(t),f=this.#l(t);if(b!==null&&this.#C(s().script.exec(a)),o!==-1){let g=a.split(s().betweenCol),k=a.split(s().betweenQuote)[1];if(l==null)f=h;else{var E=g[1]||"";this.#d(f,E.split(" "))}r.str++,f.content=k}else this.#d(f,a.split(" "));return t.o=f,t.i=i.repeat(e),t.children&&t.children.forEach(g=>this.#f(g,e+1,r,n)),[t,r]}#D(t,e=this.#n()){let{o:r}=t,n=!1;if(!r)throw new d("No CIL object found!");switch(r.tag){}return{isTemplate:n}}#R(t,e){for(let r in this.styled)if(this.styled[r]===!0&&this.styled.styles[r]){let n=e?"":`
-`;t=t.replace("<head>","<head>"+n+this.styled.styles[r]),this.styled[r]="has"}return t}#I(t,e){return t.includes("head")&&(t=this.#R(t,e)),t}#A(t,e){let r=s=>!!s,n=s=>t+=s;return r(e.class)&&n(` class="${e.class}"`),r(e.id)&&n(` id="${e.id}"`),r(e.style)&&n(` style="${e.style}"`),r(e.data)&&n(` ${e.data}`),r(e.attr)&&n(` ${e.attr}`),t}#P(t,e,r,n,s,i){let a=i?"":`
-`;t=a+`${i?"":e.i}<${r.tag}`,t=this.#A(t,r),n>0&&(s=!0);let o=">"+a;return s&&(t+=" /"),t+=o,{html:t,shorter:s}}#F(t,e,r,n){let s=n?"":t.i;switch(t.c[0]){case'"':e+=s+t.c.slice(1,t.c.length-1);break;default:e+=s+this.#b(t,r,n)}return e}#H(t,e,r,n){for(let s of t.children)e=this.#F(s,e,r,n);return e}#O(t,e,r,n,s){let i=s?"":`
-`;return t+=i,e||(t+=`${s?"":r.i}</${n.tag}>${i}`),t.includes("<>")&&(t=t.replace("<>","").replace("</>","")),t}#M(t,e,r){let n=r?"":t.i+"  ";return t.o?.content&&(e+=n+t.o.content),e}#b(t,e=this.#n(),r=!1){let n=t.o;if(!n)throw new d("No CIL object found!");let s=!1,i=this.arrMatch(n.tag,this.#g),a=i.count,o=i.list,l="",{isTemplate:b}=this.#D(t,e);return{html:l,shorter:s}=this.#P(l,t,n,a,s,r),l=this.#M(t,l,r),l=this.#H(t,l,e,r),l=this.#O(l,s,t,n,r),l=this.#I(l,r),l}#q(t,e,r=""){let n=this.#n();return[t,n]=this.#f(t,0,n,r),this.#b(t,n,e)}parse(t,e){let r=this.#p(t),n=this.#w(r),s=this.#y(n);return this.#q(s[0],e)}async findFile(t){for(let r of t){try{var e=await fetch(r)}catch(n){console.error(`Error fetching file from '${r}':`,n)}if(e?.ok)return r}return null}ChubRep(t,e="<!DOCTYPE html>"){t=this.parse(t,!0),document.open(),document.write(e+`
-`+t),document.close()}injectChub(t){var e=this.parse(t,!0);this.chubDev==!0&&console.log(e);let r=this.chubLocation||"chub",n=this.$(r);n?n.innerHTML=e:r="body",u.#t.detail=n,u.#t.activate()}Router=class{__env__=m();constructor(){switch(this.__env__){case"Node":break;case"Browser":break}}};CHUBfax(t,e=" "){let r=t||"";return r=r.replaceAll("=","|e").replaceAll(";","|col").replaceAll('"',"|qw").replaceAll(e,"|"),r}attrSyn(t){if(`${t}`.match(/=/gm)?.length>1)throw this.s.errorList.eqspl3;return t.replace("="," spcfork.Equals.Token ").replace("\\|"," spcfork.Pipe.Token ").replace(/\|e/gm,"=").replace(/\|col/gm,";").replace(/\|qw/gm,'"').replace(/\|/gm," ").replace(" spcfork.Pipe.Token ","|").split(" spcfork.Equals.Token ")}async CHUBWFetch(t){let e=await fetch(t);if(!e?.ok)throw new Error(`HTTP error! Status: ${e.status}`);let r=await e.text();return this.HTMLToChub(r)}getURLbit(){var t=window.location.href,e=t.split("/"),r=e[e.length-1];return r}CHUBsanitize(t){var e=document.createElement("div");e.innerText=t;var r=e.innerHTML;return r}DupeCollection={};CHUBduper(t="p;"){this.DupeCollection||(this.DupeCollection={}),this.DupeCollection[t]!==void 0?this.DupeCollection[t]+=1:this.DupeCollection[t]=0;let e;if(t.includes(";")){let n=t.split(";");n[0]+=` #${this.DupeCollection[t]}`,e=n.join("")}else e=t+";";let r={editedDupe:e,D:this.DupeCollection,s:()=>JSON.stringify(this.DupeCollection),c:()=>JSON.parse(r.s())};return r}CHUBstrprep(t){return t.replace(/[.*+?^${}()|[\]\\"';:]/g,"\\$&").replace(/[;]/g,"|col")}CHUBunmess(t){let r=t.replace(/\\\"/g,'"').replace(/\\\|col/g,",");return[r,JSON.parse(r)]}MLTextToNodes(t,e="text/html"){return new DOMParser().parseFromString(t,e)}Chubify(t){let e=this.parse(t,!0);return this.MLTextToNodes(e,"text/html")}HTMLToChub=(t,e="")=>{t instanceof Element&&(t=t.outerHTML);let r=this.MLTextToNodes(t,"text/html");return this.getChubML(r.documentElement,"",e)};getChubML=(t,e="",r="")=>{let n="";if(n+=`${e}${t.nodeName.toLowerCase()}`,t.attributes.length>0){let s=Array.from(t.attributes);n=this.#j(s,n)}return t.childNodes.length>0?n=this.#B(n,t,e,r):n+=`;
-`,n};#U(t,e){if(!t.textContent)return"";let r=t.textContent.trim();return r!=""?`${e}  "${r}";
-`:""}#B(t,e,r,n){t+=`;
-`;let s=Array.from(e.childNodes);for(let i of s)switch(i.nodeType){case Node.TEXT_NODE:t+=this.#U(i,r);break;case Node.ELEMENT_NODE:t+=this.getChubML(i,r+"  ",n);break}return t+=`${r}${n}
-`,t}#j(t,e){let r=n=>this.CHUBfax(n.value);for(let n of t)switch(n.name.toLowerCase()){case"class":e+=` .${r(n)}`;break;case"id":e+=` #${r(n)}`;default:e+=` %${n.name}=${r(n)}`}return e}aliasIndexes=["beam.lmc","beam.chub","index.lmc","index.chub"];async#r(t,e={}){let r=await fetch(t,{method:"HEAD",...e});return[r.ok,r]}async#_(t){let[e,r]=await this.#r(t);if(!e)throw new Error("File not found!");return{req:await fetch(t),okRes:r}}async#G(t){for(let e of t){let[r,n]=await this.#r(e);if(r)return e}return null}#W=(t,e)=>new Promise(async(r,n)=>{try{await t(e,r)}catch(s){n(s)}});async#J(t){let e=[],r=new AbortController,n=async(i,a)=>{if(r.signal.aborted)throw new Error("Aborted");let[o]=await this.#r(i,{signal:r.signal});o&&r.abort(),a([i,o])};for(let i of t)e.push(this.#W(n,i));let s=await Promise.all(e.map(i=>i.catch(a=>["",!1])));for(let[i,a]of s)if(a)return i;return null}async#z(t,e=!1){let[r,n]=await this.#r(t);return r?t:e?await this.#G(this.aliasIndexes):await this.#J(this.aliasIndexes)}async beamPrep(t,e){let r=await this.#z(t,e);if(!r)throw new Error("File not found!");let n=await this.#_(r);return c.lastChub=n,{...n,location:t}}async beamParse(t,e=""){let r=await t.text(),n=this.parse(r,!0);return{text:r,doc:n,location:e}}async beamMake(t,e){let{req:r}=await this.beamPrep(t,e);return await this.beamParse(r,t)}async beamDo(t,e){let{text:r,doc:n,location:s}=await this.beamParse(t);this.beamRender(n,e,{location:s,text:r})}beamRender(t,e,r={}){this.chubDev&&console.log(t);let n=e||this.chubLocation||"chub",s=this.$(n)||document.body;s.innerHTML=t,u.#t.detail={nodes:s,text:t,...r},u.#t.activate()}async beamSync(t,e,r=!1){let{req:n}=await this.beamPrep(t,r);return async()=>await this.beamDo(n,e)}async beamChub(t,e,r=!1){return await(await this.beamSync(t,e,r))()}constructor(){super();try{this.#Q()}catch{}}#Q(){}},L=new C;try{module.exports=L}catch{}try{c.window.ChubML=L}catch{}export{C as ChubMLMod};
+if (globalThis.window) globalThis.module ||= { exports: {} }
+import {
+  static_default
+} from "./chunk-VMLHXWRI.mjs";
+import {
+  CowErr_default
+} from "./chunk-UCJLESIC.mjs";
+import {
+  CustomEventHandle_default
+} from "./chunk-7XRO2CLO.mjs";
+import {
+  checkEnvironment_default
+} from "./chunk-P6HZRHOZ.mjs";
+import {
+  cst_default
+} from "./chunk-VM752BWL.mjs";
+import {
+  eobj_default
+} from "./chunk-HSOLDJ7R.mjs";
+
+// src/cml.ts
+var { chaosGl, chaosEval, NOOP, ANOOP } = cst_default;
+var ChubMLMod = class _ChubMLMod extends static_default {
+  static ChubML = _ChubMLMod;
+  ChubML = _ChubMLMod;
+  static #ChubStarted = new CustomEventHandle_default("chubstart");
+  static #ChubInjected = new CustomEventHandle_default("chubinjected");
+  static {
+    chaosGl.lastChub ||= "";
+    chaosGl.cbMode ||= "";
+    chaosGl.chubLocation ||= "";
+    chaosGl.chubDev ||= false;
+    chaosGl.__lastQD = null;
+    chaosGl.__lastQM = null;
+    chaosGl.onload && (window.onload = () => {
+      this.#ChubStarted.detail = this;
+      this.#ChubStarted.activate();
+    });
+  }
+  #makeDef = (_) => ({
+    tag: "",
+    id: "",
+    class: "",
+    content: "",
+    data: "",
+    style: "",
+    attr: "",
+    indent: 0,
+    [Symbol.unscopables]: {
+      _: _ || null,
+      atBucket: []
+    }
+  });
+  static #_(scope) {
+    return Reflect.get(scope, Symbol.unscopables);
+  }
+  #un = _ChubMLMod.#_;
+  static #_b(scope) {
+    return this.#_(scope).atBucket;
+  }
+  #ab = _ChubMLMod.#_b;
+  #makeIndexes = () => ({
+    str: 0,
+    tmp: 0
+  });
+  #specialTags = [
+    "area",
+    "base",
+    "br",
+    "col",
+    "embed",
+    "hr",
+    "img",
+    "input",
+    "link",
+    "meta",
+    "param",
+    "source",
+    "track",
+    "wbr"
+  ];
+  static #getQM() {
+    return chaosGl.__lastQM;
+  }
+  static get __lastQM() {
+    return this.#getQM();
+  }
+  static #setQM(val) {
+    chaosGl.__lastQM = val;
+  }
+  static set __lastQM(val) {
+    this.#setQM(val);
+  }
+  get __lastQM() {
+    return _ChubMLMod.__lastQM;
+  }
+  set __lastQM(val) {
+    _ChubMLMod.__lastQM = val;
+  }
+  static #getQD() {
+    return chaosGl.__lastQD;
+  }
+  static get __lastQD() {
+    return this.#getQD();
+  }
+  static #setQD(val) {
+    chaosGl.__lastQD = val;
+  }
+  static set __lastQD(val) {
+    this.#setQD(val);
+  }
+  get __lastQD() {
+    return _ChubMLMod.__lastQD;
+  }
+  set __lastQD(val) {
+    _ChubMLMod.__lastQD = val;
+  }
+  get doc() {
+    return document;
+  }
+  #setOrAppend(val, p) {
+    if (typeof val === "string") this.body.innerHTML = val;
+    else this.body.appendChild(val);
+  }
+  get body() {
+    return document.body;
+  }
+  set body(val) {
+    this.#setOrAppend(val, this.body);
+  }
+  get head() {
+    return document.head;
+  }
+  set head(val) {
+    this.#setOrAppend(val, this.head);
+  }
+  get html() {
+    return document.documentElement;
+  }
+  get title() {
+    return document.title;
+  }
+  set title(val) {
+    document.title = val;
+  }
+  get chubLocation() {
+    return chaosGl.chubLocation;
+  }
+  set chubLocation(val) {
+    chaosGl.chubLocation = val;
+  }
+  get chubDev() {
+    return chaosGl.chubDev;
+  }
+  set chubDev(val) {
+    chaosGl.chubDev = val;
+  }
+  #orStr(str, def = "") {
+    return str ? str : def;
+  }
+  #prepSpcIf(str) {
+    return str ? str + " " : "";
+  }
+  s = static_default;
+  styled = {};
+  #Rexps = () => this.s.Rexps;
+  #initialFormat(str) {
+    let r = this.#Rexps;
+    return str.replace(r().lineWithComment, "").replace(r().formatspace2, "\n").replace(r().formatspace1, "\n");
+  }
+  #cascadeIndentList(str) {
+    let strLines = str.split(/;/);
+    let col = [];
+    for (const line of strLines) col.push({
+      c: line.trim(),
+      i: line.search(/\S/)
+    });
+    return col;
+  }
+  #sortCILIndent(contents) {
+    const sortedContents = [];
+    let parentStack = [];
+    for (const content of contents) {
+      const currentIndent = content.i;
+      const currentContent = { c: content.c, i: currentIndent, children: [], parent: null };
+      while (parentStack.length > 0 && currentIndent <= parentStack[parentStack.length - 1].i)
+        parentStack.pop();
+      if (parentStack.length > 0) {
+        const parent = parentStack[parentStack.length - 1];
+        currentContent.parent = parent;
+        parent.children.push(currentContent);
+      } else {
+        sortedContents.push(currentContent);
+      }
+      parentStack.push(Object.assign(currentContent));
+    }
+    ;
+    return sortedContents;
+  }
+  #handleScript(scrmatch) {
+    const r = this.#Rexps;
+    let src = scrmatch[1];
+    let issrc = src.includes("src=");
+    let execafter = src.includes('"execafter";\n');
+    var dostill = true;
+    const fetchScript = async (src2) => {
+      let pt = await fetch(src2);
+      let t = await pt.text();
+      try {
+        let script = document.createElement("script");
+        script.type = "text/javascript";
+        script.text = t;
+        document.body.appendChild(script);
+      } catch (error) {
+        console.log(error, this.s.errorList.scripterror);
+      }
+    };
+    if (issrc && scrmatch) {
+      let srcis = src.match(/src="(.*)"/);
+      if (srcis) {
+        fetchScript(srcis[1]);
+        dostill = false;
+      }
+    }
+    if (scrmatch !== null && dostill) {
+      try {
+        chaosEval(src);
+      } catch (error) {
+        console.error(error, this.s.errorList.scripterror);
+      }
+    }
+  }
+  #parseParam(param) {
+    let p = this.attrSyn(param).join("");
+    let r = this.#orStr(p);
+    return r;
+  }
+  async #handleAtFetch(tempC, param) {
+    window?.location?.origin && (param = `${param}`.includes("{{ORIG}}") ? param.replace("{{ORIG}}", window.location.origin) : param);
+    tempC.tag = tempC.tag ? tempC.tag : "fetcherBlock";
+    tempC.data = `${this.#prepSpcIf(tempC.data)}data-fetchw="${param}" data-instance="${(/* @__PURE__ */ new Date()).getTime()}"`;
+    let fw = await fetch(await this.findFile([param])) || {
+      text: () => {
+        return param;
+      }
+    };
+    let fwtext = await fw.text();
+    tempC.content = `${fwtext ? fwtext : ""}`;
+    if (window?.location?.origin) {
+      let el = this.$(`[${tempC.data.split(" ").join("][")}]`);
+      el && (el.innerHTML = tempC.content.replace(/\n/g, "\n</br>\n"));
+    }
+    return param;
+  }
+  #stealProp(tempC, prop) {
+    let v = tempC[prop];
+    tempC[prop] = "";
+    return v;
+  }
+  #defEval(er) {
+    return er ? chaosEval(er) : {};
+  }
+  #stealAndTryToEval(tempC, prop) {
+    if (!tempC[prop]) return {};
+    try {
+      var r = this.#defEval(this.#stealProp(tempC, prop));
+    } catch {
+    }
+    return r;
+  }
+  #handleAtEval(tempC, ev) {
+    let r = this.attrSyn(ev).join(";");
+    let er = this.#stealAndTryToEval(tempC, "id");
+    try {
+      var scriptRes = new Function(r).bind(tempC)(er, tempC);
+    } catch (error) {
+      return console.error(error, this.s.errorList.scripterror);
+    }
+    this.chubDev && console.log("AtEval: ", scriptRes);
+    scriptRes && this.#handleAtPutCont(tempC, scriptRes);
+  }
+  #handleAtRet(tempC, ev) {
+    this.#handleAtEval(tempC, "return " + ev);
+    this.chubDev && console.log("AtRet: ", ev);
+  }
+  #handleAtPutCont(tempC, param) {
+    let r = this.#parseParam(param);
+    tempC.content += r;
+    this.chubDev && console.log("AtPutCont: ", param);
+  }
+  #handleAtCall(tempC, globalRef) {
+    let r = this.#parseParam(globalRef);
+    let res = chaosEval(r);
+    if (!res) throw new CowErr_default("CowErr", "No Call: " + r);
+    if (typeof res !== "function") throw new CowErr_default("CowErr", "Not a function: " + r);
+    let er = this.#stealAndTryToEval(tempC, "id");
+    let cr = res.bind(tempC)(tempC, er);
+    cr && this.#handleAtPutCont(tempC, cr);
+    this.chubDev && console.log("Call: ", cr);
+  }
+  #handleAtFrom(tempC, param) {
+    let r = this.#parseParam(param);
+    let template = this.$(r);
+    if (!template) throw new CowErr_default("CowErr", "No Template: " + r);
+    let res = template.innerHTML;
+    tempC.content += res;
+    this.chubDev && console.log("AtFrom: ", res);
+  }
+  #handleAtImport(tempC, pv) {
+    let res = this.beamMake(pv, true);
+    res.then(({ doc }) => tempC.content += this.parse(doc));
+  }
+  #handleAtGlobalize(tempC, param) {
+    let r = this.#parseParam(param);
+    Object.defineProperty(chaosGl, r, {
+      get: () => tempC
+    });
+    this.chubDev && console.log("AtGlobalize: ", param);
+  }
+  #definePropertyWithHelper(target, property, value, helper) {
+    target[property] = value;
+    Reflect.defineProperty(chaosGl, helper, {
+      get: () => target[property],
+      configurable: true,
+      enumerable: true
+    });
+  }
+  #dfi(res, fp, v) {
+    this.#definePropertyWithHelper(res, fp, v, "__lastQD");
+  }
+  #dfp(res, fp, v) {
+    this.#definePropertyWithHelper(res, fp, v, "__lastQM");
+  }
+  #handleAtMkPrp(tempC, p) {
+    let [gobj, ...propNames] = p.split(".");
+    let fp = propNames.pop();
+    let g = chaosGl[gobj];
+    if (!fp)
+      throw new CowErr_default("CowErr", "No property name: " + p);
+    if (!g)
+      throw new CowErr_default("CowErr", "No Global Object: " + gobj);
+    let res = g;
+    for (const propName of propNames) {
+      res = res[propName];
+      if (!res)
+        throw new CowErr_default("CowErr", "No Property: " + propName);
+    }
+    this.#dfp(res, fp, this.#stealAndTryToEval(tempC, "id"));
+    this.chubDev && console.log("MkPrp: ", p, fp, g, res, res[fp]);
+  }
+  #handleAtDef(tempC, param) {
+    let er = this.#stealProp(tempC, "id");
+    this.#dfi(chaosGl, param, this.#defEval(er));
+    this.chubDev && console.log("AtDef: ", param);
+  }
+  #handleAtAsg(tempC, param) {
+    let propName = this.attrSyn(param);
+    let er = this.#stealProp(tempC, "id");
+    let res = propName.join(";");
+    if (er) {
+      Reflect.set(chaosGl, er, res);
+      tempC.content += er;
+    } else new CowErr_default("CowErr", "No Property: " + res).throw();
+    this.chubDev && console.log("AtAsg: ", tempC, res, er);
+  }
+  // #watchVar(tempC: ChubNode, param: string) {
+  //   let v: unknown;
+  // }
+  /** @@ - At Codes */
+  #handleAtCode(tempC, param) {
+    if (typeof param !== "string") return;
+    if (this.chubDev)
+      console.log("using @: ", `${param}`.slice(1).split(/[=]/));
+    const S_name = param.slice(1);
+    function prune(len) {
+      let p = S_name.slice(len + 1);
+      _ChubMLMod.#_b(tempC).push(p);
+      return p;
+    }
+    function starts(str) {
+      return S_name.startsWith(str);
+    }
+    switch (true) {
+      case starts("fetchw"):
+        this.#handleAtFetch(tempC, prune(6));
+        break;
+      case starts("eval"):
+        this.#handleAtEval(tempC, prune(4));
+        break;
+      case starts("ret"):
+        this.#handleAtRet(tempC, prune(3));
+        break;
+      case starts(":"):
+        this.#handleAtPutCont(tempC, prune(0));
+        break;
+      case starts("call"):
+        this.#handleAtCall(tempC, prune(4));
+        break;
+      case starts("from"):
+        this.#handleAtFrom(tempC, prune(4));
+        break;
+      case starts("import"):
+        this.#handleAtImport(tempC, prune(6));
+        break;
+      case starts("gl"):
+        this.#handleAtGlobalize(tempC, prune(2));
+        break;
+      case starts("mkprp"):
+        this.#handleAtMkPrp(tempC, prune(5));
+        break;
+      case starts("def"):
+        this.#handleAtDef(tempC, prune(3));
+        break;
+      case starts("asg"):
+        this.#handleAtAsg(tempC, prune(3));
+        break;
+      case starts("%"):
+        this.#handleAtCode(tempC, prune(1));
+        break;
+      default:
+        console.log("no valid @ found...?", param);
+    }
+    return param;
+  }
+  #appendAttr(tempC, nodeName, newAttr, expectedPrefixLen = 1) {
+    let pv = newAttr.slice(expectedPrefixLen);
+    tempC[nodeName] = this.#prepSpcIf(tempC[nodeName].toString()) + pv;
+  }
+  #handleClass(tempC, param) {
+    this.#appendAttr(tempC, "class", param);
+  }
+  #handleID(tempC, param) {
+    this.#appendAttr(tempC, "id", param);
+  }
+  #handleData(tempC, param) {
+    this.#addAttribute(tempC, param, "data", true);
+  }
+  #handlePercAttr(tempC, param) {
+    this.#addAttribute(tempC, param, "attr", false);
+  }
+  #addAttribute(tempC, param, type, isData) {
+    let attrParam = this.attrSyn(param);
+    if (!attrParam) return;
+    let name = attrParam[0].slice(1);
+    let value = attrParam[1];
+    let attrB = `${name}="${value}"`;
+    isData && (attrB = `data-${attrB}`);
+    tempC[type] = this.#prepSpcIf(tempC[type]) + attrB;
+  }
+  #handleChubAttr(param, tempC, paramI) {
+    switch (param[0]) {
+      case "#":
+        this.#handleID(tempC, param);
+        break;
+      case ".":
+        this.#handleClass(tempC, param);
+        break;
+      case "$":
+        this.#handleData(tempC, param);
+        break;
+      case "%":
+        this.#handlePercAttr(tempC, param);
+        break;
+      case "@":
+        param = this.#handleAtCode(tempC, param);
+        break;
+      default:
+        tempC.tag = this.#prepSpcIf(tempC.tag) + param;
+    }
+    return param;
+  }
+  #checkAttr = (tempC, arr) => arr.forEach((param, paramI) => {
+    param = this.#handleChubAttr(param, tempC, paramI);
+  });
+  #traverse(cil, i, indexes, v = "") {
+    const r = this.#Rexps;
+    let indentString = "  ";
+    let str = cil.c;
+    let isStr = str.search(r().betweenQuote);
+    let hasOpts = str.search(r().betweenCol);
+    let isscr = str.match(r().script);
+    let def = this.#makeDef(cil);
+    let tempC = this.#makeDef(cil);
+    isscr !== null && this.#handleScript(r().script.exec(str));
+    if (isStr !== -1) {
+      let tempLines = str.split(r().betweenCol);
+      let content = str.split(r().betweenQuote)[1];
+      if (hasOpts == null) {
+        tempC = def;
+      } else {
+        var inner = tempLines[1] || "";
+        this.#checkAttr(tempC, inner.split(" "));
+      }
+      indexes.str++;
+      tempC.content = content;
+    } else {
+      this.#checkAttr(tempC, str.split(" "));
+    }
+    cil.o = tempC;
+    cil.i = indentString.repeat(i);
+    cil.children && cil.children.forEach((child) => this.#traverse(child, i + 1, indexes, v));
+    return [cil, indexes];
+  }
+  // @ Templates
+  #parseTemplates(cil, opts = this.#makeIndexes()) {
+    const { o } = cil;
+    let isTemplate = false;
+    if (!o) throw new CowErr_default(`No CIL object found!`);
+    switch (o.tag) {
+    }
+    return { isTemplate };
+  }
+  #handleSHead(html, lessNl) {
+    for (let stydm in this.styled) if (this.styled[stydm] === true && this.styled.styles[stydm]) {
+      let p = lessNl ? "" : "\n";
+      html = html.replace("<head>", "<head>" + p + this.styled.styles[stydm]);
+      this.styled[stydm] = "has";
+    }
+    return html;
+  }
+  #handleSpecialTag(html, lessNl) {
+    html.includes("head") && (html = this.#handleSHead(html, lessNl));
+    return html;
+  }
+  #handleCNAttr(html, o) {
+    const is = (v) => !!v;
+    const addTo = (v) => html += v;
+    if (is(o.class))
+      addTo(` class="${o.class}"`);
+    if (is(o.id))
+      addTo(` id="${o.id}"`);
+    if (is(o.style))
+      addTo(` style="${o.style}"`);
+    if (is(o.data))
+      addTo(` ${o.data}`);
+    if (is(o.attr))
+      addTo(` ${o.attr}`);
+    return html;
+  }
+  #buildHeadTag(html, cil, o, isSpecial, shorter, lessNl) {
+    let p = lessNl ? "" : "\n";
+    html = p + `${lessNl ? "" : cil.i}<${o.tag}`;
+    html = this.#handleCNAttr(html, o);
+    if (isSpecial > 0)
+      shorter = true;
+    let end = ">" + p;
+    if (shorter) html += " /";
+    html += end;
+    return { html, shorter };
+  }
+  #handleBuildChild(child, html, opts, lessNl) {
+    let p = lessNl ? "" : child.i;
+    switch (child.c[0]) {
+      case '"':
+        html += p + child.c.slice(1, child.c.length - 1);
+        break;
+      default:
+        html += p + this.#parseChubNode(child, opts, lessNl);
+    }
+    return html;
+  }
+  #buildChildren(cil, html, opts, lessNl) {
+    for (const child of cil.children)
+      html = this.#handleBuildChild(child, html, opts, lessNl);
+    return html;
+  }
+  #buildFootTag(html, shorter, cil, o, lessNl) {
+    let p = lessNl ? "" : "\n";
+    html += p;
+    if (!shorter) html += `${lessNl ? "" : cil.i}</${o.tag}>${p}`;
+    if (html.includes("<>")) html = html.replace("<>", "").replace("</>", "");
+    return html;
+  }
+  #buildContent(cil, html, lessNl) {
+    let p = lessNl ? "" : cil.i + "  ";
+    if (cil.o?.content)
+      html += p + cil.o.content;
+    return html;
+  }
+  #parseChubNode(cil, opts = this.#makeIndexes(), lessNl = false) {
+    const o = cil.o;
+    if (!o) throw new CowErr_default(`No CIL object found!`);
+    let shorter = false;
+    let specialfind = this.arrMatch(o.tag, this.#specialTags);
+    let isSpecial = specialfind.count;
+    let inList = specialfind.list;
+    let html = "";
+    let { isTemplate } = this.#parseTemplates(cil, opts);
+    ({ html, shorter } = this.#buildHeadTag(html, cil, o, isSpecial, shorter, lessNl));
+    html = this.#buildContent(cil, html, lessNl);
+    html = this.#buildChildren(cil, html, opts, lessNl);
+    html = this.#buildFootTag(html, shorter, cil, o, lessNl);
+    html = this.#handleSpecialTag(html, lessNl);
+    return html;
+  }
+  #constuctFrom(cil, lessNl, v = "") {
+    let indexes = this.#makeIndexes();
+    let travRes = this.#traverse(cil, 0, indexes, v);
+    {
+      [cil, indexes] = travRes;
+    }
+    let res = this.#parseChubNode(cil, indexes, lessNl);
+    return res;
+  }
+  parse(source, lessNl) {
+    let str = this.#initialFormat(source);
+    let indList = this.#cascadeIndentList(str);
+    let sorted = this.#sortCILIndent(indList);
+    return this.#constuctFrom(sorted[0], lessNl);
+  }
+  async findFile(fileLocations) {
+    for (const location of fileLocations) {
+      try {
+        var res = await fetch(location);
+      } catch (error) {
+        console.error(`Error fetching file from '${location}':`, error);
+      }
+      if (res?.ok)
+        return location;
+    }
+    return null;
+  }
+  ChubRep(doc, quirky = "<!DOCTYPE html>") {
+    doc = this.parse(doc, true);
+    document.open();
+    document.write(quirky + "\n" + doc);
+    document.close();
+  }
+  injectChub(input) {
+    var htmlCode = this.parse(input, true);
+    if (this.chubDev == true) console.log(htmlCode);
+    let locationB = this.chubLocation || "chub";
+    let locationGot = this.$(locationB);
+    if (!locationGot) locationB = "body";
+    else locationGot.innerHTML = htmlCode;
+    _ChubMLMod.#ChubInjected.detail = locationGot;
+    _ChubMLMod.#ChubInjected.activate();
+  }
+  Router = class Router {
+    __env__ = checkEnvironment_default();
+    constructor() {
+      switch (this.__env__) {
+        case "Node":
+          break;
+        case "Browser":
+          break;
+      }
+    }
+  };
+  // Reformat Attributes to prevent conflicts and such.
+  CHUBfax(tex, sep = " ") {
+    let modtxt = tex || "";
+    modtxt = modtxt.replaceAll("=", "|e|").replaceAll(";", "|c|").replaceAll('"', "|q|").replaceAll(sep, "|");
+    return modtxt;
+  }
+  attrSyn(tex) {
+    if (`${tex}`.match(/=/gm)?.length > 1) throw this.s.errorList.eqspl3;
+    let eqTok = " spcfork.Equals.Token ";
+    let piTok = " spcfork.Pipe.Token ";
+    let attrParam = tex.replaceAll("=", eqTok).replaceAll("\\|", piTok).replaceAll("|e|", "=").replaceAll("|c|", ";").replaceAll("|q|", '"').replaceAll("|", " ").replaceAll(piTok, "|").split(eqTok);
+    return attrParam;
+  }
+  /**
+   * Fetch a web page and convert it to CHUB
+   * @param {string} url The URL of the web page to fetch
+   * @returns The CHUB representation of the web page
+   */
+  async CHUBWFetch(url) {
+    const response = await fetch(url);
+    if (!response?.ok)
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    const html = await response.text();
+    return this.HTMLToChub(html);
+  }
+  getURLbit() {
+    var url = window.location.href;
+    var parts = url.split("/");
+    var lastPart = parts[parts.length - 1];
+    return lastPart;
+  }
+  CHUBsanitize(input) {
+    var element = document.createElement("div");
+    element.innerText = input;
+    var sanitizedInput = element.innerHTML;
+    return sanitizedInput;
+  }
+  DupeCollection = {};
+  /**
+   * @param {string} dupe - The dupe to be added to the collection.
+   * @returns {object} - The edited dupe, the dupe collection, and the stringified and parsed collection.
+   */
+  CHUBduper(dupe = "p;") {
+    if (!this.DupeCollection) {
+      this.DupeCollection = {};
+    }
+    if (this.DupeCollection[dupe] !== void 0) {
+      this.DupeCollection[dupe] += 1;
+    } else {
+      this.DupeCollection[dupe] = 0;
+    }
+    let editedDupe;
+    if (dupe.includes(";")) {
+      let d2 = dupe.split(";");
+      d2[0] += ` #${this.DupeCollection[dupe]}`;
+      editedDupe = d2.join("");
+    } else {
+      editedDupe = dupe + ";";
+    }
+    let d = {
+      editedDupe,
+      D: this.DupeCollection,
+      s: () => JSON.stringify(this.DupeCollection),
+      c: () => JSON.parse(d.s())
+    };
+    return d;
+  }
+  CHUBstrprep(str) {
+    return str.replace(/[.*+?^${}()|[\]\\"';:]/g, "\\$&").replace(/[;]/g, "|c|");
+  }
+  CHUBunmess(str) {
+    const escapedStr = str.replace(/\\\"/g, '"');
+    const unescapedStr = escapedStr.replace(/\\\|c|/g, ",");
+    return [
+      unescapedStr,
+      JSON.parse(unescapedStr)
+    ];
+  }
+  MLTextToNodes(str, type = "text/html") {
+    return new DOMParser().parseFromString(str, type);
+  }
+  Chubify(str) {
+    let parsedHTML = this.parse(str, true);
+    let parsedDOM = this.MLTextToNodes(parsedHTML, "text/html");
+    return parsedDOM;
+  }
+  // ARARARAR
+  HTMLToChub = (html, delim = "") => {
+    if (html instanceof Element) html = html.outerHTML;
+    const doc = this.MLTextToNodes(html, "text/html");
+    return this.getChubML(doc.documentElement, "", delim);
+  };
+  getChubML = (node, indent = "", delim = "") => {
+    let chubML = "";
+    chubML += `${indent}${node.nodeName.toLowerCase()}`;
+    if (node.attributes.length > 0) {
+      const attrs = Array.from(node.attributes);
+      chubML = this.#handleAttr(attrs, chubML);
+    }
+    if (node.childNodes.length > 0)
+      chubML = this.#handleChildren(chubML, node, indent, delim);
+    else
+      chubML += ";\n";
+    return chubML;
+  };
+  #handleChildTextNode(child, indent) {
+    if (!child.textContent) return "";
+    let t = child.textContent.trim();
+    if (t != "") return `${indent}  "${t}";
+`;
+    return "";
+  }
+  #handleChildren(chubML, node, indent, delim) {
+    chubML += ";\n";
+    const childNodes = Array.from(node.childNodes);
+    for (const child of childNodes) switch (child.nodeType) {
+      case Node.TEXT_NODE:
+        chubML += this.#handleChildTextNode(child, indent);
+        break;
+      case Node.ELEMENT_NODE:
+        chubML += this.getChubML(child, indent + "  ", delim);
+        break;
+    }
+    chubML += `${indent}${delim}
+`;
+    return chubML;
+  }
+  #handleAttr(attrs, chubML) {
+    const cfv = (attr) => this.CHUBfax(attr.value);
+    for (const attr of attrs) switch (attr.name.toLowerCase()) {
+      case "class":
+        chubML += ` .${cfv(attr)}`;
+        break;
+      case "id":
+        chubML += ` #${cfv(attr)}`;
+      default:
+        chubML += ` %${attr.name}=${cfv(attr)}`;
+    }
+    return chubML;
+  }
+  aliasIndexes = [
+    "beam.lmc",
+    "beam.chub",
+    "index.lmc",
+    "index.chub"
+  ];
+  async #checkFile(loc, opts = {}) {
+    let req = await fetch(loc, { method: "HEAD", ...opts });
+    return [req.ok, req];
+  }
+  async #getFileSafely(loc) {
+    let [ok, okRes] = await this.#checkFile(loc);
+    if (!ok) throw new Error(`File not found!`);
+    let req = await fetch(loc);
+    return { req, okRes };
+  }
+  async #findFileOfCases(fileLocations) {
+    for (const loc of fileLocations) {
+      let [ok, okRes] = await this.#checkFile(loc);
+      if (ok) return loc;
+    }
+    return null;
+  }
+  #batchFile = (handleFile, loc) => new Promise(async (resolve, reject) => {
+    try {
+      await handleFile(loc, resolve);
+    } catch (error) {
+      reject(error);
+    }
+  });
+  async #batchFileOfCases(fileLocations) {
+    let pArr = [];
+    let abortController = new AbortController();
+    const handleFile = async (loc, resolve) => {
+      if (abortController.signal.aborted) throw new Error("Aborted");
+      let [f] = await this.#checkFile(loc, { signal: abortController.signal });
+      if (f) abortController.abort();
+      resolve([loc, f]);
+    };
+    for (const loc of fileLocations)
+      pArr.push(this.#batchFile(handleFile, loc));
+    let resses = await Promise.all(
+      pArr.map((p) => p.catch((e) => ["", false]))
+    );
+    for (const [res, ok] of resses)
+      if (ok) return res;
+    return null;
+  }
+  async #fileOrFallback(loc, slowly = false) {
+    let [ok, okRes] = await this.#checkFile(loc);
+    if (ok) return loc;
+    let choice = slowly ? this.#findFileOfCases : this.#batchFileOfCases;
+    return await choice(this.aliasIndexes);
+  }
+  async beamPrep(location, slowly) {
+    let fileName = await this.#fileOrFallback(location, slowly);
+    if (!fileName)
+      throw new Error(`File not found!`);
+    let req = await this.#getFileSafely(fileName);
+    chaosGl.lastChub = req;
+    return { ...req, location };
+  }
+  async beamParse(req, location = "") {
+    let text = await req.text();
+    let doc = this.parse(text, true);
+    return { text, doc, location };
+  }
+  async beamMake(location, slowly) {
+    let { req } = await this.beamPrep(location, slowly);
+    return await this.beamParse(req, location);
+  }
+  async beamDo(req, DOM) {
+    let { text, doc, location } = await this.beamParse(req);
+    this.beamRender(doc, DOM, { location, text });
+  }
+  beamRender(doc, DOM, optionalDetails = {}) {
+    this.chubDev && console.log(doc);
+    let entrypoint = DOM || this.chubLocation || "chub";
+    let locationGot = typeof entrypoint == "string" ? this.$(entrypoint) || document.body : entrypoint;
+    locationGot.innerHTML = doc;
+    _ChubMLMod.#ChubInjected.detail = {
+      nodes: locationGot,
+      text: doc,
+      ...optionalDetails
+    };
+    _ChubMLMod.#ChubInjected.activate();
+  }
+  async beamSync(location, DOM, slowly = false) {
+    let { req } = await this.beamPrep(location, slowly);
+    return async () => await this.beamDo(req, DOM);
+  }
+  /**
+   * Example usage:
+   * 
+   * ```typescript
+   * const cml = new ChubMLMod();
+   * cml.beamChub('/path/to/chub/file', document.getElementById('app'), true);
+   * ```
+   * 
+   * @param slowly - If true, errors are ignored and execution using a quicker Promise.all, this is better for users, worse for servers.
+   */
+  async beamChub(location, DOM, slowly = false) {
+    return await (await this.beamSync(location, DOM, slowly))();
+  }
+  constructor() {
+    super();
+    try {
+      this.#elevateToWindow();
+    } catch {
+    }
+  }
+  #elevateToWindow() {
+  }
+};
+var __ChubI = new ChubMLMod();
+var cml_default = eobj_default(__ChubI, ["ChubML", "ChubMLMod"]).default;
+export {
+  cml_default as default
+};
 //# sourceMappingURL=cml.mjs.map

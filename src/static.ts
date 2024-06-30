@@ -1,9 +1,14 @@
-import { chaosGl, NOOP, ANOOP } from './cst';
+import cst from './cst';
+const { chaosGl, ANOOP, NOOP } = cst;
 
-import { CowErr } from './CowErr';
-import { CowObj, CowObject } from './CowObj'
+import CowErr from './CowErr';
 
-export class CML_Static {
+import CowObj from './CowObj';
+import type { CowObject } from './CowObj'
+
+import eobj from './eobj'
+
+class CML_Static {
   static CML_Static = CML_Static
   CML_Static = CML_Static
 
@@ -76,3 +81,5 @@ export class CML_Static {
     return { count, list };
   }
 }
+
+export default eobj(CML_Static).default;
