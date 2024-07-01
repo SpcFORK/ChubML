@@ -1,3 +1,5 @@
+![chubml_logo](https://github.com/SpcFORK/ChubML/assets/126259962/2947fff2-cee1-4186-82fa-af0b18468a56)
+
 # ChubML
 
 ChubML (Chub Markup Language) is a lightweight markup language designed to simplify the process of creating websites. It provides a simplified syntax that allows for rapid and efficient development.
