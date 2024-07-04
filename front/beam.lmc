@@ -1,6 +1,8 @@
-html @gl=html;
+@import=fold/ind.lmc;
+
+!DOCTYPE html
+html;
+  // HEADER
   head;
   body;
-    "Hey";
-
-@%=;
+    nav;

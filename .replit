@@ -1,4 +1,4 @@
-run = "tsup; node index.js"
+run = "tsup; node tool/index.js; node index.js"
 entrypoint = "index.ts"
 hidden = [".config", "package-lock.json", "tsconfig.json"]
 
@@ -27,9 +27,10 @@ requiredFiles = [".replit", "replit.nix", ".config"]
     start = "typescript-language-server --stdio"
 
 [deployment]
-run = ["tsx", "index.ts"]
-deploymentTarget = "cloudrun"
+deploymentTarget = "static"
 ignorePorts = false
+build = ["sh", "-c", "tsup;"]
+publicDir = "front"
 
 [[ports]]
 localPort = 3000

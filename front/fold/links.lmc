@@ -1,0 +1,27 @@
+a .link-url %href=template.js;
+  "Template File";
+
+span .pipeDiv;
+  "|";
+a .link-url %href=style.css;
+  "Template Style";
+
+span .pipeDiv;
+  "|";
+a .link-url %href=dist/cml.js;
+  "SRC Code";
+
+span .pipeDiv;
+  "|";
+a .link-url %href=README.md;
+  "README.md";
+
+span .pipeDiv;
+  "|";
+a .link-url %href=#;
+  "Temp HTML";
+
+span .pipeDiv;
+  "|";
+a .link-url %href=dist.zip;
+  "Zip Dist";

@@ -1,0 +1,6 @@
+!DOCTYPE html;
+html @gl=html;
+  head;
+  body;
+    div %chubexps=ChubML.handleLiveReload(self);
+      script %src=import.mjs;

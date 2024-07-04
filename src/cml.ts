@@ -1,11 +1,12 @@
 // @ CowSTD
 import cst from './cst';
-const { chaosGl, chaosEval, NOOP, ANOOP } = cst;
+const { chaosGl, chaosEval, NOOP, ANOOP, R } = cst;
 
 import CowErr from './CowErr';
 
 // Global
 import type * as gl from '../global';
+import type { Interface, ReadLine } from 'readline';
 
 // @ CML
 import type { CILEList, ChubNode, SortedCILE } from './CILEList';
@@ -13,7 +14,11 @@ import type { CILEList, ChubNode, SortedCILE } from './CILEList';
 import CML_Static from './static';
 import CustomEventHandle from './CustomEventHandle';
 import checkEnvironment from './checkEnvironment';
+
 import eobj from './eobj';
+
+import CowDOM from './domImp';
+const { CowHTMLDocCtx, CowXMLDocCtx } = CowDOM;
 
 /**
  * A ChubML instance.
@@ -80,6 +85,134 @@ class ChubMLMod extends CML_Static {
   static #ChubStarted = new CustomEventHandle('chubstart');
   static #ChubInjected = new CustomEventHandle('chubinjected');
 
+  // static #splitFirst(str: string, d = ' ') {
+  //   let [a, ...b] = str.split(d);
+  //   return [a, b.join(d)]
+  // }
+
+  // static #splitLast(str: string, d = ' ') {
+  //   let [a, ...b] = str.split(d).reverse()
+  //   return [a, b.reverse().join(d)]
+  // }
+
+  static #dmsg(msg: string, ...elsew: any[]) {
+    let d = chaosGl.chubDev;
+    d && console.log('ChubML: ' + msg, ...elsew);
+  }
+
+  static #handleCustomAttr(attr: Attr, el: Element) {
+    const attrs = el.attributes;
+
+    switch (attr.name.toLowerCase()) {
+      case 'chubexp':
+      case 'chubexps':
+        for (const exp of attr.value.split(';')) {
+          let r = Function('self', exp);
+          if (r) var rv = r.apply(exp, [el]);
+          this.#dmsg(`${exp} -> ${rv}`)
+        }
+        attrs.removeNamedItem(attr.name)
+        break;
+      case 'chublive':
+        // Hot-Reload
+        let ms = parseFloat(attr.value)
+
+        // Worry about context when context is used.
+        if (!isNaN(ms)) ms = this.#makeLiveReloadWatcher(ms, el, attr);
+        else this.#dmsg(`Invalid value for ${attr.name} attribute.`);
+
+        attrs.removeNamedItem(attr.name);
+        break;
+    }
+
+    this.#dmsg(attr.name, attr.value)
+  }
+
+  static #makeLiveReloadWatcher(ms: number, el: Element, attr: Attr) {
+    let sr = setInterval(() => {
+      this.#dmsg(`Requesting Frame for `, el, '...', ms);
+      ms = this.#liveReloadFrame(ms, el, attr);
+    }, ms);
+    Reflect.set(el, 'chubLiveReload', sr)
+    return ms;
+  }
+
+  static #liveFrames = new WeakMap
+  static #liveScriptChanges = new WeakMap
+  static #liveReloadFrame(ms: number, el: Element, attr: Attr) {
+    if (!chaosGl.requestAnimationFrame) return ms;
+    chaosGl.requestAnimationFrame(async (a: any) => {
+      if (isNaN(ms)) return;
+      if (this.#liveFrames.has(el)) return;
+
+      this.#liveFrames.set(el, a);
+
+      await this.handleLiveReload(el);
+      this.#dmsg(`HTML updated and scripts executed every ${ms}ms`, el, a);
+
+      this.#liveFrames.delete(el);
+
+      ms = parseFloat(attr.value);
+    });
+    return ms;
+  }
+
+  static async handleLiveReload(el: Element) {
+    let htmlContent = el.innerHTML;
+    el.innerHTML = htmlContent;
+    const scripts = el.querySelectorAll('script');
+    // Has doneBefore dataFlag?
+    const filteredScripts = Array
+      .from(scripts)
+      .filter(s => !s.hasAttribute('data-doneBefore') || s.hasAttribute('data-forceReload'));
+
+    this.#dmsg('scripts found', scripts.length, filteredScripts)
+    for (const script of filteredScripts) {
+      const newScript = document.createElement('script');
+      for (const attr of script.attributes)
+        newScript.setAttribute(attr.name, attr.value)
+
+      if (script.src) await this.#handleLiveSrcScript(newScript, script);
+      else this.#handleLiveStaticSource(newScript, script);
+
+      script.parentNode?.replaceChild(newScript, script);
+      this.#dmsg(newScript.src, 'script src updated')
+    }
+  }
+  handleLiveReload = ChubMLMod.handleLiveReload.bind(ChubMLMod)
+
+  static #handleLiveStaticSource(newScript: HTMLScriptElement, script: HTMLScriptElement) {
+    newScript.textContent = script.textContent;
+    // newScript.dataset['doneBefore'] = 'true';
+    newScript.setAttribute('data-doneBefore', 'true');
+    this.#dmsg(newScript.src, 'script src updated loose')
+  }
+
+  static async #handleLiveSrcScript(newScript: HTMLScriptElement, script: HTMLScriptElement) {
+    let [ok, headReq] = await this.#_checkFile(script.src)
+    if (!ok) return this.#dmsg('Failed to load script', script.src);
+    this.#dmsg('Script loaded', script.src);
+
+    let past = this.#liveScriptChanges.get(script);
+    let is304 = (past && past === script.textContent) || script.dataset['forceReload'] || (headReq.status == 304)
+
+    if (is304) return this.#dmsg('Script is 304', script.src);
+    this.#dmsg('Script is not 304', script.src);
+
+    let file = await (await fetch(script.src)).text();
+    newScript.textContent = file;
+    this.#liveScriptChanges.set(script, file)
+
+    this.#dmsg('script source updated', newScript.src, file, is304, past, headReq, ok)
+  }
+
+  static #handleCustomAttrs() {
+    let all = document.querySelectorAll('*');
+    for (const el of all) for (const attr of el.attributes)
+      this.#handleCustomAttr(attr, el);
+    chaosGl.chubDev && console.log('Custom attrs handled.', all.length, 'elements.', all);
+  }
+
   // @ Options
   static {
     chaosGl.lastChub ||= ""
@@ -94,6 +227,10 @@ class ChubMLMod extends CML_Static {
       this.#ChubStarted.detail = this
       this.#ChubStarted.activate();
     })
+
+    chaosGl.chubinjected.globals.push(() => {
+      this.#handleCustomAttrs()
+    });
   }
 
   #makeDef = (_?: SortedCILE): ChubNode => ({
@@ -107,19 +244,25 @@ class ChubMLMod extends CML_Static {
     indent: 0,
     [Symbol.unscopables]: {
       _: _ || null,
-      atBucket: []
+      atBucket: [],
+      data: {},
     }
   })
 
-  static #_(scope: { [key: string]: any, [Symbol.unscopables]: any }): Record<string, any> {
+  static _(scope: { [key: string]: any, [Symbol.unscopables]: any }): Record<string, any> {
     return Reflect.get(scope, Symbol.unscopables)
   }
-  #un = ChubMLMod.#_
+  un = ChubMLMod._.bind(ChubMLMod)
 
-  static #_b(scope: { [key: string]: any, [Symbol.unscopables]: any }): string[] {
-    return this.#_(scope).atBucket
+  static _b(scope: { [key: string]: any, [Symbol.unscopables]: any }): string[] {
+    return this._(scope).atBucket
   }
-  #ab = ChubMLMod.#_b
+  ab = ChubMLMod._b.bind(ChubMLMod)
+
+  static _d(scope: { [key: string]: any, [Symbol.unscopables]: any }): Record<any, any> {
+    return this._(scope).data
+  }
+  dt = ChubMLMod._d.bind(ChubMLMod)
 
   #makeIndexes = () => ({
     str: 0,
@@ -140,7 +283,9 @@ class ChubMLMod extends CML_Static {
     'param',
     'source',
     'track',
-    'wbr'
+    'wbr',
+    '!',
+    '?',
   ]
 
   static #getQM() {
@@ -377,22 +522,56 @@ class ChubMLMod extends CML_Static {
     return v
   }
 
+  #stealPropItem<T>(tempC: T, prop: keyof T, d = ' ') {
+    let v = tempC[prop];
+    // Split into two by first occurence of d.
+    let [a, ...b] = (v + '').split(d);
+    (tempC[prop] as any) = b.join(d);
+    return a;
+  }
+
+  #stealID(tempC: ChubNode, e = true) {
+    return e
+      ? this.#stealAndTryToEval(tempC, 'id')
+      : this.#stealPropItem(tempC, 'id')
+  }
+
   #defEval(er: string | number | { _: SortedCILE | null; atBucket: string[]; }): any {
     return er ? chaosEval(er) : {};
   }
 
-  #stealAndTryToEval(tempC: ChubNode, prop: keyof ChubNode) {
-    if (!tempC[prop]) return {};
-    try { var r = this.#defEval(this.#stealProp(tempC, prop)) } catch { }
-    return r!
+  #stealAndTryToEval(tempC: ChubNode, prop: keyof ChubNode, d = void 0) {
+    if (!tempC[prop]) return d;
+    try { var r = this.#defEval(this.#stealPropItem(tempC, prop)) } catch { }
+    return r || d
   }
 
-  #handleAtEval(tempC: ChubNode, ev: string) {
-    let r = this.attrSyn(ev).join(';');
-    let er = this.#stealAndTryToEval(tempC, 'id')
+  // Why is there no AsyncFunction class?
+  #asyncFn = Object.getPrototypeOf(ANOOP).constructor;
+  promiseBucket = [] as Promise<any>[];
+  async #handlePromise(promise: Promise<any>) {
+    let i = this.promiseBucket.push(promise)
+    await promise;
+    if (this.promiseBucket[i] === promise)
+      this.promiseBucket.splice(i, 1);
+  }
 
-    try { var scriptRes = new Function(r).bind(tempC)(er, tempC) }
-    catch (error) { return console.error(error, this.s.errorList.scripterror) }
+  #handleAtEval(tempC: ChubNode, ev: string, a = false) {
+    let r = this.attrSyn(ev).join(';');
+    let er = this.#stealID(tempC)
+
+    try {
+      let caller: FunctionConstructor = a ? this.#asyncFn : Function
+      let i = caller.apply(tempC, ['param', 'ctx', 'self', 'promiseBucket', r])
+
+      let res = i(er, this.un(tempC), tempC, () => Promise.all(this.promiseBucket))
+      if (res instanceof Promise) this.#handlePromise(res)
+
+      var scriptRes = !a ? res?.toString?.() : undefined
+    }
+    catch (error) {
+      return console.error(error, this.s.errorList.scripterror)
+    }
 
     this.chubDev && console.log("AtEval: ", scriptRes);
     scriptRes && this.#handleAtPutCont(tempC, scriptRes);
@@ -416,7 +595,7 @@ class ChubMLMod extends CML_Static {
     if (!res) throw new CowErr("CowErr", "No Call: " + r)
     if (typeof res !== 'function') throw new CowErr("CowErr", "Not a function: " + r)
 
-    let er = this.#stealAndTryToEval(tempC, 'id')
+    let er = this.#stealID(tempC)
     let cr = res.bind(tempC)(tempC, er)
     cr && this.#handleAtPutCont(tempC, cr)
 
@@ -432,15 +611,36 @@ class ChubMLMod extends CML_Static {
     this.chubDev && console.log("AtFrom: ", res)
   }
 
+  // importMap = []
   #handleAtImport(tempC: ChubNode, pv: string) {
+    let storage = this.#stealID(tempC)
+    // if (!storage) throw new CowErr("CowErr", "No Storage: " + pv)
+
     let res = this.beamMake(pv, true);
-    res.then(({ doc }) => tempC.content += this.parse(doc))
+    let dt = this.dt(tempC)
+
+    let holder: any;
+    dt.doImport = (element: Element) => (delete dt.doImport, holder = element)
+    // tempC.attr += ' %chubExps=ChubML.dt(divCore).doImport'
+
+    res.then(({ doc }) => {
+      if (storage) {
+        let s;
+        let COUNTER = 0;
+        while (!(s = this.$(storage))) if (COUNTER++ > 1000)
+          throw new CowErr("CowErr", "No Storage: " + storage);
+        s.innerHTML += doc
+      }
+      if (holder) holder.innerHTML += doc
+      dt.onImport?.(tempC)
+    })
   }
 
   #handleAtGlobalize(tempC: ChubNode, param: string) {
     let r = this.#parseParam(param)
     Object.defineProperty(chaosGl, r, {
-      get: () => tempC
+      get: () => tempC,
+      configurable: true,
     })
     this.chubDev && console.log("AtGlobalize: ", param);
   }
@@ -463,8 +663,8 @@ class ChubMLMod extends CML_Static {
   }
 
   #handleAtMkPrp(tempC: ChubNode, p: string) {
-    let [gobj, ...propNames] = p.split('.');
-    let fp = propNames.pop();
+    let [gobj, ...datas] = p.split('.');
+    let fp = datas.pop();
     let g = chaosGl[gobj];
 
     if (!fp)
@@ -473,36 +673,64 @@ class ChubMLMod extends CML_Static {
       throw new CowErr("CowErr", "No Global Object: " + gobj);
 
     let res = g;
-    for (const propName of propNames) {
-      res = res[propName];
+    for (const data of datas) {
+      res = res[data];
       if (!res)
-        throw new CowErr("CowErr", "No Property: " + propName);
+        throw new CowErr("CowErr", "No Property: " + data);
     }
 
     // var er = this.#stealProp(tempC, 'id');
-    this.#dfp(res, fp, this.#stealAndTryToEval(tempC, 'id'));
+    this.#dfp(res, fp, this.#stealID(tempC))
 
     this.chubDev && console.log("MkPrp: ", p, fp, g, res, res[fp]);
   }
 
   #handleAtDef(tempC: ChubNode, param: string) {
-    let er = this.#stealProp(tempC, 'id');
+    let er = this.#stealID(tempC)
     this.#dfi(chaosGl, param, this.#defEval(er!));
 
     this.chubDev && console.log("AtDef: ", param);
   }
 
   #handleAtAsg(tempC: ChubNode, param: string) {
-    let propName = this.attrSyn(param)
-    let er = this.#stealProp(tempC, 'id') as string
-    let res = propName.join(';')
+    let data = this.attrSyn(param)
+    let parent = this.#stealID(tempC)
+    let prop = this.#stealID(tempC, false)
+    let res = chaosEval(data.join(';'))
 
-    if (er) {
-      Reflect.set(chaosGl, er, res)
-      tempC.content += er
-    } else new CowErr('CowErr', 'No Property: ' + res).throw()
+    if (!parent) throw new CowErr('CowErr', 'No Parent: ' + res)
+    if (!prop) throw new CowErr('CowErr', 'No Property: ' + res)
 
-    this.chubDev && console.log("AtAsg: ", tempC, res, er);
+    Reflect.set(parent, prop, res)
+
+    this.chubDev && console.log("AtAsg: ", tempC, res, parent);
+  }
+
+  #handleAtDelete(tempC: ChubNode, param: string) {
+    let parent = this.#stealID(tempC) || globalThis
+    let prop = this.attrSyn(param)[0]
+
+    if (!prop) throw new CowErr('CowErr', 'No Property: ' + parent)
+
+    Reflect.deleteProperty(parent, prop)
+
+    this.chubDev && console.log("AtDelete: ", tempC, prop, parent);
+  }
+
+  #makeWrap(param: string, tempC: ChubNode, close = false) {
+    let r = this.#parseParam(param);
+    let [tag] = this.attrSyn(r);
+    return `<${tag}>${tempC.content}` + (close ? `</${tag}>` : '');;
+  }
+
+  #handleUWrap(tempC: ChubNode, param: string) {
+    // Takes content, and wraps in tag.
+    tempC.content = this.#makeWrap(param, tempC);
+  }
+
+  #handleWrap(tempC: ChubNode, param: string) {
+    // Takes content, and wraps in tag.
+    tempC.content = this.#makeWrap(param, tempC, true)
   }
 
   // #watchVar(tempC: ChubNode, param: string) {
@@ -527,7 +755,7 @@ class ChubMLMod extends CML_Static {
     const S_name = param.slice(1)
     function prune(len: number): string {
       let p = S_name.slice(len + 1);
-      ChubMLMod.#_b(tempC).push(p);
+      ChubMLMod._b(tempC).push(p);
       return p
     }
     function starts(str: string): boolean {
@@ -544,6 +772,10 @@ class ChubMLMod extends CML_Static {
 
       case starts('eval'):
         this.#handleAtEval(tempC, prune(4));
+        break;
+
+      case starts('*eval'):
+        this.#handleAtEval(tempC, prune(5), true);
         break;
 
       case starts('ret'):
@@ -582,8 +814,16 @@ class ChubMLMod extends CML_Static {
         this.#handleAtAsg(tempC, prune(3));
         break;
 
-      case starts('%'):
-        this.#handleAtCode(tempC, prune(1));
+      case starts('del'):
+        this.#handleAtDelete(tempC, prune(3));
+        break;
+
+      case starts('*wrp'):
+        this.#handleUWrap(tempC, prune(3));
+        break;
+
+      case starts('wrp'):
+        this.#handleWrap(tempC, prune(3));
         break;
 
       // ---
@@ -756,6 +996,7 @@ class ChubMLMod extends CML_Static {
     return html;
   }
 
+  // @@ Build Head
   #buildHeadTag(html: string, cil: SortedCILE, o: ChubNode, isSpecial: number, shorter: boolean, lessNl: boolean) {
     let p = lessNl ? "" : "\n"
     html = p + `${lessNl ? '' : cil.i}<${o.tag}`;
@@ -767,7 +1008,19 @@ class ChubMLMod extends CML_Static {
 
     let end = ">" + p
 
-    if (shorter) html += " /"
+    let suf = ' /'
+
+    let t = o.tag.toLowerCase()
+    switch (true) {
+      case t.startsWith('!'):
+        suf = ''
+        break;
+      case t.startsWith('?'):
+        suf = ' ?'
+        break;
+    }
+
+    if (shorter) html += suf;
     html += end
 
     return { html, shorter };
@@ -880,9 +1133,7 @@ class ChubMLMod extends CML_Static {
 
   ChubRep(doc: string, quirky = "<!DOCTYPE html>") {
     (doc as any) = this.parse(doc, true);
-    document.open();
-    document.write(quirky + '\n' + doc);
-    document.close();
+    return CowHTMLDocCtx.manualWrite(quirky + '\n' + doc)
   }
 
   injectChub(input: string) {
@@ -1124,25 +1375,28 @@ class ChubMLMod extends CML_Static {
     "index.chub",
   ]
 
-  async #checkFile(loc: string | URL | Request, opts = {}) {
+  static async #_checkFile(loc: string | URL | Request, opts = {}) {
     let req = await fetch(loc, { method: "HEAD", ...opts })
     return [req.ok, req] as [boolean, Response]
   }
+  #checkFile = ChubMLMod.#_checkFile
 
-  async #getFileSafely(loc: string | URL | Request) {
-    let [ok, okRes] = await this.#checkFile(loc)
+  static async #_getFileSafely(loc: string | URL | Request) {
+    let [ok, okRes] = await this.#_checkFile(loc)
     if (!ok) throw new Error(`File not found!`)
     let req = await fetch(loc)
     return { req, okRes }
   }
+  #getFileSafely = ChubMLMod.#_getFileSafely.bind(ChubMLMod)
 
-  async #findFileOfCases(fileLocations: string[]) {
+  static async #_findFileOfCases(fileLocations: string[]) {
     for (const loc of fileLocations) {
-      let [ok, okRes] = await this.#checkFile(loc)
+      let [ok, okRes] = await this.#_checkFile(loc)
       if (ok) return loc
     }
     return null
   }
+  #findFileOfCases = ChubMLMod.#_findFileOfCases.bind(ChubMLMod)
 
   #batchFile = (
     handleFile: Function,
@@ -1259,10 +1513,164 @@ class ChubMLMod extends CML_Static {
     super()
 
     try { this.#elevateToWindow() } catch { }
+
+    try { this.#asCLI(process.argv) } catch { }
+
   }
 
   #elevateToWindow() {
+  }
 
+  #FS: any;
+  #RL: any;
+  async #asCLI(vargs: string[]) {
+    if (vargs.length == 0) return;
+
+    // console.log(vargs)
+
+    if (vargs[0] == 'node') vargs.shift()
+    let [, location, ...args] = vargs
+    // console.log(args)
+
+    this.#FS = R('fs');
+    this.#RL = R('readline')
+
+    if (args[0] == 'parse') try {
+      this.#CLIParse(args);
+    } catch (e) {
+      console.error(e)
+    }
+
+    if (args[0] == 'transpile') try {
+      this.#CLITranspile(args);
+    } catch (e) {
+      console.error(e)
+    }
+
+    if (args[0] == 'write') try {
+      await this.#CLIWrite(args, this.#RL.createInterface({
+        input: process.stdin,
+        output: process.stdout
+      }));
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  #CLIReadParseCmFile(file: string, sm?: boolean) {
+    let text = this.#FS.readFileSync(file, 'utf-8');
+    let doc = this.parse(text, sm);
+    return doc;
+  }
+
+  #CLIParse(args: string[]) {
+    let file = args[1];
+    if (!file) throw new Error('No file specified!');
+    console.log('Parsing file:', file)
+    let doc = this.#CLIReadParseCmFile(file);
+    console.log(doc);
+  }
+
+  #CLITranspile(args: string[]) {
+    let [, file, exp, ...rest] = args;
+    if (!file) throw new Error('No file specified!');
+    if (!exp) throw new Error('No export specified!');
+
+    console.log('Transpiling...', file)
+    const str = !!rest.find(x => x == '--strict' || x == '-s')
+    console.log('Strict mode:', str)
+
+    let doc = this.#CLIReadParseCmFile(file, str);
+    console.log('Transpiled!')
+
+    const EDPrser = (doc: any, type: DOMParserSupportedType) => `export default (new DOMParser).parseFromString(\`${doc}\`, "${type}")`
+    switch (true) {
+      case exp.endsWith('.html'): break
+      case exp.endsWith('.p.js'):
+        doc = EDPrser(doc, 'text/html')
+        break
+      case exp.endsWith('.x.js'):
+        doc = EDPrser(doc, 'text/xml')
+        break
+      case exp.endsWith('.xh.js'):
+        doc = EDPrser(doc, 'application/xhtml+xml')
+        break
+      case exp.endsWith('.w.js'):
+        doc = [
+          `{`,
+          CowHTMLDocCtx,
+          `{`,
+          `const d = document;`,
+          `d.open();`,
+          `try { d.write(\`${doc}\`) } catch {};`,
+          `d.close();`,
+          `}`,
+          `}`
+        ].join('')
+        break
+      case exp.endsWith('.js'):
+        doc = `export default \`${doc}\``
+        break
+    }
+
+    this.#FS.writeFileSync(exp, doc)
+    console.log('Wrote!', exp)
+  }
+
+  async #CLIWrite(args: string[], rl: Interface) {
+    let textList = [] as string[];
+    const bld = () => textList.join('\n');
+
+    let file = args[1];
+    if (!file) {
+      console.error('No file specified!');
+      process.exit(1)
+    }
+
+    let lastTxt = '';
+    let PROMPT = '';
+    MAIN: while (lastTxt.toLowerCase() !== 'eof') {
+      console.clear();
+      process.stdin.write('Write to file until EOF or CTRL+C');
+      process.stdin.write('\n');
+      process.stdin.write(bld());
+      process.stdin.write('\n');
+
+      let tp = new Promise(resolve => rl.question('', resolve));
+      rl.write(PROMPT);
+
+      lastTxt = await tp as string;
+
+      // if (lastTxt == 'back') lastTxt = textList.pop() + ''
+      // else if (isEOF(lastTxt)) textList.push(lastTxt)
+      switch (lastTxt.toLowerCase()) {
+        case 'back':
+          PROMPT = textList.pop() || '';
+          break;
+
+        case 'clr':
+          PROMPT = '';
+          break;
+
+        case 'new':
+          PROMPT = '';
+          textList = [];
+          break;
+
+        case 'eof':
+          console.clear();
+          break MAIN;
+
+        default:
+          textList.push(lastTxt);
+          PROMPT = '';
+      }
+    }
+
+    console.log('Writing to file... ', file);
+    this.#FS.writeFileSync(file, bld());
+    console.log('Done!');
+    process.exit(0);
   }
 }
 

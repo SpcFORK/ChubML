@@ -1,7 +1,7 @@
 let cml = globalThis.ChubML
 
 var chubLocation = "html"
-var chubDev = true
+// var chubDev = true
 
 /* 
   On document load after Chub is done loading.
@@ -9,12 +9,15 @@ var chubDev = true
 */
 
 let pageSrc = 'beam.lmc'
-let page = cml.beamMake(pageSrc)
+cml.body = cml.parse(`
+nav @*wrp=b @*wrp=i;
+  "Please wait </b>";
+  span;
+    "while we load the page...";
+`)
 
-cml.body = 'Loading...'
-page.then(({ doc }) => {
+cml.beamMake(pageSrc).then(({ doc }) => {
   cml.beamRender(doc, chubLocation)
-  delete page
 })
 
 // On injectChub finished.

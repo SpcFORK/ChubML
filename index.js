@@ -1,11 +1,8 @@
 const express = require("express");
+const cml = require("./front/dist/cml");
 const path = require("path");
-
+const fs = require("fs");
 const app = express();
-
-const cml = require("./dist/cml");
-const chub = cml.default
-
 
 app.use(
   (req, res, next) => {
@@ -13,7 +10,7 @@ app.use(
     next();
   },
   express.static('./front', {
-    extensions: ['html', 'js', 'css', 'cma'],
+    extensions: ['html', 'js', 'css', 'lmc'],
   }),
   express.static('./dist', {
     extensions: ['js', 'css'],

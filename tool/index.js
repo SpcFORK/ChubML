@@ -1,0 +1,2 @@
+require('./zip')
+require('./addBin')

@@ -1,9 +1,43 @@
 {
   "devDependencies": {
-    "@types/node": "^20.14.8"
-  },
-  "dependencies": {
+    "@types/node": "^20.14.8",
+    "archiver": "^7.0.1",
     "express": "^4.19.2",
     "tsup": "^8.1.0"
-  }
+  },
+  "name": "chubml",
+  "description": "ChubML (Chub Markup Language) is a lightweight markup language designed to simplify the process of creating websites. It provides a simplified syntax that allows for rapid and efficient development.",
+  "version": "1.0.2",
+  "main": "dist/cml.js",
+  "scripts": {
+    "test": "node dist/cml.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SpcFORK/ChubML.git"
+  },
+  "files": [
+    "LICENCE",
+    "README.md",
+    "front/dist",
+    "src",
+    "global.ts"
+  ],
+  "keywords": [
+    "chubml",
+    "ml",
+    "html",
+    "js",
+    "lang",
+    "xml",
+    "markup",
+    "ts"
+  ],
+  "author": "SpcFORK",
+  "license": "ISC",
+  "types": "./dist/cml.d.ts",
+  "bugs": {
+    "url": "https://github.com/SpcFORK/ChubML/issues"
+  },
+  "homepage": "https://github.com/SpcFORK/ChubML#readme"
 }

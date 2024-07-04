@@ -13,7 +13,8 @@ export interface ChubNode {
   indent: number;
   [Symbol.unscopables]: {
     _: SortedCILE | null,
-    atBucket: string[]
+    atBucket: string[],
+    data: Record<any, any>
   }
 }
 export interface SortedCILE extends CILElement {

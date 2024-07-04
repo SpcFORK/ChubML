@@ -1,0 +1,9 @@
+meta %charset=utf-8;
+meta %name=viewport %content=width|edevice-width;
+meta %name=msapplication-TileColor %content=#ff8800;
+meta %name=theme-color %content=#ff8800;
+
+title;
+  "Chub Syntax! | Home";
+
+link %href=style.css %rel=stylesheet %type=text/css;

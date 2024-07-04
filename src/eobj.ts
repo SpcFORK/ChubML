@@ -1,8 +1,7 @@
 function eobj<C extends Record<any, any> & unknown>(obj: C, names: string[] = []) {
   if (!obj) throw new Error(`No object provided to eobj.`);
 
-  if (obj?.name)
-    names.push(obj.name);
+  if (obj?.name) names.push(obj.name);
 
   names.push('default');
 
@@ -18,4 +17,4 @@ function eobj<C extends Record<any, any> & unknown>(obj: C, names: string[] = []
 }
 
 // Bootstarp !
-export default eobj(eobj).default;
+export default eobj(eobj, ['eobj']).default;

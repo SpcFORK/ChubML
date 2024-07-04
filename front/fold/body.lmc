@@ -1,0 +1,13 @@
+article .descArticle;
+  h3;
+    "Welcome to the";
+    span;
+      " CHUB WEBSITE!";
+  
+  small;
+    "Log by SpectCOW | v.0.0.3";
+  br;
+  br;
+  
+  p;
+  "The newest and best Markdown Language simplifier!";

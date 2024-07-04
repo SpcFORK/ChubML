@@ -1,0 +1,5 @@
+#'head' @import=fold/head.lmc;
+#'body' @import=fold/body.lmc;
+
+#'nav' @import=fold/nav.lmc;
+#'div.navCont' @import=fold/links.lmc;

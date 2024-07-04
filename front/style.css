@@ -1,0 +1,352 @@
+html {
+  height: 100%;
+  width: 100%;
+}
+
+:root {
+  --rot: 1.5deg;
+  --space-char-w: 0.3em;
+}
+
+body {
+  width: 100vw;
+  overflow-x: hidden;
+}
+
+pre {
+  font-family: monospace;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  line-height: 1.25;
+  margin: 0px;
+  font-size: 1.25em;
+  padding: 0px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+* {
+  margin: 0px;
+  padding: 0px;
+}
+
+article {
+  font-family: Helvetica, sans-serif;
+}
+
+article {
+  margin: 15px;
+}
+
+#docsNav {
+  padding: 15px;
+
+}
+
+/* #docsNav {
+  margin: 10px;
+  /* padding: 15px; */
+  /* top: 0px;   */
+
+@keyframes wavy-animation {
+  0% {
+    transform: rotate( var(--rot) );
+  }
+  50% {
+    transform: rotate( calc( var(--rot) * -1 ) );
+  }
+  100% {
+    transform: rotate( var(--rot) );
+  }
+}
+
+.coolStuffspan {
+  display: inline-block;
+
+  /* padding-left: var(--space-char-w); */
+  /* padding-right: var(--space-char-w); */
+
+  position: relative;
+  animation: wavy-animation 2s infinite;
+}
+
+.navHold {
+  display: flex;
+  align-items: center;
+}
+
+.pipeDiv {
+  padding-left: calc(var(--space-char-w));
+  padding-right: var(--space-char-w);
+
+}
+
+nav {
+  padding: 15px;
+  background: rgb(255,255,255);
+  background: linear-gradient(0deg, rgba(255,255,255,0) 0%, rgba(255,136,0,1) 60%, rgba(255,136,0,1) 100%); 
+}
+
+.link-url {
+  color: #f50;
+  /* font-size: 12px; */
+  /* text-decoration: none; */
+  text-shadow: 0px 0px;
+  font-family: Helvetica, sans-serif;
+  /* filter: drop-shadow(0px 0px 0.3rem #0009); */
+}
+
+.link-url:hover {
+  color: #fff;
+}
+
+.wlink-url {
+  color: #fff;
+  /* font-size: 12px; */
+  text-decoration: underline;
+  font-family: Helvetica, sans-serif;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.wlink-url:hover {
+  color: #000;
+}
+
+.fbox {
+  background-color: #fff;
+  /* box-shadow: 0px 0px 0px 0px #000; */
+}
+
+#docsNav {
+  /* 
+    %style=
+  */
+  display: block;
+  margin: 20px;
+  margin-top: 2px;
+  border-radius: 10px;
+  background: #f80;
+  max-width: 330px;
+  /* column-gap: 0px; */
+  /* background: radial-gradient(circle, #f80 30%, #c40 100%); */
+}
+
+#docsLayout {
+  /* 
+    %style=
+  */
+  margin:0px; 
+  display:flex; 
+  gap:10px; 
+  width: 300px;
+  /* background: #f80; */
+}
+
+#docsMiniCol {
+  /* 
+    %style=
+  */
+  display:flex; 
+  gap:10px; 
+  flex-direction:column; 
+  margin:0px; 
+  padding:0px;
+  width: min-content;
+  justify-items: stretch;
+}
+
+#docsCol {
+  width: min-content;
+  display: flex;
+  gap: 10px;
+  /* flex-wrap: wrap; */
+  /* flex-direction: column; */
+}
+
+.coolerfbox {
+  left:-5px; 
+  top:-5px;
+  /* background: radial-gradient(circle, #f80 30%, #c40 100%); */
+  position:relative; 
+  box-shadow: 6px 6px 0px 0px #000;
+  width: auto;
+  /* width: 10%; */
+
+}
+
+.coolerHfbox {
+  left:-5px;
+  top:-5px;
+  padding-right: 0px;
+  padding-left: 0px;
+  position: relative;
+  display: inline-block;
+  box-shadow: 6px 6px 0px 0px #000;
+  /* background: radial-gradient(circle, #f80 30%, #c40 100%); */
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  /* text-decoration: underline 0.1px #FFF9; */
+}
+
+.docp {
+  /* filter: drop-shadow(0px 0px 0.3rem #000); */
+  text-shadow: 2px 2px 0px #000;
+}
+
+.coolerfbox:hover .docp, .coolderfbox:active .docp {
+  text-shadow: none;
+}
+
+/* 
+  .lol ::hover;
+    addevent: "lolHover";
+
+  !lolHover .asd;
+    background: ;
+
+*/
+
+
+
+.coolerfbox:hover, .coolderfbox:active {
+  left:0px; 
+  top:0px;
+  box-shadow: none;
+
+}
+
+.coolerfbox:hover a, .coolderfbox:active a {
+  color: #000;
+}
+
+.coolerHfbox:hover .docp, .coolderHfbox:active .docp {
+  text-shadow: none;
+}
+
+.coolerHfbox:hover a, .coolderHfbox:active a {
+  /* left:0px; 
+  top:0px; */
+  color: #000;
+}
+
+.coolerHfbox:hover, .coolderHfbox:active {
+  left:0px; 
+  top:0px;
+  box-shadow: none;
+}
+
+.vtext {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+/* CHUBML - A footer
+footer;
+      div .footer;
+
+        div .footer-left;
+          div .footer-left-title;
+            h3;
+              span .footer-title;
+              "CHUB WEBSITE";
+
+          div .footer-left-desc;
+            p;
+              "The newest and best Markdown Language simplifier!";
+              br;
+
+        div .footer-right;
+          div .footer-right-title;
+            h3;
+              // Create info List items
+
+              ul;
+                li;
+                  a %href=about .footer-link;
+                    "About";
+                li;
+                  a %href=docs .footer-link;
+                    "Docs";
+                li;
+                  a %href=functions .footer-link;
+                    "Functions";
+                li;
+                  a %href=more .footer-link;
+                    "More...";
+                li;
+                  a %href=contact .footer-link;
+                    "Contact";
+                li;
+                  a %href=privacy .footer-link;
+                    "Privacy";
+                li;
+                  a %href=terms .footer-link;
+                    "Terms";
+                li;
+*/
+
+body .footer {
+  /* A decent footer that will glue itself to the bottom of the page */
+  /* position: ; */
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  margin: 0;
+  background-color: #f80;
+}
+
+.footer-left {
+  /* Left side of the footer */
+  padding: 10px;
+  background-color: #f80;
+}
+
+.footer-left-title {
+  /* Title of the footer */
+  font-size: 20px;
+  color: #000;
+  font-weight: bold;
+}
+
+.footer-left-desc {
+  /* Description of the footer */
+  font-size: 15px;
+  color: #000;
+}
+
+.footer-right {
+  /* Right side of the footer */
+  padding: 10px;
+  background-color: #f80;
+}
+
+.footer-right-title {
+  /* Title of the footer */
+  font-size: 20px;
+  color: #000;
+  font-weight: bold;
+}
+
+.footer-right-title ul {
+  /* List of the footer */
+  list-style-type: none;
+  padding: 0;
+}
+
+.footer-right-title ul li {
+  /* List items of the footer */
+  margin: 5px;
+}
+
+.footer-right-title ul li a {
+  /* List items of the footer */
+  color: #000;
+  text-decoration: none;
+}
+
+.footer-right-title ul li a:hover {
+  /* List items of the footer */
+  color: #fff;
+  text-decoration: underline;
+}
