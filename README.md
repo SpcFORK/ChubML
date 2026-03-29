@@ -1,5 +1,5 @@
-![chubml_logo](https://github.com/user-attachments/assets/badef9b5-132d-46df-a858-cd4222390d97>
-)
+<img width="1571" height="843" alt="image" src="https://github.com/user-attachments/assets/dcde53c6-40d6-4a98-8273-29d2b826226e" />
+
 ---
 # ChubML
 
