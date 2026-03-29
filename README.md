@@ -1,4 +1,5 @@
-![chubml_logo](https://github.com/SpcFORK/ChubML/assets/126259962/2947fff2-cee1-4186-82fa-af0b18468a56)
+![chubml_logo](https://github.com/user-attachments/assets/badef9b5-132d-46df-a858-cd4222390d97>
+)
 ---
 # ChubML
 
